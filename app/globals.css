@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+html{
+  scroll-behavior: smooth;
+}
+
+@theme {
+  --color-primary: #0db180;
+  --color-accent: #bc8e5b;
+  --color-dark: #171717;
+  
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff; /* HR landing page odatda oq fonda chiroyli ko'rinadi, lekin xohlasangiz o'zgartirish mumkin */
+    --foreground: #171717;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, sans-serif;
+}
+
+.swiper-button-next, .swiper-button-prev {
+  color: var(--color-primary) !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--color-primary) !important;
+}
