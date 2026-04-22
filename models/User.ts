@@ -1,0 +1,28 @@
+import { Schema, model, models } from 'mongoose';
+
+const UserSchema = new Schema({
+  name: { type: String, required: true },
+  phone: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { 
+    type: String, 
+    enum: ['SUPER_ADMIN', 'TEACHER'], 
+    default: 'TEACHER' 
+  },
+  department: { 
+    type: String, 
+    enum: ['Support teacher', 'Main teacher', 'Management', 'Sales', 'Boshqaruv', 'Other'],
+    default: 'Other'
+  },
+  status: {
+    type: String,
+    enum: ['ACTIVE', 'BLOCKED'],
+    default: 'ACTIVE'
+  },
+  onboardingProgress: { type: Number, default: 0 },
+  watchedVideos: [{ type: Schema.Types.ObjectId, ref: 'Video' }],
+  createdAt: { type: Date, default: Date.now },
+});
+
+const User = models.User || model('User', UserSchema);
+export default User;

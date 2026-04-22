@@ -1,10 +1,47 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { Phone, Lock, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    try {
+      const result = await signIn('credentials', {
+        redirect: false,
+        phone,
+        password,
+      });
+
+      if (result?.error) {
+        setError('Telefon raqami yoki parol xato!');
+      } else {
+        router.push('/dashboard');
+        router.refresh();
+      }
+    } catch (err) {
+      setError('Tizimda xatolik yuz berdi');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-6">
             <Image 
@@ -15,45 +52,58 @@ export default function LoginPage() {
               className="h-10 w-auto mx-auto"
             />
           </Link>
-          <h2 className="text-2xl font-bold text-dark">Tizimga kirish</h2>
-          <p className="text-gray-500 mt-2 text-sm">HR tizimidan foydalanish uchun hisobingizga kiring</p>
+          <h2 className="text-2xl font-bold text-dark">ERP Tizimiga kirish</h2>
+          <p className="text-gray-500 mt-2 text-sm">O'z hisobingiz ma'lumotlarini kiriting</p>
         </div>
 
-        <form className="space-y-5">
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm font-medium rounded-r-lg">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+              <Phone className="h-4 w-4 text-primary" /> Telefon raqami
+            </label>
             <input 
-              type="email" 
-              className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-              placeholder="example@mail.com"
+              required
+              type="text" 
+              className="w-full h-12 px-4 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+              placeholder="998901234567"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
           <div>
-            <div className="flex justify-between mb-1">
-              <label className="block text-sm font-medium text-gray-700">Parol</label>
-              <Link href="#" className="text-sm text-primary hover:underline">Parolni unutdingizmi?</Link>
+            <div className="flex justify-between mb-2">
+              <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <Lock className="h-4 w-4 text-primary" /> Parol
+              </label>
             </div>
             <input 
+              required
               type="password" 
-              className="w-full h-12 px-4 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+              className="w-full h-12 px-4 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           
           <button 
+            disabled={loading}
             type="submit" 
-            className="w-full h-12 bg-primary text-white font-bold rounded-lg shadow-sm hover:bg-opacity-95 active:scale-[0.98] transition-all mt-2"
+            className="w-full h-12 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-opacity-95 active:scale-[0.98] transition-all mt-2 flex items-center justify-center gap-2"
           >
-            Kirish
+            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Kirish'}
           </button>
         </form>
 
         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-          <p className="text-sm text-gray-600">
-            Hisobingiz yo'qmi?{' '}
-            <Link href="/auth/register" className="font-bold text-primary hover:underline">
-              Ro'yxatdan o'ting
-            </Link>
+          <p className="text-xs text-gray-400">
+            Agar kirishda muammo bo'lsa, HR bo'limiga murojaat qiling.
           </p>
         </div>
       </div>

@@ -2,31 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
-import { CheckCircle2, Clock, Brain, User } from 'lucide-react';
+import { CheckCircle2, Clock, Brain, User, Loader2 } from 'lucide-react';
+import { testService } from '@/services/testService';
+import { ITestQuestion, TestType } from '@/types/test';
 
 export default function SkillsCheck() {
   const [step, setStep] = useState(1); // 1: Info, 2: Testing, 3: Finished
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    testType: 'DISC'
+    testType: 'DISC' as TestType
   });
-  
+
+  const [questions, setQuestions] = useState<ITestQuestion[]>([]);
+  const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
   const [isTestRunning, setIsTestRunning] = useState(false);
-
-  // Mock questions for the test
-  const questions = [
-    { q: "Siz qiyin vaziyatlarda qanday qaror qabul qilasiz?", options: ["Tez va qat'iy", "Boshqalar bilan maslahatlashib", "Uzoq o'ylab", "Ehtiyotkorlik bilan"] },
-    { q: "Jamoada sizning rolingiz qanday?", options: ["Lider", "Ijrochi", "G'oya muallifi", "Tanqidchi"] },
-    { q: "Ish jarayonida siz uchun nima muhimroq?", options: ["Natija", "Muhit", "Tartib", "Innovatsiya"] },
-    { q: "Stress holatida o'zingizni qanday tutasiz?", options: ["Faollashaman", "Vahimaga tushaman", "Sokinlashaman", "Yolg'iz qolishni xohlayman"] },
-    { q: "Yangi loyihani boshlashda birinchi navbatda nima qilasiz?", options: ["Reja tuzaman", "Darrov ishga kirishaman", "Jamoani yig'aman", "Xavflarni o'rganaman"] },
-  ];
-
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
-  
+
   useEffect(() => {
     let interval: any;
     if (isTestRunning) {
@@ -37,18 +31,31 @@ export default function SkillsCheck() {
     return () => clearInterval(interval);
   }, [isTestRunning]);
 
-  const handleStart = (e: React.FormEvent) => {
+  const handleStart = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.firstName && formData.lastName) {
-      setStep(2);
-      setIsTestRunning(true);
+      setLoading(true);
+      try {
+        const data = await testService.getQuestions(formData.testType);
+        if (data.length === 0) {
+          alert("Ushbu turdagi test uchun savollar hali qo'shilmagan.");
+          return;
+        }
+        setQuestions(data);
+        setStep(2);
+        setIsTestRunning(true);
+      } catch (error) {
+        alert("Xatolik yuz berdi");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const handleAnswer = (index: number) => {
     const newAnswers = [...answers, index];
     setAnswers(newAnswers);
-    
+
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
@@ -61,20 +68,26 @@ export default function SkillsCheck() {
     setStep(3);
 
     const timeSpent = Math.floor(timer / 60);
-    // Mock calculation for "correct" answers
-    const correctAnswers = finalAnswers.filter(a => a === 0 || a === 2).length; 
 
-    const detailedResults = questions.map((q, idx) => ({
-      question: q.q,
-      answer: q.options[finalAnswers[idx]]
-    }));
+    // To'g'ri javoblarni hisoblash
+    let correctCount = 0;
+    const detailedResults = questions.map((q, idx) => {
+      const isCorrect = q.correctAnswer === finalAnswers[idx];
+      if (isCorrect) correctCount++;
+
+      return {
+        question: q.question,
+        answer: q.options[finalAnswers[idx]],
+        isCorrect
+      };
+    });
 
     const resultData = {
       ...formData,
       timeSpent: timeSpent > 0 ? timeSpent : 1,
-      correctAnswers: correctAnswers,
+      correctAnswers: correctCount,
       totalQuestions: questions.length,
-      detailedResults: detailedResults
+      detailedResults
     };
 
     // Send to Telegram API
@@ -88,7 +101,6 @@ export default function SkillsCheck() {
       console.error('API Error:', error);
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
@@ -159,16 +171,17 @@ export default function SkillsCheck() {
                 </div>
 
                 <button 
+                  disabled={loading}
                   type="submit" 
-                  className="w-full h-14 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-opacity-95 active:scale-[0.98] transition-all mt-4"
+                  className="w-full h-14 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-opacity-95 active:scale-[0.98] transition-all mt-4 flex items-center justify-center gap-2"
                 >
-                  Testni boshlash
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Testni boshlash'}
                 </button>
               </form>
             </div>
           )}
 
-          {step === 2 && (
+          {step === 2 && questions.length > 0 && (
             <div className="p-8 md:p-12">
               <div className="flex justify-between items-center mb-10">
                 <span className="px-4 py-1.5 bg-accent/10 text-accent text-sm font-bold rounded-full">
@@ -188,7 +201,7 @@ export default function SkillsCheck() {
                   ></div>
                 </div>
                 <h2 className="text-xl md:text-2xl font-bold text-dark mb-8">
-                  {questions[currentQuestion].q}
+                  {questions[currentQuestion].question}
                 </h2>
                 <div className="space-y-4">
                   {questions[currentQuestion].options.map((option, idx) => (

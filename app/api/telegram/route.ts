@@ -13,7 +13,8 @@ export async function POST(req: Request) {
     if (detailedResults && Array.isArray(detailedResults)) {
       detailedMessage = '\n📝 *Batafsil javoblar:*\n';
       detailedResults.forEach((res: any, index: number) => {
-        detailedMessage += `\n${index + 1}. ${res.question}\n↳ *Javob:* ${res.answer}\n`;
+        const icon = res.isCorrect ? '✅' : '❌';
+        detailedMessage += `\n${index + 1}. ${res.question}\n↳ *Javob:* ${res.answer} ${icon}\n`;
       });
     }
 
