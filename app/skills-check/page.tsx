@@ -153,7 +153,7 @@ export default function SkillsCheck() {
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">Test turini tanlang</label>
                   <div className="grid grid-cols-2 gap-4">
-                    {['DISC', 'PAEI'].map((type) => (
+                    {['DISC', 'PAEI'].map((type:any) => (
                       <button
                         key={type}
                         type="button"

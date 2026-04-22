@@ -82,6 +82,7 @@ export default function OnboardingPage() {
         // @ts-ignore
         } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
           stopTracking();
+        // @ts-ignore
           if (event.data === window.YT.PlayerState.ENDED) {
              handleVideoEnded();
           }
