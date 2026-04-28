@@ -24,6 +24,7 @@ export async function GET() {
             _id: null,
             avgScore: { $avg: "$scorePercentage" },
             totalCompleted: { $sum: { $cond: ["$isCompleted", 1, 0] } }
+            
           }
         }
       ])
