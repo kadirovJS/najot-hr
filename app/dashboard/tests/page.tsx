@@ -118,8 +118,8 @@ export default function TestsAdminPage() {
     <div className="space-y-6 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-dark">Testlar boshqaruvi</h1>
-          <p className="text-gray-500 text-sm">Candidatlar uchun DISC va PAEI testlarini sozlash</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-dark font-sans tracking-tight">Testlar boshqaruvi</h1>
+          <p className="text-gray-500 text-xs md:text-sm">Candidatlar uchun DISC va PAEI testlarini sozlash</p>
         </div>
         <Button icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenForm()}>
           Yangi savol
@@ -127,12 +127,12 @@ export default function TestsAdminPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex p-1 bg-gray-100 rounded-2xl w-full md:w-fit">
+      <div className="flex p-1 bg-gray-100 rounded-xl md:rounded-2xl w-full md:w-fit overflow-x-auto no-scrollbar">
         {(['DISC', 'PAEI'] as TestType[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-grow md:flex-none px-8 py-3 rounded-xl font-bold text-sm transition-all ${
+            className={`flex-1 md:flex-none px-6 md:px-8 py-2.5 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-sm transition-all whitespace-nowrap ${
               activeTab === tab 
                 ? 'bg-white text-primary shadow-sm' 
                 : 'text-gray-500 hover:text-dark'
@@ -151,20 +151,20 @@ export default function TestsAdminPage() {
           </div>
         ) : questions.length > 0 ? (
           questions.map((q, idx) => (
-            <div key={q._id} className="bg-white p-5 md:p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition-all">
+            <div key={q._id} className="bg-white p-4 md:p-6 rounded-2xl md:rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition-all">
               <div className="flex flex-col gap-4">
                 <div className="flex justify-between items-start gap-4">
-                  <div className="flex items-start gap-3">
-                    <span className="w-8 h-8 shrink-0 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-black text-gray-400">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <span className="w-7 h-7 md:w-8 md:h-8 shrink-0 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] md:text-xs font-black text-gray-400">
                       #{questions.length - idx}
                     </span>
-                    <h3 className="font-bold text-dark text-base md:text-lg leading-tight pt-1">{q.question}</h3>
+                    <h3 className="font-bold text-dark text-sm md:text-lg leading-tight pt-1 break-words">{q.question}</h3>
                   </div>
-                  <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-xl shrink-0">
-                    <Button variant="ghost" className="h-9 w-9 p-0 hover:bg-white" onClick={() => handleOpenForm(q)}>
+                  <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg md:rounded-xl shrink-0">
+                    <Button variant="ghost" className="h-8 w-8 md:h-9 md:w-9 p-0 hover:bg-white" onClick={() => handleOpenForm(q)}>
                       <Edit2 className="h-4 w-4 text-primary" />
                     </Button>
-                    <Button variant="ghost" className="h-9 w-9 p-0 hover:bg-white" onClick={() => { setQuestionToDelete(q._id); setIsDeleteModalOpen(true); }}>
+                    <Button variant="ghost" className="h-8 w-8 md:h-9 md:w-9 p-0 hover:bg-white" onClick={() => { setQuestionToDelete(q._id); setIsDeleteModalOpen(true); }}>
                       <Trash2 className="h-4 w-4 text-red-500" />
                     </Button>
                   </div>
@@ -172,7 +172,7 @@ export default function TestsAdminPage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 md:pl-11">
                   {q.options.map((opt, i) => (
-                    <div key={i} className={`flex items-center gap-3 p-3.5 rounded-2xl border text-sm font-bold ${
+                    <div key={i} className={`flex items-center gap-3 p-3 md:p-3.5 rounded-xl md:rounded-2xl border text-xs md:text-sm font-bold ${
                       i === q.correctAnswer 
                         ? 'bg-emerald-50 border-emerald-100 text-emerald-700 shadow-sm' 
                         : 'bg-gray-50/50 border-gray-100 text-gray-500'
@@ -186,9 +186,9 @@ export default function TestsAdminPage() {
             </div>
           ))
         ) : (
-          <div className="bg-white py-20 rounded-[2.5rem] border border-dashed border-gray-200 text-center">
-            <FileText className="h-12 w-12 text-gray-200 mx-auto mb-4" />
-            <p className="text-gray-500 font-bold uppercase text-xs tracking-widest">Hozircha savollar mavjud emas</p>
+          <div className="bg-white py-12 md:py-20 rounded-2xl md:rounded-[2.5rem] border border-dashed border-gray-200 text-center px-6">
+            <FileText className="h-10 w-10 md:h-12 md:w-12 text-gray-200 mx-auto mb-4" />
+            <p className="text-gray-400 font-bold uppercase text-[10px] md:text-xs tracking-widest">Hozircha savollar mavjud emas</p>
           </div>
         )}
       </div>
@@ -200,13 +200,13 @@ export default function TestsAdminPage() {
         title={editingQuestion ? 'Savolni tahrirlash' : 'Yangi savol qo\'shish'}
         maxWidth="max-w-2xl"
       >
-        <form onSubmit={handleFormSubmit} className="space-y-6">
+        <form onSubmit={handleFormSubmit} className="space-y-5 md:space-y-6 overflow-y-auto max-h-[70vh] px-1 custom-scrollbar">
           <div className="space-y-2">
-            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Savol matni</label>
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Savol matni</label>
             <textarea 
               required
               rows={3}
-              className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark resize-none"
+              className="w-full p-4 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark resize-none text-sm md:text-base"
               placeholder="Savolni kiriting..."
               value={formData.question}
               onChange={(e) => setFormData({...formData, question: e.target.value})}
@@ -214,24 +214,24 @@ export default function TestsAdminPage() {
           </div>
 
           <div className="space-y-4">
-            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Variantlar (To'g'ri javobni tanlang)</label>
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Variantlar (To'g'ri javobni tanlang)</label>
             <div className="grid grid-cols-1 gap-3">
               {formData.options.map((opt, idx) => (
-                <div key={idx} className="flex gap-3 items-center group">
+                <div key={idx} className="flex gap-2 md:gap-3 items-center group">
                   <button
                     type="button"
                     onClick={() => setFormData({...formData, correctAnswer: idx})}
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                    className={`w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-lg md:rounded-xl flex items-center justify-center transition-all ${
                       formData.correctAnswer === idx 
                         ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200' 
                         : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
                     }`}
                   >
-                    {formData.correctAnswer === idx ? <CheckCircle2 className="h-6 w-6" /> : <Circle className="h-6 w-6" />}
+                    {formData.correctAnswer === idx ? <CheckCircle2 className="h-5 w-5 md:h-6 md:w-6" /> : <Circle className="h-5 w-5 md:h-6 md:w-6" />}
                   </button>
                   <input 
                     required
-                    className={`flex-grow h-12 px-4 rounded-xl border outline-none transition-all font-medium ${
+                    className={`flex-grow h-10 md:h-12 px-3 md:px-4 rounded-lg md:rounded-xl border outline-none transition-all font-medium text-sm ${
                       formData.correctAnswer === idx 
                         ? 'border-emerald-200 bg-emerald-50/30 focus:border-emerald-500' 
                         : 'border-gray-100 bg-gray-50 focus:border-primary focus:bg-white'
@@ -245,7 +245,7 @@ export default function TestsAdminPage() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full h-14" isLoading={actionLoading}>
+          <Button type="submit" className="w-full h-12 md:h-14 text-sm md:text-base" isLoading={actionLoading}>
             {editingQuestion ? 'Saqlash' : 'Savolni qo\'shish'}
           </Button>
         </form>

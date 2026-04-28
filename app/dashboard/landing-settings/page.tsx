@@ -271,27 +271,27 @@ export default function LandingSettingsPage() {
   }
 
   return (
-    <div className="space-y-12 pb-20">
+    <div className="space-y-8 md:space-y-12 pb-20">
       {/* Hero Settings */}
       <section className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-dark flex items-center gap-2">
-              <Layout className="h-6 w-6 text-primary" /> Hero Slaydlar
+            <h2 className="text-xl md:text-2xl font-bold text-dark flex items-center gap-2">
+              <Layout className="h-5 w-5 md:h-6 md:w-6 text-primary" /> Hero Slaydlar
             </h2>
-            <p className="text-gray-500 text-sm">Landing pagedagi asosiy showcase qismi</p>
+            <p className="text-gray-500 text-xs md:text-sm">Landing pagedagi asosiy showcase qismi</p>
           </div>
-          <Button icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenHeroForm()}>
+          <Button className="w-full sm:w-auto h-11 md:h-12" icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenHeroForm()}>
             Slayd qo'shish
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {heroSlides.map((slide, idx) => (
-            <div key={idx} className="bg-white rounded-3xl border border-gray-100 overflow-hidden group">
-              <div className="relative h-48 bg-gray-100">
+            <div key={idx} className="bg-white rounded-2xl md:rounded-3xl border border-gray-100 overflow-hidden group">
+              <div className="relative h-40 md:h-48 bg-gray-100">
                 {slide.image && <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />}
-                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-3 right-3 flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <button onClick={() => handleOpenHeroForm(idx)} className="p-2 bg-white/90 backdrop-blur rounded-lg shadow-sm text-primary hover:text-emerald-700">
                     <Edit2 className="h-4 w-4" />
                   </button>
@@ -300,9 +300,9 @@ export default function LandingSettingsPage() {
                   </button>
                 </div>
               </div>
-              <div className="p-6">
+              <div className="p-4 md:p-6">
                 <h3 className="font-bold text-dark line-clamp-1">{slide.title}</h3>
-                <p className="text-sm text-gray-500 mt-2 line-clamp-2">{slide.description}</p>
+                <p className="text-xs md:text-sm text-gray-500 mt-1 md:mt-2 line-clamp-2">{slide.description}</p>
               </div>
             </div>
           ))}
@@ -311,26 +311,26 @@ export default function LandingSettingsPage() {
 
       {/* Partners Settings */}
       <section className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-dark flex items-center gap-2">
-              <Handshake className="h-6 w-6 text-primary" /> Hamkorlar
+            <h2 className="text-xl md:text-2xl font-bold text-dark flex items-center gap-2">
+              <Handshake className="h-5 w-5 md:h-6 md:w-6 text-primary" /> Hamkorlar
             </h2>
-            <p className="text-gray-500 text-sm">Landing pagedagi hamkorlar logotiplari</p>
+            <p className="text-gray-500 text-xs md:text-sm">Landing pagedagi hamkorlar logotiplari</p>
           </div>
-          <Button icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenPartnerForm()}>
+          <Button className="w-full sm:w-auto h-11 md:h-12" icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenPartnerForm()}>
             Hamkor qo'shish
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
           {partners.map((partner) => (
-            <div key={partner._id} className="bg-white p-4 rounded-2xl border border-gray-100 flex flex-col items-center gap-3 relative group">
-              <div className="h-16 w-full flex items-center justify-center">
-                <img src={partner.logo} alt={partner.name} className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 transition-all" />
+            <div key={partner._id} className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl border border-gray-100 flex flex-col items-center gap-2 md:gap-3 relative group">
+              <div className="h-12 md:h-16 w-full flex items-center justify-center">
+                <img src={partner.logo} alt={partner.name} className="max-h-full max-w-full object-contain grayscale md:group-hover:grayscale-0 transition-all" />
               </div>
-              <span className="text-xs font-bold text-dark text-center line-clamp-1">{partner.name}</span>
-              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-[10px] md:text-xs font-bold text-dark text-center line-clamp-1">{partner.name}</span>
+              <div className="absolute top-2 right-2 flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                 <button onClick={() => handleOpenPartnerForm(partner)} className="p-1.5 bg-white shadow-sm border border-gray-50 rounded-lg text-primary hover:text-emerald-700">
                   <Edit2 className="h-3 w-3" />
                 </button>
@@ -345,19 +345,20 @@ export default function LandingSettingsPage() {
 
       {/* Team Settings */}
       <section className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-dark flex items-center gap-2">
-              <Users className="h-6 w-6 text-primary" /> Jamoa a'zolari
+            <h2 className="text-xl md:text-2xl font-bold text-dark flex items-center gap-2">
+              <Users className="h-5 w-5 md:h-6 md:w-6 text-primary" /> Jamoa a'zolari
             </h2>
-            <p className="text-gray-500 text-sm">Landing pagedagi "Jamoamiz" bo'limi</p>
+            <p className="text-gray-500 text-xs md:text-sm">Landing pagedagi "Jamoamiz" bo'limi</p>
           </div>
-          <Button icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenTeamForm()}>
+          <Button className="w-full sm:w-auto h-11 md:h-12" icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenTeamForm()}>
             A'zo qo'shish
           </Button>
         </div>
 
-        <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden">
+        {/* Desktop View */}
+        <div className="hidden md:block bg-white rounded-[2rem] border border-gray-100 overflow-hidden">
           <table className="w-full text-left">
             <thead>
               <tr className="bg-gray-50/50">
@@ -390,6 +391,29 @@ export default function LandingSettingsPage() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile View */}
+        <div className="grid grid-cols-1 gap-4 md:hidden">
+          {teamMembers.map((member) => (
+            <div key={member._id} className="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img src={member.image} alt={member.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                <div>
+                  <h4 className="font-bold text-dark text-sm">{member.name}</h4>
+                  <p className="text-xs text-gray-500 font-medium">{member.role}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <button onClick={() => handleOpenTeamForm(member)} className="p-2 text-primary active:bg-primary/5 rounded-lg transition-colors">
+                  <Edit2 className="h-4 w-4" />
+                </button>
+                <button onClick={() => handleDeleteItem(member._id, 'team')} className="p-2 text-red-500 active:bg-red-50 rounded-lg transition-colors">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

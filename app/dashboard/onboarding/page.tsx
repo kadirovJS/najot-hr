@@ -223,15 +223,15 @@ export default function OnboardingPage() {
 
   // --- TEACHER VIEW ---
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-6 md:space-y-8 pb-12">
       {!activeVideo ? (
         <>
-          <div>
-            <h1 className="text-3xl font-black text-dark tracking-tight">O'quv kursi</h1>
-            <p className="text-gray-500 font-medium">Bo'lim: <span className="text-primary">{user?.department}</span></p>
+          <div className="px-1">
+            <h1 className="text-2xl md:text-3xl font-black text-dark tracking-tight">O'quv kursi</h1>
+            <p className="text-sm md:text-gray-500 font-medium">Bo'lim: <span className="text-primary">{user?.department}</span></p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {videos.map((video, idx) => {
               const prog = getVideoProgress(video._id);
               const testStatus = getTestStatus(video._id);
@@ -264,7 +264,7 @@ export default function OnboardingPage() {
                 <div 
                   key={video._id} 
                   onClick={() => !locked && setActiveTab(video)}
-                  className={`bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden group transition-all border-b-4 ${locked ? 'opacity-75 grayscale cursor-not-allowed' : 'cursor-pointer hover:shadow-xl hover:border-b-primary'}`}
+                  className={`bg-white rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden group transition-all border-b-4 ${locked ? 'opacity-75 grayscale cursor-not-allowed' : 'cursor-pointer hover:shadow-xl hover:border-b-primary'}`}
                 >
                   <div className="aspect-video bg-dark/5 relative flex items-center justify-center overflow-hidden">
                     <img src={getPosterUrl(video)} alt={video.title} className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-110" />
@@ -272,26 +272,26 @@ export default function OnboardingPage() {
                     
                     {locked ? (
                       <div className="absolute inset-0 flex items-center justify-center bg-dark/40 backdrop-blur-[2px]">
-                        <Lock className="text-white h-12 w-12" />
+                        <Lock className="text-white h-10 w-10 md:h-12 md:w-12" />
                       </div>
                     ) : testStatus?.passed ? (
-                      <div className="absolute top-4 right-4 bg-emerald-500 text-white p-2 rounded-full shadow-lg z-10">
-                        <CheckCircle2 className="h-5 w-5" />
+                      <div className="absolute top-3 right-3 md:top-4 md:right-4 bg-emerald-500 text-white p-1.5 md:p-2 rounded-full shadow-lg z-10">
+                        <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5" />
                       </div>
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <PlayCircle className="text-white h-12 w-12 drop-shadow-2xl" />
+                        <PlayCircle className="text-white h-10 w-10 md:h-12 md:w-12 drop-shadow-2xl" />
                       </div>
                     )}
                   </div>
-                  <div className="p-6 space-y-4">
-                    <h3 className="font-black text-dark text-lg leading-tight line-clamp-2">{video.title}</h3>
+                  <div className="p-5 md:p-6 space-y-3 md:space-y-4">
+                    <h3 className="font-black text-dark text-base md:text-lg leading-tight line-clamp-2">{video.title}</h3>
                     <div className="space-y-2">
-                      <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-gray-400">
-                        <span>{testStatus ? `Test: ${testStatus.percentage}%` : 'Video Progress'}</span>
+                      <div className="flex justify-between text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-400">
+                        <span>{testStatus ? `Test: ${testStatus.percentage}%` : 'Progress'}</span>
                         <span>{prog}%</span>
                       </div>
-                      <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                      <div className="w-full bg-gray-100 h-1.5 md:h-2 rounded-full overflow-hidden">
                         <div className={`h-full transition-all duration-500 ${testStatus ? (testStatus.passed ? 'bg-emerald-500' : 'bg-red-500') : 'bg-primary'}`} style={{ width: `${prog}%` }} />
                       </div>
                     </div>
@@ -302,15 +302,15 @@ export default function OnboardingPage() {
           </div>
         </>
       ) : (
-        <div className="max-w-5xl mx-auto space-y-6">
+        <div className="max-w-5xl mx-auto space-y-4 md:space-y-6">
           <button 
             onClick={() => { setActiveTab(null); setShowTest(false); setTestFinished(false); setTestResult(null); }}
-            className="flex items-center gap-2 text-gray-400 hover:text-primary transition-all font-black uppercase text-[10px] tracking-widest"
+            className="flex items-center gap-2 text-gray-400 hover:text-primary transition-all font-black uppercase text-[10px] tracking-widest px-2"
           >
             <ArrowLeft className="h-4 w-4" /> Kursga qaytish
           </button>
 
-          <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden">
+          <div className="bg-white rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden mx-1">
             {!showTest ? (
               <>
                 <div className="aspect-video bg-black relative">
@@ -327,39 +327,39 @@ export default function OnboardingPage() {
                     />
                   )}
                 </div>
-                <div className="p-8 md:p-12 space-y-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <h2 className="text-2xl md:text-3xl font-black text-dark leading-tight">{activeVideo.title}</h2>
+                <div className="p-6 md:p-12 space-y-4 md:space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h2 className="text-xl md:text-3xl font-black text-dark leading-tight">{activeVideo.title}</h2>
                     {activeVideo.testQuestions?.length > 0 && (
                        <Button 
                          variant="outline" 
                          icon={<FileText className="h-4 w-4" />}
                          onClick={() => setShowTest(true)}
-                         className="shrink-0"
+                         className="shrink-0 h-12 text-sm"
                        >
                          Testni topshirish
                        </Button>
                     )}
                   </div>
-                  <p className="text-gray-600 text-lg font-medium leading-relaxed">{activeVideo.description}</p>
+                  <p className="text-gray-600 text-sm md:text-lg font-medium leading-relaxed">{activeVideo.description}</p>
                 </div>
               </>
             ) : (
-              <div className="p-8 md:p-12 space-y-8">
-                 <div className="text-center space-y-2">
-                    <h2 className="text-2xl font-black text-dark">Video yuzasidan test</h2>
-                    <p className="text-gray-400 text-sm font-medium italic">Bilimingizni mustahkamlang</p>
+              <div className="p-6 md:p-12 space-y-6 md:space-y-8">
+                 <div className="text-center space-y-1">
+                    <h2 className="text-xl md:text-2xl font-black text-dark">Video yuzasidan test</h2>
+                    <p className="text-gray-400 text-xs md:text-sm font-medium italic">Bilimingizni mustahkamlang</p>
                  </div>
 
                  {!testFinished ? (
-                    <div className="space-y-10">
+                    <div className="space-y-8 md:space-y-10">
                        {activeVideo.testQuestions.map((q: any, qIdx: number) => (
-                         <div key={qIdx} className="space-y-4">
-                            <h4 className="font-black text-dark text-lg flex items-center gap-3">
-                               <span className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0">{qIdx + 1}</span>
-                               {q.question}
+                         <div key={qIdx} className="space-y-3 md:space-y-4">
+                            <h4 className="font-black text-dark text-base md:text-lg flex items-center gap-2 md:gap-3">
+                               <span className="w-7 h-7 md:w-8 md:h-8 rounded-lg md:rounded-xl bg-primary text-white flex items-center justify-center text-[10px] md:text-xs font-bold shrink-0">{qIdx + 1}</span>
+                               <span className="min-w-0">{q.question}</span>
                             </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 ml-11">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 ml-9 md:ml-11">
                                {q.options.map((opt: string, oIdx: number) => (
                                  <button 
                                    key={oIdx}
@@ -368,7 +368,7 @@ export default function OnboardingPage() {
                                       newAns[qIdx] = oIdx;
                                       setTestAnswers(newAns);
                                    }}
-                                   className={`p-4 rounded-2xl border-2 text-left font-bold text-sm transition-all ${testAnswers[qIdx] === oIdx ? 'border-primary bg-primary/5 text-primary shadow-lg shadow-primary/10' : 'border-gray-50 bg-gray-50/50 text-gray-500 hover:border-gray-200'}`}
+                                   className={`p-3 md:p-4 rounded-xl md:rounded-2xl border-2 text-left font-bold text-xs md:text-sm transition-all ${testAnswers[qIdx] === oIdx ? 'border-primary bg-primary/5 text-primary shadow-lg shadow-primary/10' : 'border-gray-50 bg-gray-50/50 text-gray-500 hover:border-gray-200'}`}
                                  >
                                    {opt}
                                  </button>
@@ -377,7 +377,7 @@ export default function OnboardingPage() {
                          </div>
                        ))}
                        <Button 
-                         className="w-full h-16 text-lg" 
+                         className="w-full h-14 md:h-16 text-base md:text-lg" 
                          disabled={testAnswers.length < activeVideo.testQuestions.length}
                          onClick={handleFinishTest}
                        >
@@ -385,33 +385,33 @@ export default function OnboardingPage() {
                        </Button>
                     </div>
                  ) : (
-                    <div className="py-12 text-center space-y-6">
-                       <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto shadow-sm ${testResult && testResult.percentage >= 60 ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                    <div className="py-8 md:py-12 text-center space-y-5 md:space-y-6">
+                       <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto shadow-sm ${testResult && testResult.percentage >= 60 ? 'bg-emerald-50' : 'bg-red-50'}`}>
                           {testResult && testResult.percentage >= 60 ? (
-                            <CheckCircle2 className="h-10 w-10 text-emerald-500" />
+                            <CheckCircle2 className="h-8 w-8 md:h-10 md:w-10 text-emerald-500" />
                           ) : (
-                            <X className="h-10 w-10 text-red-500" />
+                            <X className="h-8 w-8 md:h-10 md:w-10 text-red-500" />
                           )}
                        </div>
                        <div>
-                          <h3 className="text-2xl font-black text-dark">
+                          <h3 className="text-xl md:text-2xl font-black text-dark">
                             {testResult && testResult.percentage >= 60 ? 'Tabriklaymiz!' : 'Afsus...'}
                           </h3>
-                          <p className="text-gray-500 font-medium mt-2">
+                          <p className="text-gray-500 text-sm md:text-base font-medium mt-1 md:mt-2">
                             Sizning natijangiz: <span className="font-black text-dark">{testResult?.percentage}%</span>
                           </p>
-                          <p className="text-gray-400 text-sm mt-1">
+                          <p className="text-gray-400 text-[10px] md:text-sm mt-1 px-4">
                             {testResult && testResult.percentage >= 60 
                               ? "Siz ushbu darsni to'liq o'zlashtirdingiz." 
                               : "Keyingi darsni ochish uchun kamida 60% natija kerak."}
                           </p>
                        </div>
-                       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                         <Button variant="secondary" onClick={() => { setTestFinished(false); setTestAnswers([]); }}>
+                       <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
+                         <Button variant="secondary" className="h-12 text-sm" onClick={() => { setTestFinished(false); setTestAnswers([]); }}>
                             Qayta topshirish
                          </Button>
                          {testResult && testResult.percentage >= 60 && (
-                            <Button onClick={() => { setActiveTab(null); setShowTest(false); setTestFinished(false); setTestResult(null); }}>
+                            <Button className="h-12 text-sm" onClick={() => { setActiveTab(null); setShowTest(false); setTestFinished(false); setTestResult(null); }}>
                                Keyingi darsga o'tish
                             </Button>
                          )}

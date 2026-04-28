@@ -156,18 +156,18 @@ export default function UsersPage() {
 
       {/* Search Bar */}
       <div className="bg-white p-2 rounded-2xl border border-gray-100 flex items-center px-4 gap-4 shadow-sm focus-within:border-primary transition-all">
-        <Search className="h-5 w-5 text-gray-400" />
+        <Search className="h-5 w-5 text-gray-400 shrink-0" />
         <input 
           type="text" 
-          placeholder="Ism yoki telefon raqami bo'yicha qidirish..."
-          className="flex-grow h-12 bg-transparent outline-none text-sm text-dark"
+          placeholder="Qidirish..."
+          className="flex-grow min-w-0 h-12 bg-transparent outline-none text-sm text-dark"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
       {/* Users Section */}
-      <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-2xl md:rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm">
         {/* Desktop Table View */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -265,18 +265,18 @@ export default function UsersPage() {
             </div>
           ) : users.length > 0 ? (
             users.map((user) => (
-              <div key={user._id} className="p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary font-black border border-primary/10">
+              <div key={user._id} className="p-4 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 shrink-0 rounded-xl bg-primary/5 flex items-center justify-center text-primary font-black border border-primary/10">
                       {user.name.charAt(0)}
                     </div>
-                    <div>
-                      <p className="font-bold text-dark">{user.name}</p>
-                      <p className="text-xs text-gray-400 font-medium">+{user.phone}</p>
+                    <div className="min-w-0">
+                      <p className="font-bold text-dark truncate text-sm">{user.name}</p>
+                      <p className="text-[10px] text-gray-400 font-medium truncate">+{user.phone}</p>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1">
+                  <div className="flex flex-col items-end gap-1 shrink-0">
                     <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black tracking-wider uppercase ${user.role === 'SUPER_ADMIN' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'}`}>
                       {user.role}
                     </span>
@@ -289,18 +289,18 @@ export default function UsersPage() {
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between bg-gray-50/50 p-3 rounded-xl border border-gray-100">
-                  <span className="text-xs font-bold text-gray-500">{user.department}</span>
-                  <div className="flex items-center gap-1">
+                <div className="flex items-center justify-between bg-gray-50/50 p-3 rounded-xl border border-gray-100 gap-2">
+                  <span className="text-[10px] font-bold text-gray-500 truncate">{user.department}</span>
+                  <div className="flex items-center gap-1 shrink-0">
                     <Button 
                       variant="ghost" 
-                      className="h-10 w-10 p-0 bg-white shadow-sm border border-gray-100" 
+                      className="h-9 w-9 p-0 bg-white shadow-sm border border-gray-100" 
                       icon={<Edit2 className="h-4 w-4 text-emerald-600" />}
                       onClick={() => handleOpenForm(user)}
                     />
                     <Button 
                       variant="ghost" 
-                      className="h-10 w-10 p-0 bg-white shadow-sm border border-gray-100" 
+                      className="h-9 w-9 p-0 bg-white shadow-sm border border-gray-100" 
                       icon={user.status === 'ACTIVE' 
                         ? <ShieldAlert className="h-4 w-4 text-orange-500" /> 
                         : <ShieldCheck className="h-4 w-4 text-emerald-500" />
@@ -309,7 +309,7 @@ export default function UsersPage() {
                     />
                     <Button 
                       variant="ghost" 
-                      className="h-10 w-10 p-0 bg-white shadow-sm border border-gray-100" 
+                      className="h-9 w-9 p-0 bg-white shadow-sm border border-gray-100" 
                       icon={<Trash2 className="h-4 w-4 text-red-500" />}
                       onClick={() => handleDeleteClick(user._id)}
                     />
@@ -323,14 +323,26 @@ export default function UsersPage() {
         </div>
 
         {/* Pagination */}
-        <div className="px-8 py-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
+        <div className="px-4 md:px-8 py-4 md:py-6 bg-gray-50/30 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Sahifa {page} / {totalPages}</p>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" className="h-10 px-4" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
-              <ChevronLeft className="h-4 w-4 mr-2" /> Oldingi
+          <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+            <Button 
+              variant="outline" 
+              className="h-10 flex-1 sm:flex-none px-3 md:px-4 text-sm" 
+              disabled={page === 1} 
+              onClick={() => setPage(p => p - 1)}
+            >
+              <ChevronLeft className="h-4 w-4 sm:mr-2" /> 
+              <span className="hidden sm:inline">Oldingi</span>
             </Button>
-            <Button variant="outline" className="h-10 px-4" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
-              Keyingi <ChevronRight className="h-4 w-4 ml-2" />
+            <Button 
+              variant="outline" 
+              className="h-10 flex-1 sm:flex-none px-3 md:px-4 text-sm" 
+              disabled={page === totalPages} 
+              onClick={() => setPage(p => p + 1)}
+            >
+              <span className="hidden sm:inline">Keyingi</span>
+              <ChevronRight className="h-4 w-4 sm:ml-2" />
             </Button>
           </div>
         </div>

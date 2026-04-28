@@ -169,8 +169,8 @@ export default function VacanciesAdminPage() {
     <div className="space-y-6 pb-20 md:pb-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-dark font-sans tracking-tight">Vakansiyalar boshqaruvi</h1>
-          <p className="text-gray-500 text-sm">Landing pagedagi vakansiyalarni tahrirlash va yangilarini qo'shish</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-dark font-sans tracking-tight">Vakansiyalar boshqaruvi</h1>
+          <p className="text-gray-500 text-xs md:text-sm">Landing pagedagi vakansiyalarni tahrirlash va yangilarini qo'shish</p>
         </div>
         <Button icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenForm()}>
           Yangi vakansiya
@@ -185,46 +185,46 @@ export default function VacanciesAdminPage() {
           </div>
         ) : vacancies.length > 0 ? (
           vacancies.map((vacancy) => (
-            <div key={vacancy._id} className={`bg-white p-6 rounded-3xl border transition-all ${vacancy.isVisible ? 'border-gray-100 shadow-sm' : 'border-gray-200 bg-gray-50/50 opacity-75 grayscale'}`}>
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="flex-grow space-y-4">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-lg">
+            <div key={vacancy._id} className={`bg-white p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all ${vacancy.isVisible ? 'border-gray-100 shadow-sm' : 'border-gray-200 bg-gray-50/50 opacity-75 grayscale'}`}>
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div className="flex-grow space-y-4 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                    <span className="px-2 md:px-3 py-1 bg-primary/10 text-primary text-[8px] md:text-[10px] font-black uppercase tracking-widest rounded-lg">
                       {vacancy.category}
                     </span>
-                    <span className="px-3 py-1 bg-gray-100 text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-lg">
+                    <span className="px-2 md:px-3 py-1 bg-gray-100 text-gray-500 text-[8px] md:text-[10px] font-black uppercase tracking-widest rounded-lg">
                       {vacancy.type}
                     </span>
                     {!vacancy.isVisible && (
-                      <span className="px-3 py-1 bg-red-50 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-lg flex items-center gap-1">
+                      <span className="px-2 md:px-3 py-1 bg-red-50 text-red-500 text-[8px] md:text-[10px] font-black uppercase tracking-widest rounded-lg flex items-center gap-1">
                         <EyeOff className="h-3 w-3" /> Yopilgan
                       </span>
                     )}
                   </div>
                   
-                  <h3 className="text-xl font-bold text-dark">{vacancy.title}</h3>
+                  <h3 className="text-lg md:text-xl font-bold text-dark truncate">{vacancy.title}</h3>
                   
-                  <div className="flex flex-wrap gap-6 text-sm text-gray-500 font-medium">
+                  <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs md:text-sm text-gray-500 font-medium">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-primary" /> {vacancy.location}
+                      <MapPin className="h-4 w-4 text-primary shrink-0" /> <span className="truncate">{vacancy.location}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <DollarSign className="h-4 w-4 text-primary" /> {vacancy.salary}
+                      <DollarSign className="h-4 w-4 text-primary shrink-0" /> {vacancy.salary}
                     </div>
                     <div className="flex items-center gap-2 text-gray-400">
-                      <Clock className="h-4 w-4" /> {new Date(vacancy.createdAt).toLocaleDateString()}
+                      <Clock className="h-4 w-4 shrink-0" /> {new Date(vacancy.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-2xl shrink-0">
-                  <Button variant="ghost" className="h-11 w-11 p-0 hover:bg-white" onClick={() => toggleVisibility(vacancy)}>
+                <div className="flex items-center gap-1 md:gap-2 bg-gray-50 p-1.5 md:p-2 rounded-xl md:rounded-2xl shrink-0 w-fit">
+                  <Button variant="ghost" className="h-10 w-10 md:h-11 md:w-11 p-0 hover:bg-white" onClick={() => toggleVisibility(vacancy)}>
                     {vacancy.isVisible ? <Eye className="h-5 w-5 text-emerald-500" /> : <EyeOff className="h-5 w-5 text-red-500" />}
                   </Button>
-                  <Button variant="ghost" className="h-11 w-11 p-0 hover:bg-white" onClick={() => handleOpenForm(vacancy)}>
+                  <Button variant="ghost" className="h-10 w-10 md:h-11 md:w-11 p-0 hover:bg-white" onClick={() => handleOpenForm(vacancy)}>
                     <Edit2 className="h-5 w-5 text-primary" />
                   </Button>
-                  <Button variant="ghost" className="h-11 w-11 p-0 hover:bg-white" onClick={() => handleDeleteClick(vacancy._id)}>
+                  <Button variant="ghost" className="h-10 w-10 md:h-11 md:w-11 p-0 hover:bg-white" onClick={() => handleDeleteClick(vacancy._id)}>
                     <Trash2 className="h-5 w-5 text-red-500" />
                   </Button>
                 </div>
@@ -232,9 +232,9 @@ export default function VacanciesAdminPage() {
             </div>
           ))
         ) : (
-          <div className="bg-white py-20 rounded-[2rem] border border-dashed border-gray-200 text-center">
-            <Briefcase className="h-12 w-12 text-gray-200 mx-auto mb-4" />
-            <p className="text-gray-500 font-medium">Hozircha vakansiyalar mavjud emas</p>
+          <div className="bg-white py-12 md:py-20 rounded-2xl md:rounded-[2rem] border border-dashed border-gray-200 text-center px-6">
+            <Briefcase className="h-10 w-10 md:h-12 md:w-12 text-gray-200 mx-auto mb-4" />
+            <p className="text-gray-500 font-medium text-sm">Hozircha vakansiyalar mavjud emas</p>
           </div>
         )}
       </div>
@@ -246,35 +246,35 @@ export default function VacanciesAdminPage() {
         title={editingVacancy ? 'Vakansiyani tahrirlash' : 'Yangi vakansiya qo\'shish'}
         maxWidth="max-w-3xl"
       >
-        <form onSubmit={handleFormSubmit} className="space-y-8 overflow-y-auto max-h-[70vh] px-2 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleFormSubmit} className="space-y-6 md:space-y-8 overflow-y-auto max-h-[70vh] px-1 md:px-2 custom-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Sarlavha</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sarlavha</label>
               <input 
                 required
-                className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark"
-                placeholder="Masalan: Senior Backend Developer"
+                className="w-full h-12 md:h-14 px-4 md:px-5 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark text-sm"
+                placeholder="Senior Backend Developer"
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Manzil</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Manzil</label>
               <input 
                 required
-                className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark"
-                placeholder="Masalan: Toshkent (Hadra)"
+                className="w-full h-12 md:h-14 px-4 md:px-5 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark text-sm"
+                placeholder="Toshkent (Hadra)"
                 value={formData.location}
                 onChange={(e) => setFormData({...formData, location: e.target.value})}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Bo'lim</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Bo'lim</label>
               <select 
-                className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark appearance-none"
+                className="w-full h-12 md:h-14 px-4 md:px-5 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark appearance-none text-sm"
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value as VacancyCategory})}
               >
@@ -282,9 +282,9 @@ export default function VacanciesAdminPage() {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Ish turi</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ish turi</label>
               <select 
-                className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark appearance-none"
+                className="w-full h-12 md:h-14 px-4 md:px-5 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark appearance-none text-sm"
                 value={formData.type}
                 onChange={(e) => setFormData({...formData, type: e.target.value as VacancyType})}
               >
@@ -292,11 +292,11 @@ export default function VacanciesAdminPage() {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Maosh</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Maosh</label>
               <input 
                 required
-                className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark"
-                placeholder="Masalan: 1000$ - 1500$"
+                className="w-full h-12 md:h-14 px-4 md:px-5 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark text-sm"
+                placeholder="1000$ - 1500$"
                 value={formData.salary}
                 onChange={(e) => setFormData({...formData, salary: e.target.value})}
               />
@@ -304,11 +304,11 @@ export default function VacanciesAdminPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Batafsil tavsif (Description)</label>
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Batafsil tavsif (Description)</label>
             <textarea 
               required
               rows={4}
-              className="w-full p-5 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-dark resize-none"
+              className="w-full p-4 md:p-5 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-dark resize-none text-sm"
               placeholder="Ish haqida qisqacha ma'lumot..."
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -318,7 +318,7 @@ export default function VacanciesAdminPage() {
           {/* Dynamic Requirements */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Nomzodga talablar</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Nomzodga talablar</label>
               <button type="button" onClick={() => handleAddField('requirements')} className="text-primary hover:text-emerald-700 font-bold text-xs flex items-center gap-1">
                 <PlusCircle className="h-4 w-4" /> Qo'shish
               </button>
@@ -327,14 +327,14 @@ export default function VacanciesAdminPage() {
               {formData.requirements.map((req, idx) => (
                 <div key={idx} className="flex gap-2">
                   <input 
-                    className="flex-grow h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-dark"
+                    className="flex-grow h-11 md:h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-dark text-sm"
                     placeholder={`Talab #${idx + 1}`}
                     value={req}
                     onChange={(e) => handleFieldChange('requirements', idx, e.target.value)}
                   />
                   {formData.requirements.length > 1 && (
-                    <button type="button" onClick={() => handleRemoveField('requirements', idx)} className="h-12 w-12 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100">
-                      <X className="h-5 w-5" />
+                    <button type="button" onClick={() => handleRemoveField('requirements', idx)} className="h-11 md:h-12 w-11 md:w-12 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100 shrink-0">
+                      <X className="h-4 w-4 md:h-5 md:w-5" />
                     </button>
                   )}
                 </div>
@@ -345,7 +345,7 @@ export default function VacanciesAdminPage() {
           {/* Dynamic Benefits */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Biz nima taklif qilamiz?</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Biz nima taklif qilamiz?</label>
               <button type="button" onClick={() => handleAddField('benefits')} className="text-accent hover:text-amber-700 font-bold text-xs flex items-center gap-1">
                 <PlusCircle className="h-4 w-4" /> Qo'shish
               </button>
@@ -354,14 +354,14 @@ export default function VacanciesAdminPage() {
               {formData.benefits.map((benefit, idx) => (
                 <div key={idx} className="flex gap-2">
                   <input 
-                    className="flex-grow h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-dark"
+                    className="flex-grow h-11 md:h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-dark text-sm"
                     placeholder={`Imtiyoz #${idx + 1}`}
                     value={benefit}
                     onChange={(e) => handleFieldChange('benefits', idx, e.target.value)}
                   />
                   {formData.benefits.length > 1 && (
-                    <button type="button" onClick={() => handleRemoveField('benefits', idx)} className="h-12 w-12 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100">
-                      <X className="h-5 w-5" />
+                    <button type="button" onClick={() => handleRemoveField('benefits', idx)} className="h-11 md:h-12 w-11 md:w-12 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100 shrink-0">
+                      <X className="h-4 w-4 md:h-5 md:w-5" />
                     </button>
                   )}
                 </div>
@@ -369,7 +369,7 @@ export default function VacanciesAdminPage() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full h-16 text-lg" isLoading={actionLoading}>
+          <Button type="submit" className="w-full h-14 md:h-16 text-base md:text-lg" isLoading={actionLoading}>
             {editingVacancy ? 'Vakansiyani saqlash' : 'Vakansiyani e\'lon qilish'}
           </Button>
         </form>
