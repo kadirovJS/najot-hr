@@ -15,6 +15,7 @@ import {
   Edit2
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { bookService } from '@/services/bookService';
 
 export default function BookDetailPage() {
@@ -31,6 +32,11 @@ export default function BookDetailPage() {
   // Edit comment state
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
+
+  // Delete comment state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const loadBook = async () => {
     try {
@@ -76,13 +82,23 @@ export default function BookDetailPage() {
     }
   };
 
-  const handleDeleteComment = async (commentId: string) => {
-    if (!confirm("Ushbu fikrni o'chirmoqchimisiz?")) return;
+  const handleDeleteComment = (commentId: string) => {
+    setCommentToDelete(commentId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteComment = async () => {
+    if (!commentToDelete) return;
+    setActionLoading(true);
     try {
-      const updatedBook = await bookService.deleteComment(id as string, commentId);
+      const updatedBook = await bookService.deleteComment(id as string, commentToDelete);
       setBook(updatedBook);
+      setIsDeleteModalOpen(false);
     } catch (error) {
       alert("O'chirishda xatolik");
+    } finally {
+      setActionLoading(false);
+      setCommentToDelete(null);
     }
   };
 
@@ -124,9 +140,9 @@ export default function BookDetailPage() {
         <ArrowLeft className="h-4 w-4" /> Kitoblarga qaytish
       </button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* Chap tomon: Rasm va asosiy ma'lumotlar */}
-        <div className="lg:col-span-4 space-y-6">
+        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-8">
           <div className="aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl bg-white border border-gray-100">
             {book.imageUrl ? (
               <img src={book.imageUrl} alt={book.title} className="w-full h-full object-cover" />
@@ -257,6 +273,15 @@ export default function BookDetailPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={isDeleteModalOpen} 
+        onClose={() => setIsDeleteModalOpen(false)} 
+        onConfirm={confirmDeleteComment} 
+        title="Izohni o'chirish" 
+        description="Ushbu fikr-mulohazani butunlay o'chirib tashlamoqchimisiz?" 
+        isLoading={actionLoading} 
+      />
     </div>
   );
 }

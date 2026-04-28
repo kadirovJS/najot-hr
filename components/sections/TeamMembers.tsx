@@ -1,21 +1,33 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import Image from 'next/image';
 
 import 'swiper/css';
 
-const team = [
-  { name: "Abdufattoh", role: "HR Menejer", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&h=200&auto=format&fit=crop" },
-  { name: "Sardorbek", role: "Project Manager", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&h=200&auto=format&fit=crop" },
-  { name: "Malika", role: "Dizayner", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&h=200&auto=format&fit=crop" },
-  { name: "Diyorbek", role: "Lead Developer", image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=200&h=200&auto=format&fit=crop" },
-  { name: "Nigora", role: "Marketing Menejer", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&h=200&auto=format&fit=crop" },
-  { name: "Javohir", role: "Mentor", image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=200&h=200&auto=format&fit=crop" },
-];
-
 export default function TeamMembers() {
+  const [team, setTeam] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/landing/team', { cache: 'no-store' })
+      .then(res => res.json())
+      .then(data => {
+        setTeam(data || []);
+      })
+      .catch(err => console.error("Error loading team:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || team.length === 0) {
+    return null; // Or a skeleton
+  }
+
+  // Multiply team to ensure smooth infinite loop if team is small
+  const displayTeam = team.length < 6 ? [...team, ...team, ...team] : team;
+
   return (
     <section className="py-24 bg-white overflow-hidden">
       <div className="container mx-auto px-4 md:px-6 mb-12 text-center">
@@ -40,7 +52,7 @@ export default function TeamMembers() {
         modules={[Autoplay]}
         className="team-swiper"
       >
-        {[...team, ...team].map((member, idx) => (
+        {displayTeam.map((member, idx) => (
           <SwiperSlide key={idx}>
             <div className="flex flex-col items-center group">
               <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden mb-4 border-4 border-transparent group-hover:border-primary transition-all duration-300">

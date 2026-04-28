@@ -64,10 +64,26 @@ export default function OnboardingAdminPage() {
 
   const getPosterUrl = (video: any) => {
     if (video.youtubeUrl) {
-      const videoId = video.youtubeUrl.split('v=')[1] || video.youtubeUrl.split('/').pop();
-      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      try {
+        let videoId = '';
+        const url = video.youtubeUrl;
+        if (url.includes('v=')) {
+          videoId = url.split('v=')[1].split('&')[0];
+        } else if (url.includes('youtu.be/')) {
+          videoId = url.split('youtu.be/')[1].split('?')[0];
+        } else {
+          videoId = url.split('/').pop() || '';
+        }
+        // hqdefault is more reliable than maxresdefault
+        return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      } catch (e) {
+        return "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop";
+      }
     }
-    return video.cloudinaryUrl ? video.cloudinaryUrl.replace(/\.[^/.]+$/, ".jpg") + "?so_30" : "";
+    if (video.cloudinaryUrl) {
+      return video.cloudinaryUrl.replace('/upload/', '/upload/so_30/').replace(/\.[^/.]+$/, ".jpg");
+    }
+    return "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop";
   };
 
   const handleOpenForm = (video?: any) => {
@@ -163,6 +179,34 @@ export default function OnboardingAdminPage() {
   };
 
   const [actionLoading, setActionLoading] = useState(false);
+  const [isFetchingYoutube, setIsFetchingYoutube] = useState(false);
+
+  const fetchYoutubeInfo = async () => {
+    if (!formData.youtubeUrl) return;
+    
+    setIsFetchingYoutube(true);
+    try {
+      const res = await fetch(`/api/youtube/info?url=${encodeURIComponent(formData.youtubeUrl)}`);
+      const data = await res.json();
+      
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        title: prev.title || data.title,
+        duration: data.duration || prev.duration
+      }));
+      
+    } catch (error) {
+      console.error("Error fetching YouTube info:", error);
+      alert("YouTube ma'lumotlarini yuklashda xatolik");
+    } finally {
+      setIsFetchingYoutube(false);
+    }
+  };
 
   const confirmDelete = async () => {
     if (!videoToDelete) return;
@@ -262,7 +306,17 @@ export default function OnboardingAdminPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">YouTube Link</label>
-              <input className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none font-bold text-dark" placeholder="https://youtube.com/watch?v=..." value={formData.youtubeUrl} onChange={(e) => setFormData({...formData, youtubeUrl: e.target.value})} />
+              <div className="flex gap-2">
+                <input className="flex-grow h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none font-bold text-dark" placeholder="https://youtube.com/watch?v=..." value={formData.youtubeUrl} onChange={(e) => setFormData({...formData, youtubeUrl: e.target.value})} />
+                <button 
+                  type="button" 
+                  onClick={fetchYoutubeInfo}
+                  disabled={isFetchingYoutube || !formData.youtubeUrl}
+                  className="px-4 h-14 bg-gray-100 text-primary rounded-2xl font-black text-[10px] uppercase hover:bg-primary hover:text-white transition-all disabled:opacity-50 shrink-0"
+                >
+                  {isFetchingYoutube ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Tekshirish'}
+                </button>
+              </div>
             </div>
             <div className="space-y-4">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Davomiyligi (sekund)</label>

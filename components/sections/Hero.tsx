@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import Image from 'next/image';
@@ -10,26 +11,32 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import Link from 'next/link';
 
-const slides = [
-  {
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop',
-    title: "Najot Ta'lim Jamoasiga Qo'shiling",
-    description: "Biz bilan birga kelajak bilimini ulashing va professional o'sing."
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop',
-    title: "Innovatsion Muhit va Kuchli Jamoa",
-    description: "Eng so'nggi texnologiyalar va tajribali mutaxassislar bilan ishlash imkoniyati."
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop',
-    title: "Sizning Karyerangiz Shu Yerdan Boshlanadi",
-    description: "Biz har bir xodimning rivojlanishi uchun barcha sharoitlarni yaratamiz."
-  }
-];
-
 export default function Hero() {
+  const [slides, setSlides] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/landing/settings', { cache: 'no-store' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.heroSlides) {
+          setSlides(data.heroSlides);
+        }
+      })
+      .catch(err => console.error("Error loading hero slides:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || slides.length === 0) {
+    return (
+      <section className="relative w-full h-[500px] md:h-[650px] bg-gray-100 animate-pulse flex items-center justify-center">
+        <div className="text-gray-300">Yuklanmoqda...</div>
+      </section>
+    );
+  }
+
   return (
+
     <section className="relative w-full overflow-hidden">
       <Swiper
         spaceBetween={0}

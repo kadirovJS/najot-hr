@@ -5,9 +5,7 @@ import { useSession } from 'next-auth/react';
 import { 
   PlayCircle, 
   CheckCircle2, 
-  Clock, 
   FileText, 
-  ChevronRight, 
   Loader2,
   Lock,
   ArrowLeft,
@@ -241,10 +239,25 @@ export default function OnboardingPage() {
               
               const getPosterUrl = (v: any) => {
                 if (v.youtubeUrl) {
-                  const videoId = v.youtubeUrl.split('v=')[1]?.split('&')[0] || v.youtubeUrl.split('/').pop();
-                  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                  try {
+                    let videoId = '';
+                    const url = v.youtubeUrl;
+                    if (url.includes('v=')) {
+                      videoId = url.split('v=')[1]?.split('&')[0];
+                    } else if (url.includes('youtu.be/')) {
+                      videoId = url.split('youtu.be/')[1]?.split('?')[0];
+                    } else {
+                      videoId = url.split('/').pop() || '';
+                    }
+                    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                  } catch (e) {
+                    return "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop";
+                  }
                 }
-                return v.cloudinaryUrl ? v.cloudinaryUrl.replace(/\.[^/.]+$/, ".jpg") + "?so_30" : "";
+                if (v.cloudinaryUrl) {
+                  return v.cloudinaryUrl.replace('/upload/', '/upload/so_30/').replace(/\.[^/.]+$/, ".jpg");
+                }
+                return "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop";
               };
 
               return (

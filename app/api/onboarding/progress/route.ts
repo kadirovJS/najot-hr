@@ -35,16 +35,22 @@ export async function POST(req: Request) {
       testFinished 
     } = await req.json();
 
+    const updateData: any = { 
+      watchedSeconds, 
+      isCompleted, 
+      testScore, 
+      scorePercentage, 
+      testFinished,
+      lastWatched: new Date() 
+    };
+
+    if (testFinished) {
+      updateData.$inc = { testAttempts: 1 };
+    }
+
     const progress = await Progress.findOneAndUpdate(
       { userId: user.id, videoId },
-      { 
-        watchedSeconds, 
-        isCompleted, 
-        testScore, 
-        scorePercentage, 
-        testFinished,
-        lastWatched: new Date() 
-      },
+      testFinished ? { ...updateData, $inc: { testAttempts: 1 } } : updateData,
       { upsert: true, new: true }
     );
 

@@ -6,8 +6,16 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   role: { 
     type: String, 
-    enum: ['SUPER_ADMIN', 'TEACHER'], 
+    enum: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT'], 
     default: 'TEACHER' 
+  },
+  image: { type: String },
+  email: { type: String },
+  emailVerified: { type: Boolean, default: false },
+  verificationCode: { type: String },
+  notificationSettings: {
+    browser: { type: Boolean, default: true },
+    email: { type: Boolean, default: false }
   },
   department: { 
     type: String, 

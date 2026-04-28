@@ -8,6 +8,7 @@ const ProgressSchema = new Schema({
   testScore: { type: Number, default: 0 },
   scorePercentage: { type: Number, default: 0 },
   testFinished: { type: Boolean, default: false },
+  testAttempts: { type: Number, default: 0 },
   lastWatched: { type: Date, default: Date.now },
 });
 

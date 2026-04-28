@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/db";
 import Video from "@/models/Video";
+import Notification from "@/models/Notification";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -29,6 +30,15 @@ export async function POST(req: Request) {
     const body = await req.json();
     await dbConnect();
     const video = await Video.create(body);
+
+    // Bildirishnoma yaratish
+    await Notification.create({
+      type: 'NEW_VIDEO',
+      title: 'Yangi darslik',
+      message: `"${video.title}" videosi onboarding kursiga qo'shildi.`,
+      link: '/dashboard/onboarding'
+    });
+
     return NextResponse.json(video, { status: 201 });
   } catch (error: any) {
     console.error("ONBOARDING VIDEOS ERROR:", error);
