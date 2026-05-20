@@ -221,7 +221,9 @@ export default function OnboardingPage() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+
   if (loading) return (
+    
     <div className="h-[60vh] flex items-center justify-center">
       <Loader2 className="h-10 w-10 text-primary animate-spin" />
     </div>
