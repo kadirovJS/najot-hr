@@ -223,6 +223,8 @@ export default function OnboardingPage() {
 
 
   if (loading) return (
+
+
     
     <div className="h-[60vh] flex items-center justify-center">
       <Loader2 className="h-10 w-10 text-primary animate-spin" />
