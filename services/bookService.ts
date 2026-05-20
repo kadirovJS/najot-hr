@@ -8,7 +8,7 @@ export const bookService = {
     const res = await fetch(`/api/books/${id}`);
     return res.json();
   },
-
+ 
   async createBook(data: any): Promise<any> {
     const res = await fetch('/api/books', {
       method: 'POST',

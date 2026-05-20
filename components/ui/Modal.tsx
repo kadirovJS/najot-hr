@@ -21,7 +21,7 @@ export const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-lg' 
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className={`bg-white w-full ${maxWidth} rounded-3xl shadow-2xl overflow-hidden`}
+            className={`bg-white w-full ${maxWidth} rounded-xl shadow-2xl overflow-hidden`}
           >
             <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
               <h3 className="text-xl font-bold text-dark">{title}</h3>

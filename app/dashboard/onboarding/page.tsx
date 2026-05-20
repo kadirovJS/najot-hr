@@ -10,7 +10,8 @@ import {
   Lock,
   ArrowLeft,
   Video as VideoIcon,
-  X
+  X,
+  Play
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
@@ -213,6 +214,13 @@ export default function OnboardingPage() {
     setProgress(newProgress);
   };
 
+  const formatDuration = (seconds: number) => {
+    if (!seconds) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   if (loading) return (
     <div className="h-[60vh] flex items-center justify-center">
       <Loader2 className="h-10 w-10 text-primary animate-spin" />
@@ -264,35 +272,37 @@ export default function OnboardingPage() {
                 <div 
                   key={video._id} 
                   onClick={() => !locked && setActiveTab(video)}
-                  className={`bg-white rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden group transition-all border-b-4 ${locked ? 'opacity-75 grayscale cursor-not-allowed' : 'cursor-pointer hover:shadow-xl hover:border-b-primary'}`}
+                  className={`bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden group transition-all ${locked ? 'opacity-75 grayscale cursor-not-allowed' : 'cursor-pointer hover:shadow-md hover:border-primary/30'}`}
                 >
-                  <div className="aspect-video bg-dark/5 relative flex items-center justify-center overflow-hidden">
-                    <img src={getPosterUrl(video)} alt={video.title} className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-dark/20" />
+                  <div className="aspect-video bg-gray-100 relative flex items-center justify-center overflow-hidden">
+                    <img src={getPosterUrl(video)} alt={video.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20" />
                     
                     {locked ? (
-                      <div className="absolute inset-0 flex items-center justify-center bg-dark/40 backdrop-blur-[2px]">
-                        <Lock className="text-white h-10 w-10 md:h-12 md:w-12" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
+                        <Lock className="text-white h-8 w-8" />
                       </div>
                     ) : testStatus?.passed ? (
-                      <div className="absolute top-3 right-3 md:top-4 md:right-4 bg-emerald-500 text-white p-1.5 md:p-2 rounded-full shadow-lg z-10">
-                        <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5" />
+                      <div className="absolute top-3 right-3 bg-emerald-500 text-white p-1.5 rounded-full shadow-md z-10">
+                        <CheckCircle2 className="h-4 w-4" />
                       </div>
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <PlayCircle className="text-white h-10 w-10 md:h-12 md:w-12 drop-shadow-2xl" />
+                        <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-110">
+                          <Play className="text-primary h-5 w-5 fill-primary ml-1" />
+                        </div>
                       </div>
                     )}
                   </div>
-                  <div className="p-5 md:p-6 space-y-3 md:space-y-4">
-                    <h3 className="font-black text-dark text-base md:text-lg leading-tight line-clamp-2">{video.title}</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-400">
-                        <span>{testStatus ? `Test: ${testStatus.percentage}%` : 'Progress'}</span>
+                  <div className="p-5 space-y-3">
+                    <h3 className="font-bold text-dark text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">{video.title}</h3>
+                    <div className="space-y-1.5 pt-1">
+                      <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                        <span>{testStatus ? `Natija: ${testStatus.percentage}%` : 'Progress'}</span>
                         <span>{prog}%</span>
                       </div>
-                      <div className="w-full bg-gray-100 h-1.5 md:h-2 rounded-full overflow-hidden">
-                        <div className={`h-full transition-all duration-500 ${testStatus ? (testStatus.passed ? 'bg-emerald-500' : 'bg-red-500') : 'bg-primary'}`} style={{ width: `${prog}%` }} />
+                      <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                        <div className={`h-full transition-all duration-700 ${testStatus ? (testStatus.passed ? 'bg-emerald-500' : 'bg-red-500') : 'bg-primary'}`} style={{ width: `${prog}%` }} />
                       </div>
                     </div>
                   </div>
@@ -302,15 +312,15 @@ export default function OnboardingPage() {
           </div>
         </>
       ) : (
-        <div className="max-w-5xl mx-auto space-y-4 md:space-y-6">
+        <div className="max-w-5xl mx-auto space-y-6">
           <button 
             onClick={() => { setActiveTab(null); setShowTest(false); setTestFinished(false); setTestResult(null); }}
-            className="flex items-center gap-2 text-gray-400 hover:text-primary transition-all font-black uppercase text-[10px] tracking-widest px-2"
+            className="flex items-center gap-2 text-gray-500 hover:text-dark transition-all font-bold uppercase text-[10px] tracking-widest px-1"
           >
             <ArrowLeft className="h-4 w-4" /> Kursga qaytish
           </button>
 
-          <div className="bg-white rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden mx-1">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden mx-1">
             {!showTest ? (
               <>
                 <div className="aspect-video bg-black relative">
@@ -327,15 +337,15 @@ export default function OnboardingPage() {
                     />
                   )}
                 </div>
-                <div className="p-6 md:p-12 space-y-4 md:space-y-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <h2 className="text-xl md:text-3xl font-black text-dark leading-tight">{activeVideo.title}</h2>
+                <div className="p-8 md:p-10 space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-gray-100 pb-6">
+                    <h2 className="text-2xl md:text-3xl font-bold text-dark leading-tight">{activeVideo.title}</h2>
                     {activeVideo.testQuestions?.length > 0 && (
                        <Button 
                          variant="outline" 
                          icon={<FileText className="h-4 w-4" />}
                          onClick={() => setShowTest(true)}
-                         className="shrink-0 h-12 text-sm"
+                         className="shrink-0 h-11 text-xs rounded-lg border-gray-200 hover:border-primary"
                        >
                          Testni topshirish
                        </Button>

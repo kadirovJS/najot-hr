@@ -274,35 +274,35 @@ export default function LandingSettingsPage() {
     <div className="space-y-8 md:space-y-12 pb-20">
       {/* Hero Settings */}
       <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-dark flex items-center gap-2">
-              <Layout className="h-5 w-5 md:h-6 md:w-6 text-primary" /> Hero Slaydlar
+            <h2 className="text-xl font-bold text-dark flex items-center gap-2">
+              <Layout className="h-5 w-5 text-primary" /> Hero Slaydlar
             </h2>
-            <p className="text-gray-500 text-xs md:text-sm">Landing pagedagi asosiy showcase qismi</p>
+            <p className="text-gray-500 text-xs mt-1">Landing pagedagi asosiy banner qismi</p>
           </div>
-          <Button className="w-full sm:w-auto h-11 md:h-12" icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenHeroForm()}>
+          <Button className="w-full sm:w-48 h-11 text-sm rounded-lg" icon={<Plus className="h-4 w-4" />} onClick={() => handleOpenHeroForm()}>
             Slayd qo'shish
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {heroSlides.map((slide, idx) => (
-            <div key={idx} className="bg-white rounded-2xl md:rounded-3xl border border-gray-100 overflow-hidden group">
-              <div className="relative h-40 md:h-48 bg-gray-100">
+            <div key={idx} className="bg-white rounded-xl border border-gray-200 overflow-hidden group hover:shadow-md transition-all">
+              <div className="relative h-44 bg-gray-50 border-b border-gray-100">
                 {slide.image && <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />}
-                <div className="absolute top-3 right-3 flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => handleOpenHeroForm(idx)} className="p-2 bg-white/90 backdrop-blur rounded-lg shadow-sm text-primary hover:text-emerald-700">
-                    <Edit2 className="h-4 w-4" />
+                <div className="absolute top-3 right-3 flex gap-2">
+                  <button onClick={() => handleOpenHeroForm(idx)} className="p-2 bg-white/90 backdrop-blur rounded-lg shadow-sm text-primary hover:bg-white transition-colors border border-gray-100">
+                    <Edit2 className="h-3.5 w-3.5" />
                   </button>
-                  <button onClick={() => deleteHeroSlide(idx)} className="p-2 bg-white/90 backdrop-blur rounded-lg shadow-sm text-red-500 hover:text-red-700">
-                    <Trash2 className="h-4 w-4" />
+                  <button onClick={() => deleteHeroSlide(idx)} className="p-2 bg-white/90 backdrop-blur rounded-lg shadow-sm text-red-500 hover:bg-white transition-colors border border-gray-100">
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
-              <div className="p-4 md:p-6">
-                <h3 className="font-bold text-dark line-clamp-1">{slide.title}</h3>
-                <p className="text-xs md:text-sm text-gray-500 mt-1 md:mt-2 line-clamp-2">{slide.description}</p>
+              <div className="p-5">
+                <h3 className="font-bold text-dark text-base line-clamp-1">{slide.title}</h3>
+                <p className="text-sm text-gray-500 mt-2 line-clamp-2 leading-relaxed">{slide.description}</p>
               </div>
             </div>
           ))}
@@ -311,30 +311,30 @@ export default function LandingSettingsPage() {
 
       {/* Partners Settings */}
       <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-dark flex items-center gap-2">
-              <Handshake className="h-5 w-5 md:h-6 md:w-6 text-primary" /> Hamkorlar
+            <h2 className="text-xl font-bold text-dark flex items-center gap-2">
+              <Handshake className="h-5 w-5 text-primary" /> Hamkorlar
             </h2>
-            <p className="text-gray-500 text-xs md:text-sm">Landing pagedagi hamkorlar logotiplari</p>
+            <p className="text-gray-500 text-xs mt-1">Hamkor kompaniyalar logotiplari</p>
           </div>
-          <Button className="w-full sm:w-auto h-11 md:h-12" icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenPartnerForm()}>
+          <Button className="w-full sm:w-48 h-11 text-sm rounded-lg" icon={<Plus className="h-4 w-4" />} onClick={() => handleOpenPartnerForm()}>
             Hamkor qo'shish
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {partners.map((partner) => (
-            <div key={partner._id} className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl border border-gray-100 flex flex-col items-center gap-2 md:gap-3 relative group">
-              <div className="h-12 md:h-16 w-full flex items-center justify-center">
-                <img src={partner.logo} alt={partner.name} className="max-h-full max-w-full object-contain grayscale md:group-hover:grayscale-0 transition-all" />
+            <div key={partner._id} className="bg-white p-4 rounded-xl border border-gray-200 flex flex-col items-center gap-3 relative group hover:shadow-sm transition-all">
+              <div className="h-16 w-full flex items-center justify-center">
+                <img src={partner.logo} alt={partner.name} className="max-h-full max-w-full object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" />
               </div>
-              <span className="text-[10px] md:text-xs font-bold text-dark text-center line-clamp-1">{partner.name}</span>
-              <div className="absolute top-2 right-2 flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                <button onClick={() => handleOpenPartnerForm(partner)} className="p-1.5 bg-white shadow-sm border border-gray-50 rounded-lg text-primary hover:text-emerald-700">
+              <span className="text-[10px] font-bold text-gray-500 text-center line-clamp-1 uppercase tracking-wider">{partner.name}</span>
+              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => handleOpenPartnerForm(partner)} className="p-1.5 bg-white shadow-sm border border-gray-100 rounded-md text-primary hover:bg-gray-50">
                   <Edit2 className="h-3 w-3" />
                 </button>
-                <button onClick={() => handleDeleteItem(partner._id, 'partner')} className="p-1.5 bg-white shadow-sm border border-gray-100 rounded-lg text-red-500 hover:text-red-700">
+                <button onClick={() => handleDeleteItem(partner._id, 'partner')} className="p-1.5 bg-white shadow-sm border border-gray-100 rounded-md text-red-500 hover:bg-gray-50">
                   <Trash2 className="h-3 w-3" />
                 </button>
               </div>
@@ -345,44 +345,44 @@ export default function LandingSettingsPage() {
 
       {/* Team Settings */}
       <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-dark flex items-center gap-2">
-              <Users className="h-5 w-5 md:h-6 md:w-6 text-primary" /> Jamoa a'zolari
+            <h2 className="text-xl font-bold text-dark flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" /> Jamoa a'zolari
             </h2>
-            <p className="text-gray-500 text-xs md:text-sm">Landing pagedagi "Jamoamiz" bo'limi</p>
+            <p className="text-gray-500 text-xs mt-1">Xodimlar ro'yxati va tartibi</p>
           </div>
-          <Button className="w-full sm:w-auto h-11 md:h-12" icon={<Plus className="h-5 w-5" />} onClick={() => handleOpenTeamForm()}>
+          <Button className="w-full sm:w-48 h-11 text-sm rounded-lg" icon={<Plus className="h-4 w-4" />} onClick={() => handleOpenTeamForm()}>
             A'zo qo'shish
           </Button>
         </div>
 
         {/* Desktop View */}
-        <div className="hidden md:block bg-white rounded-[2rem] border border-gray-100 overflow-hidden">
+        <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-gray-50/50">
-                <th className="px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">A'zo</th>
-                <th className="px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Kasbi</th>
-                <th className="px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Amallar</th>
+              <tr className="bg-gray-50">
+                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">A'zo</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Kasbi</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Amallar</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-100">
               {teamMembers.map((member) => (
-                <tr key={member._id} className="hover:bg-gray-50/30 transition-colors">
+                <tr key={member._id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
-                      <span className="font-bold text-dark">{member.name}</span>
+                      <img src={member.image} alt={member.name} className="w-9 h-9 rounded-full object-cover border border-gray-100 shadow-sm" />
+                      <span className="font-semibold text-dark text-sm">{member.name}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 font-medium">{member.role}</td>
+                  <td className="px-6 py-4 text-xs text-gray-500 font-medium">{member.role}</td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => handleOpenTeamForm(member)} className="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors">
+                    <div className="flex items-center justify-end gap-1">
+                      <button onClick={() => handleOpenTeamForm(member)} className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all">
                         <Edit2 className="h-4 w-4" />
                       </button>
-                      <button onClick={() => handleDeleteItem(member._id, 'team')} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                      <button onClick={() => handleDeleteItem(member._id, 'team')} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
@@ -394,21 +394,21 @@ export default function LandingSettingsPage() {
         </div>
 
         {/* Mobile View */}
-        <div className="grid grid-cols-1 gap-4 md:hidden">
+        <div className="grid grid-cols-1 gap-3 md:hidden">
           {teamMembers.map((member) => (
-            <div key={member._id} className="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+            <div key={member._id} className="bg-white p-4 rounded-xl border border-gray-200 flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-3">
-                <img src={member.image} alt={member.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover border border-gray-100" />
                 <div>
                   <h4 className="font-bold text-dark text-sm">{member.name}</h4>
-                  <p className="text-xs text-gray-500 font-medium">{member.role}</p>
+                  <p className="text-[10px] text-gray-500 font-medium uppercase tracking-tight">{member.role}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button onClick={() => handleOpenTeamForm(member)} className="p-2 text-primary active:bg-primary/5 rounded-lg transition-colors">
+                <button onClick={() => handleOpenTeamForm(member)} className="p-2 text-gray-400 active:text-primary transition-colors">
                   <Edit2 className="h-4 w-4" />
                 </button>
-                <button onClick={() => handleDeleteItem(member._id, 'team')} className="p-2 text-red-500 active:bg-red-50 rounded-lg transition-colors">
+                <button onClick={() => handleDeleteItem(member._id, 'team')} className="p-2 text-gray-400 active:text-red-500 transition-colors">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -417,46 +417,80 @@ export default function LandingSettingsPage() {
         </div>
       </section>
 
-      {/* Modals are unchanged but updated to use new handlers */}
+      {/* Hero Modal */}
       <Modal isOpen={isHeroModalOpen} onClose={() => setIsHeroModalOpen(false)} title={editingSlideIndex !== null ? 'Slaydni tahrirlash' : 'Yangi slayd qo\'shish'}>
-        <form onSubmit={handleHeroSubmit} className="space-y-6">
-          <div className="space-y-2 text-center">
-            <div onClick={() => heroInputRef.current?.click()} className="relative aspect-video w-full rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden group">
-              {(heroFile || heroFormData.image) ? <img src={heroFile ? URL.createObjectURL(heroFile) : heroFormData.image} className="w-full h-full object-cover" alt="Preview" /> : <ImageIcon className="h-10 w-10 text-gray-300" />}
+        <form onSubmit={handleHeroSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <div onClick={() => heroInputRef.current?.click()} className="relative aspect-video w-full rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden group transition-all hover:border-primary/50">
+              {(heroFile || heroFormData.image) ? <img src={heroFile ? URL.createObjectURL(heroFile) : heroFormData.image} className="w-full h-full object-cover" alt="Preview" /> : (
+                <div className="text-center p-4">
+                  <ImageIcon className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Rasm yuklash</p>
+                </div>
+              )}
             </div>
             <input type="file" ref={heroInputRef} className="hidden" accept="image/*" onChange={(e) => setHeroFile(e.target.files?.[0] || null)} />
           </div>
-          <input required className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 outline-none font-bold" placeholder="Sarlavha" value={heroFormData.title} onChange={(e) => setHeroFormData({...heroFormData, title: e.target.value})} />
-          <textarea required rows={3} className="w-full p-5 rounded-2xl border border-gray-100 bg-gray-50 outline-none font-medium resize-none" placeholder="Tavsif" value={heroFormData.description} onChange={(e) => setHeroFormData({...heroFormData, description: e.target.value})} />
-          <Button type="submit" className="w-full h-14" isLoading={actionLoading}>Saqlash</Button>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Sarlavha</label>
+              <input required className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary outline-none font-semibold text-dark text-sm" placeholder="Sarlavha..." value={heroFormData.title} onChange={(e) => setHeroFormData({...heroFormData, title: e.target.value})} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Tavsif</label>
+              <textarea required rows={3} className="w-full p-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary outline-none font-medium text-dark text-sm resize-none" placeholder="Tavsif..." value={heroFormData.description} onChange={(e) => setHeroFormData({...heroFormData, description: e.target.value})} />
+            </div>
+          </div>
+          <Button type="submit" className="w-full h-12 rounded-lg font-bold" isLoading={actionLoading}>Saqlash</Button>
         </form>
       </Modal>
 
+      {/* Partner Modal */}
       <Modal isOpen={isPartnerModalOpen} onClose={() => setIsPartnerModalOpen(false)} title={editingPartner ? 'Hamkorni tahrirlash' : 'Yangi hamkor qo\'shish'}>
-        <form onSubmit={handlePartnerSubmit} className="space-y-6">
-          <div className="space-y-2 text-center">
-            <div onClick={() => partnerInputRef.current?.click()} className="relative h-32 w-full rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden group">
-              {(partnerFile || partnerFormData.logo) ? <img src={partnerFile ? URL.createObjectURL(partnerFile) : partnerFormData.logo} className="max-h-full max-w-full object-contain p-4" alt="Preview" /> : <ImageIcon className="h-8 w-8 text-gray-300" />}
+        <form onSubmit={handlePartnerSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <div onClick={() => partnerInputRef.current?.click()} className="relative h-32 w-full rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden group transition-all hover:border-primary/50">
+              {(partnerFile || partnerFormData.logo) ? <img src={partnerFile ? URL.createObjectURL(partnerFile) : partnerFormData.logo} className="max-h-full max-w-full object-contain p-6" alt="Preview" /> : (
+                <div className="text-center p-4">
+                  <ImageIcon className="h-6 w-6 text-gray-300 mx-auto mb-2" />
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Logo yuklash</p>
+                </div>
+              )}
             </div>
             <input type="file" ref={partnerInputRef} className="hidden" accept="image/*" onChange={(e) => setPartnerFile(e.target.files?.[0] || null)} />
           </div>
-          <input required className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 outline-none font-bold" placeholder="Kompaniya nomi" value={partnerFormData.name} onChange={(e) => setPartnerFormData({...partnerFormData, name: e.target.value})} />
-          <Button type="submit" className="w-full h-14" isLoading={actionLoading}>Saqlash</Button>
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Kompaniya nomi</label>
+            <input required className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary outline-none font-semibold text-dark text-sm" placeholder="Kompaniya nomi..." value={partnerFormData.name} onChange={(e) => setPartnerFormData({...partnerFormData, name: e.target.value})} />
+          </div>
+          <Button type="submit" className="w-full h-12 rounded-lg font-bold" isLoading={actionLoading}>Saqlash</Button>
         </form>
       </Modal>
 
+      {/* Team Modal */}
       <Modal isOpen={isTeamModalOpen} onClose={() => setIsTeamModalOpen(false)} title={editingMember ? 'A\'zoni tahrirlash' : 'Yangi a\'zo qo\'shish'}>
-        <form onSubmit={handleTeamSubmit} className="space-y-6">
+        <form onSubmit={handleTeamSubmit} className="space-y-5">
           <div className="flex justify-center">
-            <div onClick={() => teamInputRef.current?.click()} className="w-32 h-32 rounded-full border-4 border-gray-100 bg-gray-50 flex items-center justify-center cursor-pointer overflow-hidden relative">
+            <div onClick={() => teamInputRef.current?.click()} className="w-28 h-28 rounded-full border-4 border-gray-50 bg-gray-50 flex items-center justify-center cursor-pointer overflow-hidden relative group hover:border-primary/30 transition-all">
               {(teamFile || teamFormData.image) ? <img src={teamFile ? URL.createObjectURL(teamFile) : teamFormData.image} className="w-full h-full object-cover" alt="Preview" /> : <ImageIcon className="h-8 w-8 text-gray-300" />}
             </div>
             <input type="file" ref={teamInputRef} className="hidden" accept="image/*" onChange={(e) => setTeamFile(e.target.files?.[0] || null)} />
           </div>
-          <input required className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 outline-none font-bold" placeholder="F.I.SH" value={teamFormData.name} onChange={(e) => setTeamFormData({...teamFormData, name: e.target.value})} />
-          <input required className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 outline-none font-bold" placeholder="Kasbi" value={teamFormData.role} onChange={(e) => setTeamFormData({...teamFormData, role: e.target.value})} />
-          <input type="number" className="w-full h-14 px-5 rounded-2xl border border-gray-100 bg-gray-50 outline-none font-bold" placeholder="Tartib raqami" value={teamFormData.order} onChange={(e) => setTeamFormData({...teamFormData, order: parseInt(e.target.value) || 0})} />
-          <Button type="submit" className="w-full h-14" isLoading={actionLoading}>Saqlash</Button>
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">F.I.SH</label>
+              <input required className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary outline-none font-semibold text-dark text-sm" placeholder="F.I.SH..." value={teamFormData.name} onChange={(e) => setTeamFormData({...teamFormData, name: e.target.value})} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Kasbi</label>
+              <input required className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary outline-none font-semibold text-dark text-sm" placeholder="Kasbi..." value={teamFormData.role} onChange={(e) => setTeamFormData({...teamFormData, role: e.target.value})} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Tartib raqami</label>
+              <input type="number" className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary outline-none font-semibold text-dark text-sm" placeholder="Tartib raqami..." value={teamFormData.order} onChange={(e) => setTeamFormData({...teamFormData, order: parseInt(e.target.value) || 0})} />
+            </div>
+          </div>
+          <Button type="submit" className="w-full h-12 rounded-lg font-bold" isLoading={actionLoading}>Saqlash</Button>
         </form>
       </Modal>
 

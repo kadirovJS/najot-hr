@@ -144,112 +144,112 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6 pb-12">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-dark">Xodimlar boshqaruvi</h1>
-          <p className="text-gray-500 text-sm italic">Jamoani shakllantirish va nazorat qilish</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-dark tracking-tight">Xodimlar boshqaruvi</h1>
+          <p className="text-gray-500 text-xs md:text-sm font-medium">Jamoani shakllantirish va nazorat qilish</p>
         </div>
-        <Button icon={<UserPlus className="h-5 w-5" />} onClick={() => handleOpenForm()}>
+        <Button className="w-full md:w-auto h-11 px-8 rounded-lg text-sm" icon={<UserPlus className="h-4 w-4" />} onClick={() => handleOpenForm()}>
           Yangi xodim
         </Button>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white p-2 rounded-2xl border border-gray-100 flex items-center px-4 gap-4 shadow-sm focus-within:border-primary transition-all">
-        <Search className="h-5 w-5 text-gray-400 shrink-0" />
+      <div className="bg-white p-1.5 rounded-xl border border-gray-200 flex items-center px-4 gap-3 shadow-sm focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5 transition-all">
+        <Search className="h-4 w-4 text-gray-400 shrink-0" />
         <input 
           type="text" 
-          placeholder="Qidirish..."
-          className="flex-grow min-w-0 h-12 bg-transparent outline-none text-sm text-dark"
+          placeholder="Ism yoki telefon raqami bo'yicha qidirish..."
+          className="flex-grow min-w-0 h-10 bg-transparent outline-none text-sm text-dark font-medium placeholder:text-gray-400"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
       {/* Users Section */}
-      <div className="bg-white rounded-2xl md:rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
         {/* Desktop Table View */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-50/50 border-b border-gray-100">
               <tr>
-                <th className="px-6 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Xodim</th>
-                <th className="px-6 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Bo'lim</th>
-                <th className="px-6 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Rol</th>
-                <th className="px-6 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Holat</th>
-                <th className="px-6 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Amallar</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Xodim</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Bo'lim</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Rol</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Holat</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Amallar</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-20 text-center">
                     <Loader2 className="h-10 w-10 text-primary animate-spin mx-auto" />
-                    <p className="text-sm text-gray-400 mt-4">Ma'lumotlar yuklanmoqda...</p>
+                    <p className="text-sm text-gray-400 mt-4 font-medium">Ma'lumotlar yuklanmoqda...</p>
                   </td>
                 </tr>
               ) : users.length > 0 ? (
                 users.map((user) => (
-                  <tr key={user._id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={user._id} className="hover:bg-gray-50/30 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary font-black border border-primary/10">
+                        <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary font-bold border border-primary/10 shadow-sm text-sm uppercase">
                           {user.name.charAt(0)}
                         </div>
                         <div>
-                          <p className="font-bold text-dark">{user.name}</p>
-                          <p className="text-xs text-gray-400 font-medium">+{user.phone}</p>
+                          <p className="font-bold text-dark text-sm">{user.name}</p>
+                          <p className="text-[11px] text-gray-400 font-medium mt-0.5">+{user.phone}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                       <span className="text-sm font-semibold text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
+                       <span className="text-[11px] font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded border border-gray-200 uppercase tracking-tight">
                         {user.department}
                        </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-lg text-[10px] font-black tracking-wider uppercase ${user.role === 'SUPER_ADMIN' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'}`}>
+                      <span className={`px-2.5 py-1 rounded text-[10px] font-bold tracking-wider uppercase border ${user.role === 'SUPER_ADMIN' ? 'bg-purple-50 text-purple-600 border-purple-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
                         {user.role}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${user.status === 'ACTIVE' ? 'bg-green-500' : 'bg-red-500'}`} />
-                        <span className={`text-[10px] font-black tracking-wider uppercase ${user.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${user.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                        <span className={`text-[10px] font-bold tracking-wider uppercase ${user.status === 'ACTIVE' ? 'text-emerald-600' : 'text-red-600'}`}>
                           {user.status}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1">
-                        <Button 
-                          variant="ghost" 
-                          className="h-9 w-9 p-0 hover:bg-emerald-50" 
-                          icon={<Edit2 className="h-4 w-4 text-emerald-600" />}
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button 
+                          className="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all" 
                           onClick={() => handleOpenForm(user)}
-                        />
-                        <Button 
-                          variant="ghost" 
-                          className="h-9 w-9 p-0 hover:bg-orange-50" 
-                          icon={user.status === 'ACTIVE' 
-                            ? <ShieldAlert className="h-4 w-4 text-orange-500" /> 
-                            : <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                          }
+                          title="Tahrirlash"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        <button 
+                          className={`p-1.5 rounded-lg transition-all ${user.status === 'ACTIVE' ? 'text-gray-400 hover:text-orange-500 hover:bg-orange-50' : 'text-gray-400 hover:text-emerald-500 hover:bg-emerald-50'}`}
                           onClick={() => handleToggleStatus(user)}
-                        />
-                        <Button 
-                          variant="ghost" 
-                          className="h-9 w-9 p-0 hover:bg-red-50" 
-                          icon={<Trash2 className="h-4 w-4 text-red-500" />}
+                          title={user.status === 'ACTIVE' ? 'Bloklash' : 'Faollashtirish'}
+                        >
+                          {user.status === 'ACTIVE' ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
+                        </button>
+                        <button 
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" 
                           onClick={() => handleDeleteClick(user._id)}
-                        />
+                          title="O'chirish"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-20 text-center text-gray-400 font-medium">Xodimlar topilmadi</td>
+                  <td colSpan={5} className="px-6 py-20 text-center text-gray-400 font-bold uppercase text-[10px] tracking-widest">Xodimlar topilmadi</td>
                 </tr>
               )}
             </tbody>
@@ -257,92 +257,89 @@ export default function UsersPage() {
         </div>
 
         {/* Mobile Card View */}
-        <div className="md:hidden divide-y divide-gray-50">
+        <div className="md:hidden divide-y divide-gray-100">
           {loading ? (
             <div className="px-6 py-20 text-center">
               <Loader2 className="h-10 w-10 text-primary animate-spin mx-auto" />
-              <p className="text-sm text-gray-400 mt-4">Ma'lumotlar yuklanmoqda...</p>
+              <p className="text-sm text-gray-400 mt-4 font-medium">Ma'lumotlar yuklanmoqda...</p>
             </div>
           ) : users.length > 0 ? (
             users.map((user) => (
-              <div key={user._id} className="p-4 space-y-4">
+              <div key={user._id} className="p-5 space-y-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 shrink-0 rounded-xl bg-primary/5 flex items-center justify-center text-primary font-black border border-primary/10">
+                    <div className="w-10 h-10 shrink-0 rounded-lg bg-primary/5 flex items-center justify-center text-primary font-bold border border-primary/10 shadow-sm text-sm uppercase">
                       {user.name.charAt(0)}
                     </div>
                     <div className="min-w-0">
                       <p className="font-bold text-dark truncate text-sm">{user.name}</p>
-                      <p className="text-[10px] text-gray-400 font-medium truncate">+{user.phone}</p>
+                      <p className="text-[10px] text-gray-400 font-medium truncate mt-0.5">+{user.phone}</p>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black tracking-wider uppercase ${user.role === 'SUPER_ADMIN' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'}`}>
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    <span className={`px-2 py-0.5 rounded text-[8px] font-bold tracking-wider uppercase border ${user.role === 'SUPER_ADMIN' ? 'bg-purple-50 text-purple-600 border-purple-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
                       {user.role}
                     </span>
-                    <div className="flex items-center gap-1">
-                      <div className={`w-1.5 h-1.5 rounded-full ${user.status === 'ACTIVE' ? 'bg-green-500' : 'bg-red-500'}`} />
-                      <span className={`text-[8px] font-black tracking-wider uppercase ${user.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}>
+                    <div className="flex items-center gap-1.5">
+                      <div className={`w-1.5 h-1.5 rounded-full ${user.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                      <span className={`text-[8px] font-bold tracking-wider uppercase ${user.status === 'ACTIVE' ? 'text-emerald-600' : 'text-red-600'}`}>
                         {user.status}
                       </span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between bg-gray-50/50 p-3 rounded-xl border border-gray-100 gap-2">
-                  <span className="text-[10px] font-bold text-gray-500 truncate">{user.department}</span>
+                <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100 gap-2">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tight truncate">{user.department}</span>
                   <div className="flex items-center gap-1 shrink-0">
-                    <Button 
-                      variant="ghost" 
-                      className="h-9 w-9 p-0 bg-white shadow-sm border border-gray-100" 
-                      icon={<Edit2 className="h-4 w-4 text-emerald-600" />}
+                    <button 
+                      className="p-2 text-gray-400 active:text-primary transition-colors" 
                       onClick={() => handleOpenForm(user)}
-                    />
-                    <Button 
-                      variant="ghost" 
-                      className="h-9 w-9 p-0 bg-white shadow-sm border border-gray-100" 
-                      icon={user.status === 'ACTIVE' 
-                        ? <ShieldAlert className="h-4 w-4 text-orange-500" /> 
-                        : <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                      }
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button 
+                      className={`p-2 transition-colors ${user.status === 'ACTIVE' ? 'text-gray-400 active:text-orange-500' : 'text-gray-400 active:text-emerald-500'}`}
                       onClick={() => handleToggleStatus(user)}
-                    />
-                    <Button 
-                      variant="ghost" 
-                      className="h-9 w-9 p-0 bg-white shadow-sm border border-gray-100" 
-                      icon={<Trash2 className="h-4 w-4 text-red-500" />}
+                    >
+                      {user.status === 'ACTIVE' ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
+                    </button>
+                    <button 
+                      className="p-2 text-gray-400 active:text-red-600 transition-colors" 
                       onClick={() => handleDeleteClick(user._id)}
-                    />
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="px-6 py-20 text-center text-gray-400 font-medium">Xodimlar topilmadi</div>
+            <div className="px-6 py-20 text-center text-gray-400 font-bold uppercase text-[10px] tracking-widest">Xodimlar topilmadi</div>
           )}
         </div>
 
         {/* Pagination */}
-        <div className="px-4 md:px-8 py-4 md:py-6 bg-gray-50/30 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Sahifa {page} / {totalPages}</p>
-          <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+        <div className="px-4 md:px-8 py-4 md:py-5 bg-gray-50/50 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sahifa {page} / {totalPages}</p>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button 
               variant="outline" 
-              className="h-10 flex-1 sm:flex-none px-3 md:px-4 text-sm" 
+              className="h-9 flex-1 sm:flex-none px-4 text-xs rounded-lg" 
               disabled={page === 1} 
               onClick={() => setPage(p => p - 1)}
             >
-              <ChevronLeft className="h-4 w-4 sm:mr-2" /> 
-              <span className="hidden sm:inline">Oldingi</span>
+              <ChevronLeft className="h-3.5 w-3.5 sm:mr-1.5" /> 
+              <span>Oldingi</span>
             </Button>
             <Button 
               variant="outline" 
-              className="h-10 flex-1 sm:flex-none px-3 md:px-4 text-sm" 
+              className="h-9 flex-1 sm:flex-none px-4 text-xs rounded-lg" 
               disabled={page === totalPages} 
               onClick={() => setPage(p => p + 1)}
             >
-              <span className="hidden sm:inline">Keyingi</span>
-              <ChevronRight className="h-4 w-4 sm:ml-2" />
+              <span>Keyingi</span>
+              <ChevronRight className="h-3.5 w-3.5 sm:ml-1.5" />
             </Button>
           </div>
         </div>
@@ -353,24 +350,25 @@ export default function UsersPage() {
         isOpen={isFormModalOpen} 
         onClose={() => setIsFormModalOpen(false)} 
         title={editingUser ? 'Xodimni tahrirlash' : 'Yangi xodim qo\'shish'}
+        maxWidth="max-w-2xl"
       >
-        <form onSubmit={handleFormSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Ism Familiya</label>
+        <form onSubmit={handleFormSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Ism Familiya</label>
               <input 
                 required
-                className="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-dark"
+                className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none transition-all font-semibold text-dark text-sm"
                 placeholder="Eshmat Toshmatov"
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Telefon</label>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Telefon raqami</label>
               <input 
                 required
-                className="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-dark"
+                className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none transition-all font-semibold text-dark text-sm"
                 placeholder="998901234567"
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
@@ -378,47 +376,61 @@ export default function UsersPage() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">
               {editingUser ? 'Yangi parol (ixtiyoriy)' : 'Parol'}
             </label>
             <input 
               required={!editingUser}
               type="password"
-              className="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium text-dark"
+              className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none transition-all font-semibold text-dark text-sm"
               placeholder="••••••••"
               value={formData.password}
               onChange={(e) => setFormData({...formData, password: e.target.value})}
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Bo'lim</label>
-              <select 
-                className="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium appearance-none text-dark"
-                value={formData.department}
-                onChange={(e) => setFormData({...formData, department: e.target.value as UserDepartment})}
-              >
-                {departments.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Bo'lim</label>
+              <div className="relative">
+                <select 
+                  className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none transition-all font-semibold text-dark appearance-none text-sm cursor-pointer"
+                  value={formData.department}
+                  onChange={(e) => setFormData({...formData, department: e.target.value as UserDepartment})}
+                >
+                  {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                  <ChevronRight className="h-4 w-4 rotate-90" />
+                </div>
+              </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Rol</label>
-              <select 
-                className="w-full h-12 px-4 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-medium appearance-none text-dark"
-                value={formData.role}
-                onChange={(e) => setFormData({...formData, role: e.target.value as UserRole})}
-              >
-                <option value="TEACHER">TEACHER</option>
-                <option value="SUPER_ADMIN">SUPER_ADMIN</option>
-              </select>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Rol</label>
+              <div className="relative">
+                <select 
+                  className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none transition-all font-semibold text-dark appearance-none text-sm cursor-pointer"
+                  value={formData.role}
+                  onChange={(e) => setFormData({...formData, role: e.target.value as UserRole})}
+                >
+                  <option value="TEACHER">TEACHER</option>
+                  <option value="HR">HR</option>
+                  <option value="ACCOUNTANT">ACCOUNTANT</option>
+                  <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                  <ChevronRight className="h-4 w-4 rotate-90" />
+                </div>
+              </div>
             </div>
           </div>
 
-          <Button type="submit" className="w-full" isLoading={actionLoading}>
-            {editingUser ? 'Saqlash' : 'Xodimni qo\'shish'}
-          </Button>
+          <div className="pt-2">
+            <Button type="submit" className="w-full h-14 text-base rounded-xl font-bold" isLoading={actionLoading}>
+              {editingUser ? 'Saqlash' : 'Xodimni qo\'shish'}
+            </Button>
+          </div>
         </form>
       </Modal>
 

@@ -18,7 +18,7 @@ export default function StatisticsPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-
+  console.log(data , "STAT")
   useEffect(() => {
     fetch('/api/dashboard/stats/detailed')
       .then(res => res.json())
@@ -44,9 +44,9 @@ export default function StatisticsPage() {
     : Math.round(((data.overview.usersThisMonth - data.overview.usersLastMonth) / data.overview.usersLastMonth) * 100);
 
   return (
-    <div className="space-y-6 md:space-y-10 pb-20">
+    <div className="space-y-6 md:space-y-8 pb-20">
       <div className="px-1">
-        <h1 className="text-2xl md:text-3xl font-black text-dark tracking-tight">Tizim Statistikasi</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-dark tracking-tight">Tizim Statistikasi</h1>
         <p className="text-sm md:text-gray-500 font-medium">O'quv jarayoni va xodimlar faolligi tahlili</p>
       </div>
 
@@ -80,10 +80,10 @@ export default function StatisticsPage() {
       </div>
 
       {/* User Progress Table */}
-      <div className="bg-white rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-5 md:p-8 border-b border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="p-6 md:p-8 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg md:text-xl font-black text-dark">Ustozlar natijalari</h3>
+            <h3 className="text-lg md:text-xl font-bold text-dark">Ustozlar natijalari</h3>
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Individual ko'rsatkichlar</p>
           </div>
           
@@ -94,7 +94,7 @@ export default function StatisticsPage() {
               placeholder="Qidirish..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-11 pr-6 h-12 bg-gray-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 font-bold text-sm w-full md:w-64"
+              className="pl-11 pr-6 h-11 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:bg-white focus:border-primary/50 transition-all font-semibold text-sm w-full md:w-64"
             />
           </div>
         </div>
@@ -104,53 +104,53 @@ export default function StatisticsPage() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-gray-50/50">
-                <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ustoz</th>
-                <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Bo'lim</th>
-                <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Progress</th>
-                <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">O'rtacha Ball</th>
-                <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Amallar</th>
+                <th className="px-8 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ustoz</th>
+                <th className="px-8 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Bo'lim</th>
+                <th className="px-8 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Progress</th>
+                <th className="px-8 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">O'rtacha Ball</th>
+                <th className="px-8 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Amallar</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-100">
               {filteredProgress.map((up: any) => (
                 <tr key={up._id} className="hover:bg-gray-50/30 transition-colors group">
-                  <td className="px-8 py-6">
+                  <td className="px-8 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-primary font-black shadow-sm border border-gray-50 uppercase">
+                      <div className="w-9 h-9 bg-primary/5 rounded-lg flex items-center justify-center text-primary font-bold border border-primary/10 shadow-sm uppercase text-sm">
                         {up.name[0]}
                       </div>
                       <div>
-                        <p className="font-black text-dark leading-none">{up.name}</p>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase mt-1">
+                        <p className="font-bold text-dark leading-none text-sm">{up.name}</p>
+                        <p className="text-[10px] font-medium text-gray-400 mt-1">
                           {new Date(up.joinedAt).toLocaleDateString()} da qo'shilgan
                         </p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-8 py-6">
-                    <span className="px-3 py-1 bg-gray-50 text-[10px] font-black uppercase tracking-widest text-gray-500 rounded-lg border border-gray-100">
+                  <td className="px-8 py-5">
+                    <span className="px-2.5 py-1 bg-gray-100 text-[10px] font-bold uppercase tracking-wider text-gray-600 rounded border border-gray-200">
                       {up.department}
                     </span>
                   </td>
-                  <td className="px-8 py-6">
+                  <td className="px-8 py-5">
                     <div className="flex items-center gap-4">
-                      <div className="flex-grow bg-gray-100 h-2 rounded-full overflow-hidden max-w-[100px]">
+                      <div className="flex-grow bg-gray-100 h-1.5 rounded-full overflow-hidden max-w-[100px]">
                         <div 
                           className={`h-full transition-all duration-1000 ${up.progress === 100 ? 'bg-emerald-500' : 'bg-primary'}`} 
                           style={{ width: `${up.progress}%` }} 
                         />
                       </div>
-                      <span className="text-sm font-black text-dark">{up.progress}%</span>
+                      <span className="text-xs font-bold text-dark">{up.progress}%</span>
                     </div>
                   </td>
-                  <td className="px-8 py-6">
-                    <span className={`text-sm font-black ${up.avgScore >= 80 ? 'text-emerald-500' : up.avgScore >= 60 ? 'text-amber-500' : 'text-red-500'}`}>
+                  <td className="px-8 py-5">
+                    <span className={`text-sm font-bold ${up.avgScore >= 80 ? 'text-emerald-500' : up.avgScore >= 60 ? 'text-amber-500' : 'text-red-500'}`}>
                       {up.avgScore}%
                     </span>
                   </td>
-                  <td className="px-8 py-6 text-right">
+                  <td className="px-8 py-5 text-right">
                     <button className="p-2 text-gray-300 group-hover:text-primary transition-colors">
-                      <ChevronRight className="h-5 w-5" />
+                      <ChevronRight className="h-4 w-4" />
                     </button>
                   </td>
                 </tr>
@@ -160,42 +160,42 @@ export default function StatisticsPage() {
         </div>
 
         {/* Mobile View */}
-        <div className="md:hidden divide-y divide-gray-50">
+        <div className="md:hidden divide-y divide-gray-100">
           {filteredProgress.map((up: any) => (
             <div key={up._id} className="p-5 space-y-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary font-black border border-primary/10 shrink-0">
+                  <div className="w-9 h-9 bg-primary/5 rounded-lg flex items-center justify-center text-primary font-bold border border-primary/10 shrink-0 text-sm">
                     {up.name[0]}
                   </div>
                   <div className="min-w-0">
-                    <p className="font-black text-dark truncate text-sm">{up.name}</p>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase">
+                    <p className="font-bold text-dark truncate text-sm">{up.name}</p>
+                    <p className="text-[10px] font-medium text-gray-400 uppercase tracking-tighter">
                       {new Date(up.joinedAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
-                <span className="px-2 py-0.5 bg-gray-50 text-[8px] font-black uppercase tracking-widest text-gray-500 rounded-lg border border-gray-100 shrink-0">
+                <span className="px-2 py-0.5 bg-gray-100 text-[9px] font-bold uppercase tracking-widest text-gray-500 rounded border border-gray-200 shrink-0">
                   {up.department}
                 </span>
               </div>
               
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div className="space-y-1">
-                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Progress</p>
+                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Progress</p>
                   <div className="flex items-center gap-2">
-                    <div className="flex-grow bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                    <div className="flex-grow bg-gray-100 h-1 rounded-full overflow-hidden">
                       <div 
                         className={`h-full transition-all duration-1000 ${up.progress === 100 ? 'bg-emerald-500' : 'bg-primary'}`} 
                         style={{ width: `${up.progress}%` }} 
                       />
                     </div>
-                    <span className="text-xs font-black text-dark shrink-0">{up.progress}%</span>
+                    <span className="text-[10px] font-bold text-dark shrink-0">{up.progress}%</span>
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest text-right">O'rtacha ball</p>
-                  <p className={`text-sm font-black text-right ${up.avgScore >= 80 ? 'text-emerald-500' : up.avgScore >= 60 ? 'text-amber-500' : 'text-red-500'}`}>
+                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest text-right">O'rtacha ball</p>
+                  <p className={`text-sm font-bold text-right ${up.avgScore >= 80 ? 'text-emerald-500' : up.avgScore >= 60 ? 'text-amber-500' : 'text-red-500'}`}>
                     {up.avgScore}%
                   </p>
                 </div>
@@ -215,20 +215,20 @@ export default function StatisticsPage() {
 
 function StatCard({ icon, title, value, subValue, trend }: any) {
   return (
-    <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-gray-100 hover:border-primary transition-all group">
-      <div className="flex justify-between items-start mb-4 md:mb-6">
-        <div className="p-3 md:p-4 bg-gray-50 rounded-2xl group-hover:bg-primary/5 transition-colors">{icon}</div>
+    <div className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 hover:border-primary/30 transition-all group">
+      <div className="flex justify-between items-start mb-6">
+        <div className="p-3 bg-gray-50 rounded-lg group-hover:bg-primary/5 transition-colors border border-gray-100">{icon}</div>
         {trend && (
-           <div className={`flex items-center gap-1 text-[10px] font-black uppercase px-2 py-1 rounded-lg ${trend === 'up' ? 'text-emerald-600 bg-emerald-50' : 'text-red-600 bg-red-50'}`}>
+           <div className={`flex items-center gap-1 text-[9px] font-bold uppercase px-2 py-1 rounded border ${trend === 'up' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 'text-red-600 bg-red-50 border-red-100'}`}>
              {trend === 'up' ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
              <span className="hidden xs:inline">{trend === 'up' ? 'O\'sish' : 'Pasayish'}</span>
            </div>
         )}
       </div>
       <div>
-        <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">{title}</p>
-        <p className="text-2xl md:text-4xl font-black text-dark mt-2 tracking-tight">{value}</p>
-        <p className="text-[10px] md:text-xs text-gray-500 font-medium mt-2">{subValue}</p>
+        <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">{title}</p>
+        <p className="text-2xl md:text-3xl font-bold text-dark mt-2 tracking-tight">{value}</p>
+        <p className="text-[10px] md:text-xs text-gray-400 font-medium mt-2">{subValue}</p>
       </div>
     </div>
   );

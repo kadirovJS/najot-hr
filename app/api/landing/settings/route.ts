@@ -13,9 +13,19 @@ export async function GET() {
       settings = await LandingSetting.create({
         heroSlides: [
           {
-            title: "Najot Ta'lim Jamoasiga Qo'shiling",
-            description: "Biz bilan birga kelajak bilimini ulashing va professional o'sing.",
+            title: "Najot Ta'lim — zamonaviy kasblar markazi",
+            description: "Dasturlash, dizayn va marketing kabi zamonaviy kasblarni biz bilan o'rganing.",
             image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
+          },
+          {
+            title: "Hayotni yaxshilovchi ta'lim",
+            description: "Zamonaviy kasblar yordamida insonlar hayotini yaxshilovchi va kelajakka bo'lgan ishonchni mustahkamlovchi maskan.",
+            image: "https://images.unsplash.com/photo-1524178232363-1fb28f74b671?q=80&w=2070&auto=format&fit=crop"
+          },
+          {
+            title: "Katta jamoa, buyuk maqsadlar",
+            description: "2500 dan ortiq o'quvchilar va 350 dan ortiq katta jamoani birlashtirgan ta'lim va innovatsiya markazi.",
+            image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop"
           }
         ]
       });

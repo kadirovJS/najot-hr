@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -14,10 +15,12 @@ import {
   Library
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
+import { ConfirmModal } from '../ui/ConfirmModal';
 
 export default function DashboardNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const role = (session?.user as any)?.role;
 
   const links = [
@@ -46,7 +49,9 @@ export default function DashboardNav() {
         <nav className="flex-grow p-4 space-y-2 overflow-y-auto">
           {filteredLinks.map((link) => {
             const Icon = link.icon;
-            const isActive = pathname === link.href;
+            const isActive = link.href === '/dashboard' 
+              ? pathname === link.href 
+              : pathname.startsWith(link.href);
             return (
               <Link
                 key={link.href}
@@ -66,7 +71,7 @@ export default function DashboardNav() {
 
         <div className="p-4 border-t border-gray-50">
           <button 
-            onClick={() => signOut({ callbackUrl: '/' })}
+            onClick={() => setIsLogoutModalOpen(true)}
             className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all"
           >
             <LogOut className="h-5 w-5" />
@@ -75,11 +80,21 @@ export default function DashboardNav() {
         </div>
       </aside>
 
+      <ConfirmModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={() => signOut({ callbackUrl: '/' })}
+        title="Tizimdan chiqish"
+        description="Rostdan ham tizimdan chiqmoqchimisiz?"
+      />
+
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-1 z-50 flex overflow-x-auto items-center h-16 no-scrollbar">
         {filteredLinks.map((link) => {
           const Icon = link.icon;
-          const isActive = pathname === link.href;
+          const isActive = link.href === '/dashboard' 
+            ? pathname === link.href 
+            : pathname.startsWith(link.href);
           return (
             <Link
               key={link.href}

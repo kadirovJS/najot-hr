@@ -127,15 +127,15 @@ export default function TestsAdminPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex p-1 bg-gray-100 rounded-xl md:rounded-2xl w-full md:w-fit overflow-x-auto no-scrollbar">
+      <div className="flex p-1 bg-gray-100 rounded-lg w-full md:w-fit overflow-x-auto no-scrollbar border border-gray-200 shadow-sm">
         {(['DISC', 'PAEI'] as TestType[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 md:flex-none px-6 md:px-8 py-2.5 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-sm transition-all whitespace-nowrap ${
+            className={`flex-1 md:flex-none px-8 py-2.5 rounded-md font-bold text-xs md:text-sm whitespace-nowrap outline-none transition-colors ${
               activeTab === tab 
-                ? 'bg-white text-primary shadow-sm' 
-                : 'text-gray-500 hover:text-dark'
+                ? 'bg-white text-primary shadow-sm border border-gray-100' 
+                : 'text-gray-500 hover:text-dark border border-transparent'
             }`}
           >
             {tab} Testi
@@ -151,33 +151,37 @@ export default function TestsAdminPage() {
           </div>
         ) : questions.length > 0 ? (
           questions.map((q, idx) => (
-            <div key={q._id} className="bg-white p-4 md:p-6 rounded-2xl md:rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition-all">
-              <div className="flex flex-col gap-4">
+            <div key={q._id} className="bg-white p-5 md:p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all">
+              <div className="flex flex-col gap-6">
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex items-start gap-3 min-w-0">
-                    <span className="w-7 h-7 md:w-8 md:h-8 shrink-0 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] md:text-xs font-black text-gray-400">
-                      #{questions.length - idx}
+                    <span className="w-8 h-8 shrink-0 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-xs font-bold text-gray-400">
+                      {questions.length - idx}
                     </span>
-                    <h3 className="font-bold text-dark text-sm md:text-lg leading-tight pt-1 break-words">{q.question}</h3>
+                    <h3 className="font-bold text-dark text-base md:text-lg leading-snug pt-0.5 break-words">{q.question}</h3>
                   </div>
-                  <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg md:rounded-xl shrink-0">
-                    <Button variant="ghost" className="h-8 w-8 md:h-9 md:w-9 p-0 hover:bg-white" onClick={() => handleOpenForm(q)}>
-                      <Edit2 className="h-4 w-4 text-primary" />
-                    </Button>
-                    <Button variant="ghost" className="h-8 w-8 md:h-9 md:w-9 p-0 hover:bg-white" onClick={() => { setQuestionToDelete(q._id); setIsDeleteModalOpen(true); }}>
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
+                  <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg shrink-0 border border-gray-100">
+                    <button onClick={() => handleOpenForm(q)} className="p-2 text-gray-400 hover:text-primary hover:bg-white rounded-md transition-all" title="Tahrirlash">
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => { setQuestionToDelete(q._id); setIsDeleteModalOpen(true); }} className="p-2 text-gray-400 hover:text-red-500 hover:bg-white rounded-md transition-all" title="O'chirish">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 md:pl-11">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:pl-11">
                   {q.options.map((opt, i) => (
-                    <div key={i} className={`flex items-center gap-3 p-3 md:p-3.5 rounded-xl md:rounded-2xl border text-xs md:text-sm font-bold ${
+                    <div key={i} className={`flex items-center gap-3 p-4 rounded-xl border text-sm font-semibold transition-all ${
                       i === q.correctAnswer 
                         ? 'bg-emerald-50 border-emerald-100 text-emerald-700 shadow-sm' 
                         : 'bg-gray-50/50 border-gray-100 text-gray-500'
                     }`}>
-                      {i === q.correctAnswer ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <Circle className="h-4 w-4 shrink-0 opacity-20" />}
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        i === q.correctAnswer ? 'border-emerald-500 bg-emerald-500' : 'border-gray-200'
+                      }`}>
+                        {i === q.correctAnswer && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                      </div>
                       <span className="leading-tight">{opt}</span>
                     </div>
                   ))}
@@ -186,9 +190,11 @@ export default function TestsAdminPage() {
             </div>
           ))
         ) : (
-          <div className="bg-white py-12 md:py-20 rounded-2xl md:rounded-[2.5rem] border border-dashed border-gray-200 text-center px-6">
-            <FileText className="h-10 w-10 md:h-12 md:w-12 text-gray-200 mx-auto mb-4" />
-            <p className="text-gray-400 font-bold uppercase text-[10px] md:text-xs tracking-widest">Hozircha savollar mavjud emas</p>
+          <div className="bg-white py-16 md:py-24 rounded-xl border border-dashed border-gray-200 text-center px-6 shadow-sm">
+            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+              <FileText className="h-8 w-8 text-gray-300" />
+            </div>
+            <p className="text-gray-400 font-bold uppercase text-[10px] md:text-xs tracking-widest">Savollar topilmadi</p>
           </div>
         )}
       </div>
@@ -200,41 +206,41 @@ export default function TestsAdminPage() {
         title={editingQuestion ? 'Savolni tahrirlash' : 'Yangi savol qo\'shish'}
         maxWidth="max-w-2xl"
       >
-        <form onSubmit={handleFormSubmit} className="space-y-5 md:space-y-6 overflow-y-auto max-h-[70vh] px-1 custom-scrollbar">
+        <form onSubmit={handleFormSubmit} className="space-y-6 overflow-y-auto max-h-[70vh] px-1 custom-scrollbar">
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Savol matni</label>
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Savol matni</label>
             <textarea 
               required
               rows={3}
-              className="w-full p-4 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-primary outline-none transition-all font-bold text-dark resize-none text-sm md:text-base"
+              className="w-full p-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none transition-all font-semibold text-dark resize-none text-sm md:text-base leading-relaxed"
               placeholder="Savolni kiriting..."
               value={formData.question}
               onChange={(e) => setFormData({...formData, question: e.target.value})}
             />
           </div>
 
-          <div className="space-y-4">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Variantlar (To'g'ri javobni tanlang)</label>
+          <div className="space-y-4 pt-2">
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Variantlar va to'g'ri javob</label>
             <div className="grid grid-cols-1 gap-3">
               {formData.options.map((opt, idx) => (
-                <div key={idx} className="flex gap-2 md:gap-3 items-center group">
+                <div key={idx} className="flex gap-3 items-center group">
                   <button
                     type="button"
                     onClick={() => setFormData({...formData, correctAnswer: idx})}
-                    className={`w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-lg md:rounded-xl flex items-center justify-center transition-all ${
+                    className={`w-11 h-11 shrink-0 rounded-lg flex items-center justify-center transition-all border ${
                       formData.correctAnswer === idx 
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200' 
-                        : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                        ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' 
+                        : 'bg-white border-gray-200 text-gray-300 hover:border-emerald-300 hover:text-emerald-300'
                     }`}
                   >
-                    {formData.correctAnswer === idx ? <CheckCircle2 className="h-5 w-5 md:h-6 md:w-6" /> : <Circle className="h-5 w-5 md:h-6 md:w-6" />}
+                    {formData.correctAnswer === idx ? <CheckCircle2 className="h-5 w-5" /> : <span className="text-xs font-bold">{idx + 1}</span>}
                   </button>
                   <input 
                     required
-                    className={`flex-grow h-10 md:h-12 px-3 md:px-4 rounded-lg md:rounded-xl border outline-none transition-all font-medium text-sm ${
+                    className={`flex-grow h-11 px-4 rounded-lg border outline-none transition-all font-medium text-sm ${
                       formData.correctAnswer === idx 
-                        ? 'border-emerald-200 bg-emerald-50/30 focus:border-emerald-500' 
-                        : 'border-gray-100 bg-gray-50 focus:border-primary focus:bg-white'
+                        ? 'border-emerald-200 bg-emerald-50/20 focus:border-emerald-400' 
+                        : 'border-gray-200 bg-gray-50 focus:border-primary/50 focus:bg-white'
                     }`}
                     placeholder={`Variant ${idx + 1}`}
                     value={opt}
@@ -245,9 +251,11 @@ export default function TestsAdminPage() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full h-12 md:h-14 text-sm md:text-base" isLoading={actionLoading}>
-            {editingQuestion ? 'Saqlash' : 'Savolni qo\'shish'}
-          </Button>
+          <div className="pt-4">
+            <Button type="submit" className="w-full h-14 text-base rounded-xl font-bold" isLoading={actionLoading}>
+              {editingQuestion ? 'O\'zgarishlarni saqlash' : 'Savolni qo\'shish'}
+            </Button>
+          </div>
         </form>
       </Modal>
 

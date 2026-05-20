@@ -4,8 +4,8 @@ import Hero from '@/components/sections/Hero';
 import Partners from '@/components/sections/Partners';
 import TeamMap from '@/components/sections/TeamMap';
 import TeamMembers from '@/components/sections/TeamMembers';
-// ... qolgan importlar
-import { Metadata } from 'next';
+
+import  { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -14,6 +14,8 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
+
+
   return (
     <main className="min-h-screen flex flex-col">
       <Header />
