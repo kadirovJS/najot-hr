@@ -95,6 +95,8 @@ export default function SettingsPage() {
       
       setProfileData({ ...profileData, image: imageUrl });
       alert("Profil rasmi yangilandi");
+
+      
       
       // Sahifani yangilamasdan sessionni yangilash imkoni bo'lmasa, ma'lumotni qayta yuklaymiz
       loadUser();
