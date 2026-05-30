@@ -15,6 +15,7 @@ export default function VacancyDetail() {
   
   const [vacancy, setVacancy] = useState<IVacancy | null>(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchVacancy = async () => {
@@ -180,9 +181,14 @@ export default function VacancyDetail() {
                     </p>
                     
                     <div className="space-y-4">
-                      <button className="w-full h-16 bg-primary text-white font-black rounded-2xl shadow-lg shadow-primary/20 flex items-center justify-center gap-3 hover:bg-opacity-95 active:scale-[0.98] transition-all text-lg">
+                      <a 
+                        href={`https://t.me/Najot_Talim_IT?text=${encodeURIComponent(`Assalomu alaykum, men "${vacancy.title}" vakansiyasi bo'yicha aloqaga chiqayotgan edim.`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full h-16 bg-primary text-white font-black rounded-2xl shadow-lg shadow-primary/20 flex items-center justify-center gap-3 hover:bg-opacity-95 active:scale-[0.98] transition-all text-lg"
+                      >
                         <Send className="h-6 w-6" /> Arizani yuborish
-                      </button>
+                      </a>
                       <p className="text-[10px] text-gray-400 text-center font-bold uppercase tracking-widest">
                         Najot Ta'lim HR jamoasi
                       </p>
@@ -191,11 +197,34 @@ export default function VacancyDetail() {
                     <div className="mt-12 pt-8 border-t border-gray-50">
                       <h4 className="font-black text-dark mb-6 uppercase text-xs tracking-widest">Ulashish</h4>
                       <div className="grid grid-cols-3 gap-3">
-                        {['Telegram', 'LinkedIn', 'Copy'].map(social => (
-                          <button key={social} className="py-3 bg-gray-50 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-primary hover:text-white transition-all">
-                            {social}
-                          </button>
-                        ))}
+                        <button 
+                          onClick={() => {
+                            window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(vacancy.title)}`, '_blank');
+                          }}
+                          className="py-3 bg-gray-50 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-primary hover:text-white transition-all"
+                        >
+                          Telegram
+                        </button>
+                        <button 
+                          onClick={() => {
+                            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, '_blank');
+                          }}
+                          className="py-3 bg-gray-50 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-primary hover:text-white transition-all"
+                        >
+                          LinkedIn
+                        </button>
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(window.location.href);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 3000);
+                          }}
+                          className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                            copied ? 'bg-primary text-white' : 'bg-gray-50 text-gray-500 hover:bg-primary hover:text-white'
+                          }`}
+                        >
+                          {copied ? "Nusxalandi!" : "Nusxalash"}
+                        </button>
                       </div>
                     </div>
                   </div>
