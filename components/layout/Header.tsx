@@ -12,7 +12,7 @@ export default function Header() {
     { href: '/#about', label: 'Jamoa haqida' },
     { href: '/#locations', label: 'Hududlar' },
     { href: '/vacancies', label: 'Vakansiyalar' },
-    { href: '/skills-check', label: 'Skills Check' },
+    { href: '/skills-check', label: 'Test ishlash' },
   ];
 
   return (

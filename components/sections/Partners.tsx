@@ -24,23 +24,27 @@ export default function Partners() {
     <section className="py-24 bg-gray-50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-dark">Bizning hamkorlar</h2>
-          <p className="text-gray-500 mt-4">Biz bilan birga ishlovchi yetakchi kompaniyalar</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-dark italic relative inline-block">
+            Bizning hamkorlar
+            <span className="absolute -bottom-2 left-0 w-full h-1 bg-primary/20 rounded-full" />
+          </h2>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8 items-center justify-items-center">
           {partners.map((partner) => (
-            <div key={partner._id} className="group relative aspect-[3/2] w-full overflow-hidden rounded-[2rem] bg-white border border-gray-100 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1">
+            <div 
+              key={partner._id} 
+              className="w-full h-20 md:h-24 flex items-center justify-center p-4 bg-white/50 border border-gray-100/50 rounded-2xl group transition-all duration-300 hover:bg-white hover:shadow-md hover:border-gray-200"
+            >
               <img 
                 src={partner.logo} 
                 alt={partner.name} 
-                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" 
+                className="max-h-full max-w-full object-contain transition-all duration-500 ease-in-out transform group-hover:scale-110"
+                title={partner.name}
               />
-              <div className="absolute inset-0 bg-dark/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );
