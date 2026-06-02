@@ -15,7 +15,7 @@ import {
   Phone
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { onboardingService } from '@/services/onboardingService';
+import { onboardingService } from '@/services/onboardingService'
 
 export default function SettingsPage() {
   const [user, setUser] = useState<any>(null);
