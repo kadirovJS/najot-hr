@@ -5,7 +5,7 @@ const VacancySchema = new Schema({
   category: { 
     type: String, 
     required: true,
-    enum: ['IT', 'HR', "O'quv bo'limi", 'SMM', 'Marketing', 'Sales', 'Other']
+    enum: ['IT', 'HR', "O'quv bo'limi", 'Marketing', 'Sotuv', 'Boshqa']
   },
   location: { type: String, required: true },
   type: { 

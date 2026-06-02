@@ -1,4 +1,5 @@
-export type VacancyCategory = 'IT' | 'HR' | "O'quv bo'limi" | 'SMM' | 'Marketing' | 'Sales' | 'Other';
+export type VacancyCategory = 'IT' | 'HR' | "O'quv bo'limi" | 'Marketing' | 'Sotuv' | 'Boshqa';
+export const VACANCY_CATEGORIES: VacancyCategory[] = ['IT', 'HR', "O'quv bo'limi", 'Marketing', 'Sotuv', 'Boshqa'];
 export type VacancyType = 'Full-time' | 'Part-time' | 'Remote' | 'Internship';
 
 export interface IVacancy {

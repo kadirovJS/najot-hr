@@ -20,9 +20,9 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { vacancyService } from '@/services/vacancyService';
-import { IVacancy, VacancyFormData, VacancyCategory, VacancyType } from '@/types/vacancy';
+import { IVacancy, VacancyFormData, VacancyCategory, VacancyType, VACANCY_CATEGORIES } from '@/types/vacancy';
 
-const categories: VacancyCategory[] = ['IT', 'HR', "O'quv bo'limi", 'SMM', 'Marketing', 'Sales', 'Other'];
+const categories = VACANCY_CATEGORIES;
 const types: VacancyType[] = ['Full-time', 'Part-time', 'Remote', 'Internship'];
 
 export default function VacanciesAdminPage() {

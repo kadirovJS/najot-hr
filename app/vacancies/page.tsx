@@ -9,10 +9,10 @@ import Header from '@/components/layout/Header';
 import { Search, MapPin, Briefcase, Clock, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { vacancyService } from '@/services/vacancyService';
-import { IVacancy } from '@/types/vacancy';
+import { IVacancy, VACANCY_CATEGORIES } from '@/types/vacancy';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const categories = ['Barchasi', 'IT', 'HR', "O'quv bo'limi", 'SMM', 'Marketing', 'Sales'];
+const categories = ['Barchasi', ...VACANCY_CATEGORIES];
 
 export default function VacanciesPage() {
   const [vacancies, setVacancies] = useState<IVacancy[]>([]);
