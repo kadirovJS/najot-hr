@@ -35,7 +35,7 @@ export default function Header() {
           {links.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}
         </nav>
         <div className="header-actions">
-          <Link href="/auth/register" className="header-cta">Kirish <ArrowUpRight size={17} /></Link>
+          <Link href="/auth/login" className="header-cta">Kirish <ArrowUpRight size={17} /></Link>
           <button className="menu-button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-menu" aria-label={open ? 'Menyuni yopish' : 'Menyuni ochish'}>
             {open ? <X /> : <Menu />}
           </button>
@@ -49,7 +49,6 @@ export default function Header() {
       >
         <nav aria-label="Mobil navigatsiya">
           {links.map((link) => <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>{link.label}<ArrowUpRight size={17} /></Link>)}
-          <Link href="/auth/register" onClick={() => setOpen(false)}>Onboarding<ArrowUpRight size={17} /></Link>
           <Link href="/auth/login" onClick={() => setOpen(false)}>Kirish<ArrowUpRight size={17} /></Link>
         </nav>
       </div>

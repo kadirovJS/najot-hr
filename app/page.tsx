@@ -50,7 +50,7 @@ export default async function Home() {
           <span className="eyebrow eyebrow-light">Keyingi qadam</span>
           <h2>Ta’lim kelajagida sizning ham o‘rningiz bor.</h2>
           <p>Tajriba, g‘oya va energiyangizni minglab insonlar kelajagiga aylantiradigan jamoaga qo‘shiling.</p>
-          <div className="hero-actions"><Link href="/vacancies" className="button button-white">Vakansiyalarni ko‘rish <ArrowUpRight size={19} /></Link><Link href="/auth/register" className="button button-dark-outline">Profil yaratish</Link></div>
+          <div className="hero-actions"><Link href="/vacancies" className="button button-white">Vakansiyalarni ko‘rish <ArrowUpRight size={19} /></Link><Link href="/auth/login" className="button button-dark-outline">Tizimga kirish</Link></div>
         </div>
       </section>
       <footer className="site-footer">
