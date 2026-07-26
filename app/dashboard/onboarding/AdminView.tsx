@@ -23,8 +23,114 @@ import { onboardingService } from '@/services/onboardingService';
 
 const departments = ['All', 'Support teacher', 'Main teacher', 'Management', 'Sales', 'Boshqaruv', 'Other'];
 
+type LearnerProgress = {
+  _id: string;
+  name: string;
+  department: string;
+  assignedVideos: number;
+  watchedVideos: number;
+  completedVideos: number;
+  courseProgress: number;
+  avgTestScore: number | null;
+  testAttempts: number;
+  lastActivity: string | null;
+};
+type ProgressSummary = {
+  totalEmployees: number;
+  averageCourseProgress: number;
+  completedCourses: number;
+};
+type YoutubeDurationPlayer = {
+  getDuration: () => number;
+  destroy: () => void;
+};
+type YoutubeApiWindow = Window & {
+  YT?: { Player: new (element: HTMLElement, options: object) => YoutubeDurationPlayer };
+  onYouTubeIframeAPIReady?: () => void;
+};
+
+const getYoutubeVideoId = (value: string) => {
+  try {
+    const url = new URL(value);
+    const hostname = url.hostname.replace(/^www\./, '');
+    const id = hostname === 'youtu.be'
+      ? url.pathname.split('/').filter(Boolean)[0] || ''
+      : hostname.endsWith('youtube.com')
+        ? url.searchParams.get('v') || url.pathname.split('/').filter(Boolean).at(-1) || ''
+        : '';
+    return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : '';
+  } catch {
+    return '';
+  }
+};
+
+const loadYoutubeIframeApi = () => new Promise<NonNullable<YoutubeApiWindow['YT']>>((resolve, reject) => {
+  const youtubeWindow = window as YoutubeApiWindow;
+  if (youtubeWindow.YT?.Player) {
+    resolve(youtubeWindow.YT);
+    return;
+  }
+
+  const previousReadyHandler = youtubeWindow.onYouTubeIframeAPIReady;
+  const timeout = window.setTimeout(() => reject(new Error('YouTube player yuklanmadi')), 15000);
+  youtubeWindow.onYouTubeIframeAPIReady = () => {
+    previousReadyHandler?.();
+    window.clearTimeout(timeout);
+    if (youtubeWindow.YT?.Player) resolve(youtubeWindow.YT);
+    else reject(new Error('YouTube player yuklanmadi'));
+  };
+
+  if (!document.querySelector('script[data-admin-youtube-api]')) {
+    const script = document.createElement('script');
+    script.src = 'https://www.youtube.com/iframe_api';
+    script.dataset.adminYoutubeApi = 'true';
+    script.onerror = () => {
+      window.clearTimeout(timeout);
+      reject(new Error('YouTube player yuklanmadi'));
+    };
+    document.head.appendChild(script);
+  }
+});
+
+const getYoutubeDuration = async (url: string) => {
+  const videoId = getYoutubeVideoId(url);
+  if (!videoId) throw new Error('YouTube havolasi noto‘g‘ri');
+
+  const YT = await loadYoutubeIframeApi();
+  return new Promise<number>((resolve, reject) => {
+    const container = document.createElement('div');
+    container.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;pointer-events:none;';
+    document.body.appendChild(container);
+    let player: YoutubeDurationPlayer | null = null;
+    const timeout = window.setTimeout(() => finish(new Error('Video davomiyligini olib bo‘lmadi')), 15000);
+
+    const finish = (result: number | Error) => {
+      window.clearTimeout(timeout);
+      player?.destroy();
+      container.remove();
+      if (typeof result === 'number') resolve(result);
+      else reject(result);
+    };
+
+    player = new YT.Player(container, {
+      videoId,
+      playerVars: { controls: 0, rel: 0 },
+      events: {
+        onReady: (event: { target: YoutubeDurationPlayer }) => {
+          const duration = Math.round(event.target.getDuration());
+          finish(duration > 0 ? duration : new Error('Video davomiyligini olib bo‘lmadi'));
+        },
+        onError: () => finish(new Error('YouTube videosini ochib bo‘lmadi')),
+      },
+    });
+  });
+};
+
 export default function OnboardingAdminPage() {
   const [videos, setVideos] = useState<any[]>([]);
+  const [learners, setLearners] = useState<LearnerProgress[]>([]);
+  const [progressSummary, setProgressSummary] = useState<ProgressSummary | null>(null);
+  const [progressLoading, setProgressLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -42,9 +148,13 @@ export default function OnboardingAdminPage() {
     youtubeUrl: '',
     duration: 0,
     departments: ['All'] as string[],
-    testQuestions: [] as any[]
+    testQuestions: [] as any[],
+    coverImageUrl: '',
+    coverImagePublicId: '',
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedCoverFile, setSelectedCoverFile] = useState<File | null>(null);
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState('');
 
   const loadVideos = async () => {
     try {
@@ -58,8 +168,24 @@ export default function OnboardingAdminPage() {
     }
   };
 
+  const loadLearnerProgress = async () => {
+    try {
+      setProgressLoading(true);
+      const response = await fetch('/api/onboarding/progress/admin');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Progress yuklanmadi');
+      setLearners(data.learners || []);
+      setProgressSummary(data.summary || null);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setProgressLoading(false);
+    }
+  };
+
   useEffect(() => {
-    loadVideos();
+    void loadVideos();
+    void loadLearnerProgress();
   }, []);
 
   const formatDuration = (seconds: number) => {
@@ -70,6 +196,7 @@ export default function OnboardingAdminPage() {
   };
 
   const getPosterUrl = (video: any) => {
+    if (video.coverImageUrl) return video.coverImageUrl;
     if (video.youtubeUrl) {
       try {
         let videoId = '';
@@ -102,14 +229,29 @@ export default function OnboardingAdminPage() {
         youtubeUrl: video.youtubeUrl || '',
         duration: video.duration || 0,
         departments: video.departments || ['All'],
-        testQuestions: video.testQuestions || []
+        testQuestions: video.testQuestions || [],
+        coverImageUrl: video.coverImageUrl || '',
+        coverImagePublicId: video.coverImagePublicId || '',
       });
     } else {
       setEditingVideo(null);
-      setFormData({ title: '', description: '', youtubeUrl: '', duration: 0, departments: ['All'], testQuestions: [] });
+      setFormData({ title: '', description: '', youtubeUrl: '', duration: 0, departments: ['All'], testQuestions: [], coverImageUrl: '', coverImagePublicId: '' });
     }
     setSelectedFile(null);
+    setSelectedCoverFile(null);
+    setCoverPreviewUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return '';
+    });
     setIsModalOpen(true);
+  };
+
+  const handleCoverSelection = (file: File | null) => {
+    setSelectedCoverFile(file);
+    setCoverPreviewUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return file ? URL.createObjectURL(file) : '';
+    });
   };
 
   const handleDeptToggle = (dept: string) => {
@@ -150,6 +292,8 @@ export default function OnboardingAdminPage() {
         duration: formData.duration,
         departments: formData.departments,
         testQuestions: formData.testQuestions,
+        coverImageUrl: formData.coverImageUrl,
+        coverImagePublicId: formData.coverImagePublicId,
       };
 
       if (selectedFile) {
@@ -160,6 +304,12 @@ export default function OnboardingAdminPage() {
         videoData.cloudinaryUrl = cloudinaryRes.secure_url;
         videoData.publicId = cloudinaryRes.public_id;
         videoData.duration = Math.round(cloudinaryRes.duration || 0);
+      }
+
+      if (selectedCoverFile) {
+        const coverRes = await onboardingService.uploadImageToCloudinary(selectedCoverFile, 'najot-hr-onboarding-covers');
+        videoData.coverImageUrl = coverRes.secure_url;
+        videoData.coverImagePublicId = coverRes.public_id;
       }
 
       if (!videoData.youtubeUrl && !videoData.cloudinaryUrl && !selectedFile) {
@@ -182,6 +332,11 @@ export default function OnboardingAdminPage() {
       setActionLoading(false);
       setUploadProgress(0);
       setSelectedFile(null);
+      setSelectedCoverFile(null);
+      setCoverPreviewUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return '';
+      });
     }
   };
 
@@ -193,23 +348,23 @@ export default function OnboardingAdminPage() {
     
     setIsFetchingYoutube(true);
     try {
-      const res = await fetch(`/api/youtube/info?url=${encodeURIComponent(formData.youtubeUrl)}`);
+      const [res, duration] = await Promise.all([
+        fetch(`/api/youtube/info?url=${encodeURIComponent(formData.youtubeUrl)}`),
+        getYoutubeDuration(formData.youtubeUrl),
+      ]);
       const data = await res.json();
       
-      if (data.error) {
-        alert(data.error);
-        return;
-      }
+      if (!res.ok) throw new Error(data.error || 'YouTube ma’lumotlarini yuklab bo‘lmadi');
 
       setFormData(prev => ({
         ...prev,
         title: prev.title || data.title,
-        duration: data.duration || prev.duration
+        duration,
       }));
       
     } catch (error) {
       console.error("Error fetching YouTube info:", error);
-      alert("YouTube ma'lumotlarini yuklashda xatolik");
+      alert(error instanceof Error ? error.message : "YouTube ma'lumotlarini yuklashda xatolik");
     } finally {
       setIsFetchingYoutube(false);
     }
@@ -275,6 +430,19 @@ export default function OnboardingAdminPage() {
         </div>
         <Button className="h-12 text-sm" icon={<Upload className="h-5 w-5" />} onClick={() => handleOpenForm()}>Video qo'shish</Button>
       </div>
+
+      <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-gray-100 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div><h2 className="text-lg font-bold text-dark">Xodimlar o‘quv jarayoni</h2><p className="mt-1 text-xs text-gray-500">Foiz video to‘liq ko‘rilib, testli darslarda kamida 60% natija olingandan keyingina oshadi.</p></div>
+          <button type="button" onClick={() => void loadLearnerProgress()} className="text-xs font-bold text-primary hover:underline">Yangilash</button>
+        </div>
+        <div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
+          <div className="p-4 text-center"><p className="text-xl font-bold text-dark">{progressLoading ? '—' : progressSummary?.totalEmployees || 0}</p><p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Xodim</p></div>
+          <div className="p-4 text-center"><p className="text-xl font-bold text-dark">{progressLoading ? '—' : `${progressSummary?.averageCourseProgress || 0}%`}</p><p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">O‘rtacha jarayon</p></div>
+          <div className="p-4 text-center"><p className="text-xl font-bold text-dark">{progressLoading ? '—' : progressSummary?.completedCourses || 0}</p><p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Kursni tugatgan</p></div>
+        </div>
+        <div className="overflow-x-auto"><table className="w-full min-w-[680px] text-left"><thead className="bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-400"><tr><th className="px-5 py-3">Xodim</th><th className="px-5 py-3">Darslar</th><th className="px-5 py-3">Jarayon</th><th className="px-5 py-3">Test</th><th className="px-5 py-3">Oxirgi faollik</th></tr></thead><tbody className="divide-y divide-gray-100">{progressLoading ? <tr><td colSpan={5} className="px-5 py-10 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin text-primary" /></td></tr> : learners.length ? learners.map((learner) => <tr key={learner._id} className="text-sm"><td className="px-5 py-4"><p className="font-bold text-dark">{learner.name}</p><p className="mt-0.5 text-xs text-gray-500">{learner.department}</p></td><td className="px-5 py-4 text-gray-600">{learner.completedVideos}/{learner.assignedVideos} yakunlangan</td><td className="px-5 py-4"><div className="flex min-w-32 items-center gap-2"><div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100"><div className="h-full rounded-full bg-primary" style={{ width: `${learner.courseProgress}%` }} /></div><span className="text-xs font-bold text-dark">{learner.courseProgress}%</span></div></td><td className="px-5 py-4 text-gray-600">{learner.avgTestScore === null ? '—' : `${learner.avgTestScore}%`} <span className="text-xs text-gray-400">({learner.testAttempts} urinish)</span></td><td className="px-5 py-4 text-xs text-gray-500">{learner.lastActivity ? new Intl.DateTimeFormat('uz-UZ', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(learner.lastActivity)) : 'Hali boshlamagan'}</td></tr>) : <tr><td colSpan={5} className="px-5 py-10 text-center text-sm text-gray-500">Xodimlar uchun hali progress ma’lumoti yo‘q.</td></tr>}</tbody></table></div>
+      </section>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {loading ? (
@@ -370,6 +538,25 @@ export default function OnboardingAdminPage() {
                   {selectedFile ? selectedFile.name : 'Video faylni tanlang'}
                 </p>
               </label>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Cover rasmi</label>
+              {(coverPreviewUrl || formData.coverImageUrl) && <span className="text-[10px] font-medium text-emerald-600">Yuklashga tayyor</span>}
+            </div>
+            <div className="flex flex-col gap-3 rounded-xl border border-dashed border-gray-200 bg-gray-50 p-3 sm:flex-row sm:items-center">
+              <div className="h-24 w-full shrink-0 overflow-hidden rounded-lg bg-gray-200 sm:w-40">
+                {coverPreviewUrl || formData.coverImageUrl ? <img src={coverPreviewUrl || formData.coverImageUrl} alt="Cover preview" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-center text-[10px] font-bold uppercase tracking-wider text-gray-400">Cover yo‘q</div>}
+              </div>
+              <div className="min-w-0 flex-1">
+                <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" id="cover-upload" onChange={(e) => handleCoverSelection(e.target.files?.[0] || null)} />
+                <label htmlFor="cover-upload" className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-xs font-bold text-dark transition-colors hover:border-primary hover:text-primary">
+                  <Upload className="h-4 w-4" /> {selectedCoverFile ? 'Boshqa rasm tanlash' : 'Cover rasm yuklash'}
+                </label>
+                <p className="mt-2 truncate text-xs text-gray-500">{selectedCoverFile?.name || 'JPG, PNG yoki WEBP. Tavsiya: 16:9 format.'}</p>
+              </div>
             </div>
           </div>
 

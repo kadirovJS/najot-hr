@@ -28,4 +28,13 @@ export const deleteVideo = async (publicId: string) => {
   }
 };
 
+export const deleteImage = async (publicId: string) => {
+  try {
+    return await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+  } catch (error) {
+    console.error('Cloudinary Image Delete Error:', error);
+    throw error;
+  }
+};
+
 export default cloudinary;

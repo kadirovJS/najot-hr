@@ -9,7 +9,7 @@ import { authOptions } from "@/lib/auth";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    if (!session || (session.user as { role?: string }).role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
     }
 
@@ -30,8 +30,7 @@ export async function GET() {
     });
 
     // 2. Videolarni ko'rish statistikasi
-    const videos = await Video.find({}, '_id departments title');
-    const totalVideosCount = videos.length;
+    const videos = await Video.find({}, '_id departments title testQuestions');
 
     const progressData = await Progress.find();
     
@@ -58,7 +57,10 @@ export async function GET() {
         v.departments.includes('All') || v.departments.includes(teacher.department)
       );
       
-      const completedCount = teacherProgress.filter(p => p.isCompleted).length;
+      const completedCount = assignedVideos.filter(video => {
+        const record = teacherProgress.find(progress => progress.videoId.toString() === video._id.toString());
+        return record?.isCompleted && (!video.testQuestions?.length || (record.testFinished && record.scorePercentage >= 60));
+      }).length;
       const progressPercent = assignedVideos.length > 0 
         ? Math.round((completedCount / assignedVideos.length) * 100) 
         : 0;

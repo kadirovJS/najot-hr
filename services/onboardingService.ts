@@ -66,8 +66,7 @@ export const onboardingService = {
     return result;
   },
 
-  async uploadImageToCloudinary(file: File): Promise<any> {
-    const folder = 'najot-hr-books';
+  async uploadImageToCloudinary(file: File, folder = 'najot-hr-books'): Promise<any> {
     const signRes = await fetch(`/api/onboarding/videos/sign?folder=${folder}`);
     const signData = await signRes.json();
 
@@ -82,7 +81,9 @@ export const onboardingService = {
       method: 'POST',
       body: formData
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Rasmni yuklab bo‘lmadi');
+    return result;
   },
 
   async saveVideoData(data: any): Promise<any> {
@@ -107,20 +108,26 @@ export const onboardingService = {
     await fetch(`/api/onboarding/videos/${id}`, { method: 'DELETE' });
   },
 
-  async updateProgress(data: { 
-    videoId: string, 
-    watchedSeconds?: number, 
-    isCompleted?: boolean,
-    testScore?: number,
-    scorePercentage?: number,
-    testFinished?: boolean
-  }): Promise<any> {
+  async updateProgress(data: { videoId: string; action: 'heartbeat'; position: number; ended?: boolean }): Promise<any> {
     const res = await fetch('/api/onboarding/progress', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Progress saqlanmadi');
+    return result;
+  },
+
+  async submitTest(videoId: string, answers: number[]): Promise<any> {
+    const res = await fetch('/api/onboarding/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ videoId, action: 'submit-test', answers })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Test natijasini saqlab bo‘lmadi');
+    return result;
   },
 
   async getMyProgress(): Promise<any[]> {

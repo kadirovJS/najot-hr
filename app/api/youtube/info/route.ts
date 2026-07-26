@@ -2,47 +2,46 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+function getYoutubeVideoId(value: string) {
+  try {
+    const url = new URL(value);
+    const hostname = url.hostname.replace(/^www\./, '');
+    let id = '';
+
+    if (hostname === 'youtu.be') id = url.pathname.split('/').filter(Boolean)[0] || '';
+    if (hostname.endsWith('youtube.com')) {
+      id = url.searchParams.get('v') || url.pathname.split('/').filter(Boolean).at(-1) || '';
+    }
+
+    return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : '';
+  } catch {
+    return '';
+  }
+}
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    if (!session || (session.user as { role?: string }).role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
     }
 
-    const { searchParams } = new URL(req.url);
-    const videoUrl = searchParams.get('url');
-
-    if (!videoUrl) {
-      return NextResponse.json({ error: "URL berilmadi" }, { status: 400 });
+    const videoUrl = new URL(req.url).searchParams.get('url') || '';
+    const videoId = getYoutubeVideoId(videoUrl);
+    if (!videoId) {
+      return NextResponse.json({ error: "YouTube havolasi noto‘g‘ri" }, { status: 400 });
     }
 
-    const res = await fetch(videoUrl);
-    const html = await res.text();
-
-    // YouTube uses ISO 8601 duration format in its meta tags: "PT5M30S"
-    const durationMatch = html.match(/"approxDurationMs":"(\d+)"/);
-    let durationSeconds = 0;
-
-    if (durationMatch && durationMatch[1]) {
-      durationSeconds = Math.floor(parseInt(durationMatch[1]) / 1000);
-    } else {
-      // Fallback to searching for "lengthSeconds"
-      const lengthMatch = html.match(/"lengthSeconds":"(\d+)"/);
-      if (lengthMatch && lengthMatch[1]) {
-        durationSeconds = parseInt(lengthMatch[1]);
-      }
+    const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}&format=json`;
+    const response = await fetch(oembedUrl, { cache: 'no-store' });
+    if (!response.ok) {
+      return NextResponse.json({ error: "YouTube videosi topilmadi yoki ochiq emas" }, { status: 404 });
     }
 
-    // Get title if possible from meta tags
-    const titleMatch = html.match(/<title>(.*?) - YouTube<\/title>/) || html.match(/<meta name="title" content="(.*?)">/);
-    const title = titleMatch ? titleMatch[1] : "";
-
-    return NextResponse.json({ 
-      duration: durationSeconds,
-      title: title
-    });
+    const data = await response.json() as { title?: unknown };
+    return NextResponse.json({ title: typeof data.title === 'string' ? data.title : '' });
   } catch (error) {
     console.error("YOUTUBE INFO ERROR:", error);
-    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "YouTube ma’lumotlarini yuklab bo‘lmadi" }, { status: 500 });
   }
 }

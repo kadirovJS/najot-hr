@@ -1,4 +1,6 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import { Schema, model, models } from 'mongoose';
+
+const NOTIFICATION_RETENTION_SECONDS = 14 * 24 * 60 * 60;
 
 const NotificationSchema = new Schema({
   type: { 
@@ -10,7 +12,8 @@ const NotificationSchema = new Schema({
   message: { type: String, required: true },
   link: { type: String }, // Bildirishnoma ustiga bosganda qayerga borishi
   isRead: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
+  // MongoDB TTL indeksi muddati tugagan bildirishnomalarni avtomatik o‘chiradi.
+  createdAt: { type: Date, default: Date.now, expires: NOTIFICATION_RETENTION_SECONDS },
 });
 
 const Notification = models.Notification || model('Notification', NotificationSchema);

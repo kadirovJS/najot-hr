@@ -6,6 +6,8 @@ const VideoSchema = new Schema({
   youtubeUrl: { type: String },
   cloudinaryUrl: { type: String },
   publicId: { type: String }, // Cloudinary o'chirish uchun kerak
+  coverImageUrl: { type: String },
+  coverImagePublicId: { type: String }, // Cover rasmni Cloudinary'dan o'chirish uchun kerak
   duration: { type: Number, default: 0 }, // Sekundlarda
   departments: [{ 
     type: String, 

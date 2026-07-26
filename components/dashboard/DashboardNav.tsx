@@ -12,7 +12,9 @@ import {
   Settings, 
   LogOut,
   BarChart3,
-  Library
+  Library,
+  Menu,
+  X,
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { ConfirmModal } from '../ui/ConfirmModal';
@@ -21,7 +23,8 @@ export default function DashboardNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const role = (session?.user as any)?.role;
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const role = (session?.user as { role?: string } | undefined)?.role;
 
   const links = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT'] },
@@ -35,7 +38,14 @@ export default function DashboardNav() {
     { name: 'Sozlamalar', href: '/dashboard/settings', icon: Settings, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT'] },
   ];
 
-  const filteredLinks = links.filter(link => link.roles.includes(role));
+  const filteredLinks = role ? links.filter((link) => link.roles.includes(role)) : [];
+  const mobilePriorityHrefs = role === 'SUPER_ADMIN'
+    ? ['/dashboard', '/dashboard/users', '/dashboard/onboarding', '/dashboard/settings']
+    : ['/dashboard', '/dashboard/onboarding', '/dashboard/books', '/dashboard/settings'];
+  const mobilePrimaryLinks = mobilePriorityHrefs
+    .map((href) => filteredLinks.find((link) => link.href === href))
+    .filter((link): link is typeof links[number] => Boolean(link));
+  const mobileMoreLinks = filteredLinks.filter((link) => !mobilePrimaryLinks.some((primary) => primary.href === link.href));
 
   return (
     <>
@@ -89,8 +99,20 @@ export default function DashboardNav() {
       />
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-1 z-50 flex overflow-x-auto items-center h-16 no-scrollbar">
-        {filteredLinks.map((link) => {
+      {isMoreMenuOpen && mobileMoreLinks.length > 0 && (
+        <div className="fixed inset-x-3 bottom-20 z-40 rounded-2xl border border-gray-200 bg-white p-3 shadow-lg md:hidden">
+          <div className="mb-2 flex items-center justify-between px-2"><p className="text-xs font-bold text-dark">Boshqa bo‘limlar</p><button type="button" onClick={() => setIsMoreMenuOpen(false)} className="rounded-lg p-1 text-gray-400" aria-label="Menyuni yopish"><X className="h-4 w-4" /></button></div>
+          <div className="grid grid-cols-3 gap-1">
+            {mobileMoreLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive = pathname.startsWith(link.href);
+              return <Link key={link.href} href={link.href} onClick={() => setIsMoreMenuOpen(false)} className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-xl px-1 text-center text-[10px] font-semibold ${isActive ? 'bg-primary/5 text-primary' : 'text-gray-600 hover:bg-gray-50'}`}><Icon className="h-5 w-5" /><span className="line-clamp-1">{link.name}</span></Link>;
+            })}
+          </div>
+        </div>
+      )}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center border-t border-gray-200 bg-white px-2 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-1 md:hidden">
+        {mobilePrimaryLinks.map((link) => {
           const Icon = link.icon;
           const isActive = link.href === '/dashboard' 
             ? pathname === link.href 
@@ -99,15 +121,16 @@ export default function DashboardNav() {
             <Link
               key={link.href}
               href={link.href}
-              className={`flex flex-col items-center justify-center min-w-[70px] px-2 py-1 gap-1 rounded-xl transition-all shrink-0 ${
-                isActive ? 'text-primary' : 'text-gray-400'
+              className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-1 transition-colors ${
+                isActive ? 'bg-primary/5 text-primary' : 'text-gray-400'
               }`}
             >
               <Icon className="h-5 w-5" />
-              <span className="text-[10px] font-medium whitespace-nowrap">{link.name}</span>
+              <span className="max-w-full truncate text-[10px] font-medium">{link.name}</span>
             </Link>
           );
         })}
+        {mobileMoreLinks.length > 0 && <button type="button" onClick={() => setIsMoreMenuOpen((open) => !open)} className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-1 text-[10px] font-medium transition-colors ${isMoreMenuOpen ? 'bg-primary/5 text-primary' : 'text-gray-400'}`} aria-expanded={isMoreMenuOpen} aria-label="Ko‘proq bo‘limlar"><Menu className="h-5 w-5" /><span>Ko‘proq</span></button>}
       </nav>
 
       <style jsx global>{`
