@@ -1,182 +1,131 @@
 'use client';
 
-// Client componentlarda metadata ishlamaydi, shuning uchun layout.tsx dagi template ishlaydi.
-// Agar har bir page uchun alohida kerak bo'lsa, page.tsx ni server component qilib,
-// uni ichida client componentni chaqirish kerak.
-
-import { useState, useEffect } from 'react';
-import Header from '@/components/layout/Header';
-import { Search, MapPin, Briefcase, Clock, ChevronRight, Loader2 } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import {
+  ArrowLeft, ArrowRight, BriefcaseBusiness, Building2, CheckCircle2,
+  Clock3, MapPin, Search, SlidersHorizontal, Sparkles, UsersRound, X,
+} from 'lucide-react';
+import Header from '@/components/layout/Header';
 import { vacancyService } from '@/services/vacancyService';
 import { IVacancy, VACANCY_CATEGORIES } from '@/types/vacancy';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const categories = ['Barchasi', ...VACANCY_CATEGORIES];
+const typeLabels: Record<string, string> = { 'Full-time': 'To‘liq stavka', 'Part-time': 'Yarim stavka', Remote: 'Masofaviy', Internship: 'Amaliyot' };
+
+function VacancySkeleton() {
+  return <div className="vacancy-skeleton" aria-label="Vakansiyalar yuklanmoqda">{[1, 2, 3].map((item) => <div key={item}><span /><span /><span /></div>)}</div>;
+}
 
 export default function VacanciesPage() {
+  const page = useRef<HTMLDivElement>(null);
   const [vacancies, setVacancies] = useState<IVacancy[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('Barchasi');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const loadVacancies = async () => {
+    setLoading(true); setFailed(false);
+    try { setVacancies(await vacancyService.getVacancies()); }
+    catch { setFailed(true); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => { loadVacancies(); }, []);
+
   useEffect(() => {
-    const fetchVacancies = async () => {
-      try {
-        const data = await vacancyService.getVacancies();
-        setVacancies(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchVacancies();
+    if (!page.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const context = gsap.context(() => {
+      gsap.from('[data-vacancy-hero]', { y: 38, opacity: 0, duration: .85, stagger: .09, ease: 'power3.out' });
+      gsap.from('.career-compass', { scale: .65, opacity: 0, rotation: -18, duration: 1.15, delay: .12, ease: 'expo.out' });
+      gsap.from('.vacancy-toolbar', { y: 35, opacity: 0, duration: .7, scrollTrigger: { trigger: '.vacancy-toolbar', start: 'top 90%', once: true } });
+    }, page);
+    return () => context.revert();
   }, []);
 
-  const filteredVacancies = vacancies.filter(v => {
-    const matchesCategory = selectedCategory === 'Barchasi' || v.category === selectedCategory;
-    const matchesSearch = v.title.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredVacancies = useMemo(() => vacancies.filter((vacancy) => {
+    const query = searchQuery.trim().toLocaleLowerCase('uz');
+    const matchesCategory = selectedCategory === 'Barchasi' || vacancy.category === selectedCategory;
+    const matchesSearch = !query || `${vacancy.title} ${vacancy.location} ${vacancy.type}`.toLocaleLowerCase('uz').includes(query);
     return matchesCategory && matchesSearch;
-  });
+  }), [vacancies, searchQuery, selectedCategory]);
+
+  const resetFilters = () => { setSearchQuery(''); setSelectedCategory('Barchasi'); };
+  const hasFilters = Boolean(searchQuery || selectedCategory !== 'Barchasi');
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div ref={page} className="vacancies-page">
       <Header />
-      
-      <main className="flex-grow container mx-auto px-4 md:px-6 py-12">
-        {/* Header section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-dark mb-4">Vakansiyalar</h1>
-          <p className="text-gray-500 max-w-2xl mx-auto italic font-medium">
-            Najot Ta'lim jamoasiga qo'shiling va kelajak ta'limini biz bilan birga quring.
-          </p>
-        </div>
-
-        {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row gap-6 mb-12 items-center justify-between">
-          <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
-                  selectedCategory === cat 
-                    ? 'bg-primary text-white shadow-lg shadow-primary/20' 
-                    : 'bg-white text-gray-500 hover:bg-gray-100'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+      <main>
+        <section className="vacancies-hero">
+          <div className="vacancies-hero-grid" aria-hidden="true" />
+          <div className="site-container vacancies-hero-layout">
+            <div className="vacancies-hero-copy">
+              <Link data-vacancy-hero href="/" className="back-home"><ArrowLeft size={16} /> Bosh sahifa</Link>
+              <span data-vacancy-hero className="eyebrow"><Sparkles size={15} /> Ochiq imkoniyatlar</span>
+              <h1 data-vacancy-hero>Kasbingiz bilan <em>ta’limga ta’sir</em> qiling.</h1>
+              <p data-vacancy-hero>Biz shunchaki xodim emas, muammoni ko‘ra oladigan, o‘rganishdan zavqlanadigan va natijaga egalik qiladigan hamfikrlarni izlaymiz.</p>
+              <a data-vacancy-hero href="#open-roles" className="button button-primary">Mos rolni topish <ArrowRight size={18} /></a>
+            </div>
+            <div className="career-compass" aria-label={`${vacancies.length} ta ochiq vakansiya`}>
+              <div className="compass-ring ring-one"/><div className="compass-ring ring-two"/><div className="compass-ring ring-three"/>
+              <div className="compass-core"><strong>{loading ? '—' : vacancies.length}</strong><span>ochiq rol</span></div>
+              <span className="compass-chip chip-one"><BriefcaseBusiness /> Karyera</span>
+              <span className="compass-chip chip-two"><UsersRound /> Kuchli jamoa</span>
+              <span className="compass-chip chip-three"><CheckCircle2 /> Real ta’sir</span>
+            </div>
           </div>
+          <div className="vacancies-marquee" aria-hidden="true"><div>O‘RGANISH · TASHABBUS · NATIJA · HAMJIHATLIK · O‘RGANISH · TASHABBUS · NATIJA · HAMJIHATLIK ·</div></div>
+        </section>
 
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Vakansiya qidirish..."
-              className="w-full h-12 pl-12 pr-4 bg-white rounded-2xl border border-gray-100 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm font-medium"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </div>
+        <section id="open-roles" className="open-roles">
+          <div className="site-container">
+            <div className="roles-heading">
+              <div><span className="eyebrow">O‘z o‘rningizni toping</span><h2>Ochiq vakansiyalar</h2></div>
+              <p><strong>{filteredVacancies.length}</strong> ta mos imkoniyat</p>
+            </div>
 
-        {/* Results */}
-        <AnimatePresence mode="wait">
-          {loading ? (
-            <motion.div 
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="py-24 relative overflow-hidden flex flex-col items-center justify-center min-h-[400px]"
-            >
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-                <h2 className="text-[8vw] font-black text-gray-400/15 uppercase tracking-tighter leading-none text-center select-none whitespace-nowrap">
-                  Najot Ta'lim
-                </h2>
+            <div className="vacancy-toolbar">
+              <div className="vacancy-search">
+                <Search size={20} aria-hidden="true" />
+                <label htmlFor="vacancy-search" className="sr-only">Vakansiya qidirish</label>
+                <input id="vacancy-search" type="search" placeholder="Lavozim yoki hudud bo‘yicha qidiring" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} />
+                {searchQuery && <button onClick={() => setSearchQuery('')} aria-label="Qidiruvni tozalash"><X size={18}/></button>}
               </div>
-              <div className="z-10 flex flex-col items-center">
-                <div className="w-32 h-1 bg-gray-100 rounded-full overflow-hidden relative">
-                  <motion.div 
-                    className="absolute inset-0 bg-primary/40"
-                    initial={{ x: "-100%" }}
-                    animate={{ x: "100%" }}
-                    transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                  />
-                </div>
-              </div>
-            </motion.div>
-          ) : filteredVacancies.length > 0 ? (
-            <motion.div 
-              key="content"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              {filteredVacancies.map((vacancy) => (
-                <div 
-                  key={vacancy._id} 
-                  className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all group"
-                >
-                  <div className="flex justify-between items-start mb-6">
-                    <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black rounded-lg uppercase tracking-wider">
-                      {vacancy.category}
-                    </span>
-                    <span className="text-[10px] font-bold text-gray-400 flex items-center gap-1 uppercase tracking-widest">
-                      <Clock className="h-3 w-3" /> {new Date(vacancy.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  
-                  <h3 className="text-xl font-black text-dark mb-6 group-hover:text-primary transition-colors leading-tight">
-                    {vacancy.title}
-                  </h3>
-                  
-                  <div className="space-y-4 mb-8">
-                    <div className="flex items-center gap-3 text-gray-500 text-sm font-bold">
-                      <div className="p-2 bg-gray-50 rounded-lg"><MapPin className="h-4 w-4 text-primary" /></div>
-                      {vacancy.location}
-                    </div>
-                    <div className="flex items-center gap-3 text-gray-500 text-sm font-bold">
-                      <div className="p-2 bg-gray-50 rounded-lg"><Briefcase className="h-4 w-4 text-primary" /></div>
-                      {vacancy.type}
-                    </div>
-                    <div className="text-primary font-black text-lg pl-1">
-                      {vacancy.salary}
-                    </div>
-                  </div>
+              <div className="category-filters" aria-label="Vakansiya kategoriyalari"><SlidersHorizontal size={17} />{categories.map((category) => <button key={category} className={selectedCategory === category ? 'is-active' : ''} aria-pressed={selectedCategory === category} onClick={() => setSelectedCategory(category)}>{category}</button>)}</div>
+            </div>
 
-                  <Link 
-                    href={`/vacancies/${vacancy._id}`}
-                    className="w-full h-14 bg-gray-50 rounded-2xl flex items-center justify-center gap-2 font-black text-dark hover:bg-primary hover:text-white transition-all group/btn"
-                  >
-                    Batafsil <ChevronRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+            {loading ? <VacancySkeleton /> : failed ? (
+              <div className="vacancy-state"><BriefcaseBusiness /><h3>Vakansiyalarni yuklab bo‘lmadi</h3><p>Internet aloqasini tekshirib, yana urinib ko‘ring.</p><button className="button button-primary" onClick={loadVacancies}>Qayta urinish</button></div>
+            ) : filteredVacancies.length ? (
+              <div className="vacancy-list">
+                {filteredVacancies.map((vacancy, index) => (
+                  <Link href={`/vacancies/${vacancy._id}`} className="vacancy-row" key={vacancy._id}>
+                    <div className="vacancy-number">{String(index + 1).padStart(2, '0')}</div>
+                    <div className="vacancy-main"><span className="vacancy-category">{vacancy.category}</span><h3>{vacancy.title}</h3><div className="vacancy-meta"><span><MapPin />{vacancy.location}</span><span><Clock3 />{typeLabels[vacancy.type] || vacancy.type}</span><span><Building2 />{vacancy.salary}</span></div></div>
+                    <div className="vacancy-date"><span>E’lon qilingan</span>{new Intl.DateTimeFormat('uz-UZ', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(vacancy.createdAt))}</div>
+                    <div className="vacancy-arrow"><ArrowRight /></div>
                   </Link>
-                </div>
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div 
-              key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-24 bg-white rounded-[3rem] border border-dashed border-gray-200"
-            >
-              <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="h-8 w-8 text-gray-300" />
+                ))}
               </div>
-              <h3 className="text-xl font-bold text-dark mb-2">Hech narsa topilmadi</h3>
-              <p className="text-gray-500">Qidiruv so'rovini yoki filtrlarni o'zgartirib ko'ring.</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
+            ) : (
+              <div className="vacancy-state"><Search /><h3>Mos vakansiya topilmadi</h3><p>Boshqa kalit so‘z yozing yoki barcha yo‘nalishlarni ko‘ring.</p>{hasFilters && <button className="button button-primary" onClick={resetFilters}>Filtrlarni tozalash</button>}</div>
+            )}
+          </div>
+        </section>
 
-      <footer className="bg-white border-t border-gray-100 py-8 text-center text-sm text-gray-400 font-bold uppercase tracking-widest">
-        © 2026 Najot Ta'lim HR. Barcha huquqlar himoyalangan.
-      </footer>
+        <section className="vacancy-culture">
+          <div className="site-container vacancy-culture-grid">
+            <div><span className="eyebrow eyebrow-light">Nega Najot Ta’lim?</span><h2>Bu yerda ish — o‘sishning bir shakli.</h2></div>
+            <div className="culture-points"><article><span>01</span><h3>O‘rganish muhiti</h3><p>Kurslar, mentorlik va tajriba almashish orqali doimiy rivojlanish.</p></article><article><span>02</span><h3>Ochiq jamoa</h3><p>Fikr bildirish, tashabbus ko‘rsatish va natijaga egalik qilish uchun joy bor.</p></article><article><span>03</span><h3>Sezilarli ta’sir</h3><p>Qilgan ishingiz minglab o‘quvchi va ularning kelajagiga xizmat qiladi.</p></article></div>
+          </div>
+        </section>
+      </main>
+      <footer className="vacancies-footer"><div className="site-container"><span>© 2026 Najot Ta’lim HR</span><Link href="/">Bosh sahifa</Link><Link href="/skills-check">Bilim testi</Link></div></footer>
     </div>
   );
 }

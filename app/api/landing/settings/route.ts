@@ -3,6 +3,69 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
 import LandingSetting from "@/models/LandingSetting";
+import { DEFAULT_SHOWCASE, type ShowcaseSettings } from "@/lib/landing";
+
+interface HeroSlide {
+  title: string;
+  description: string;
+  image: string;
+}
+
+function normalizeShowcase(value: unknown): ShowcaseSettings {
+  if (!value || typeof value !== 'object') {
+    throw new Error("Showcase ma'lumotlari yuborilmadi");
+  }
+
+  const showcase = value as Partial<ShowcaseSettings>;
+  const requiredTextFields: Array<keyof Omit<ShowcaseSettings, 'metrics'>> = [
+    'eyebrow',
+    'title',
+    'description',
+    'primaryCtaLabel',
+    'primaryCtaHref',
+    'secondaryCtaLabel',
+    'secondaryCtaHref',
+  ];
+
+  const normalized = { ...DEFAULT_SHOWCASE } as ShowcaseSettings;
+  for (const field of requiredTextFields) {
+    const text = showcase[field];
+    if (typeof text !== 'string' || !text.trim()) {
+      throw new Error(`Showcase uchun ${field} majburiy`);
+    }
+    normalized[field] = text.trim();
+  }
+
+  if (!Array.isArray(showcase.metrics) || showcase.metrics.length === 0 || showcase.metrics.length > 4) {
+    throw new Error("Showcase 1 tadan 4 tagacha ko‘rsatkichni qabul qiladi");
+  }
+
+  normalized.metrics = showcase.metrics.map((metric) => {
+    if (!metric || typeof metric.value !== 'string' || typeof metric.label !== 'string' || !metric.value.trim() || !metric.label.trim()) {
+      throw new Error("Har bir ko‘rsatkichda qiymat va nom bo‘lishi kerak");
+    }
+    return { value: metric.value.trim(), label: metric.label.trim() };
+  });
+
+  return normalized;
+}
+
+function normalizeHeroSlides(value: unknown): HeroSlide[] {
+  if (!Array.isArray(value) || value.length === 0 || value.length > 5) {
+    throw new Error("Hero uchun 1 tadan 5 tagacha slayd bo‘lishi kerak");
+  }
+
+  return value.map((slide) => {
+    if (!slide || typeof slide !== 'object') {
+      throw new Error("Hero slayd ma'lumotlari noto‘g‘ri");
+    }
+    const { title, description, image } = slide as Partial<HeroSlide>;
+    if (typeof title !== 'string' || typeof description !== 'string' || typeof image !== 'string' || !title.trim() || !description.trim() || !image.trim()) {
+      throw new Error("Hero slaydida sarlavha, tavsif va rasm majburiy");
+    }
+    return { title: title.trim(), description: description.trim(), image: image.trim() };
+  });
+}
 
 export async function GET() {
   try {
@@ -10,25 +73,10 @@ export async function GET() {
     let settings = await LandingSetting.findOne();
     
     if (!settings) {
-      settings = await LandingSetting.create({
-        heroSlides: [
-          {
-            title: "Najot Ta'lim — zamonaviy kasblar markazi",
-            description: "Dasturlash, dizayn va marketing kabi zamonaviy kasblarni biz bilan o'rganing.",
-            image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
-          },
-          {
-            title: "Hayotni yaxshilovchi ta'lim",
-            description: "Zamonaviy kasblar yordamida insonlar hayotini yaxshilovchi va kelajakka bo'lgan ishonchni mustahkamlovchi maskan.",
-            image: "https://images.unsplash.com/photo-1524178232363-1fb28f74b671?q=80&w=2070&auto=format&fit=crop"
-          },
-          {
-            title: "Katta jamoa, buyuk maqsadlar",
-            description: "2500 dan ortiq o'quvchilar va 350 dan ortiq katta jamoani birlashtirgan ta'lim va innovatsiya markazi.",
-            image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop"
-          }
-        ]
-      });
+      settings = await LandingSetting.create({ showcase: DEFAULT_SHOWCASE });
+    } else if (!settings.showcase?.title) {
+      settings.showcase = DEFAULT_SHOWCASE;
+      await settings.save();
     }
 
     return NextResponse.json(settings);
@@ -47,10 +95,16 @@ export async function PUT(req: Request) {
 
     await dbConnect();
     const body = await req.json();
+    const update: { showcase?: ShowcaseSettings; heroSlides?: HeroSlide[] } = {};
+    if (body.showcase !== undefined) update.showcase = normalizeShowcase(body.showcase);
+    if (body.heroSlides !== undefined) update.heroSlides = normalizeHeroSlides(body.heroSlides);
+    if (Object.keys(update).length === 0) {
+      return NextResponse.json({ error: "Yangilanadigan sozlama yuborilmadi" }, { status: 400 });
+    }
     
     const settings = await LandingSetting.findOneAndUpdate(
       {}, 
-      { $set: body }, 
+      { $set: update },
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );
 

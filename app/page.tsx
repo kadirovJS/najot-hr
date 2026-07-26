@@ -1,77 +1,66 @@
+import type { Metadata } from 'next';
+import { connection } from 'next/server';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowUpRight, Camera, Play, Send } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import AboutTeam from '@/components/sections/AboutTeam';
 import Hero from '@/components/sections/Hero';
+import LandingMotion from '@/components/sections/LandingMotion';
 import Partners from '@/components/sections/Partners';
 import TeamMap from '@/components/sections/TeamMap';
 import TeamMembers from '@/components/sections/TeamMembers';
+import { dbConnect } from '@/lib/db';
+import LandingSetting from '@/models/LandingSetting';
+import { createShowcaseDraft, DEFAULT_SHOWCASE, type HeroSlide, type ShowcaseSettings } from '@/lib/landing';
 
-import  { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
+export const metadata: Metadata = { title: "Najot Ta'lim HR | Kelajakni birga o‘rgatamiz", description: "Najot Ta'lim jamoasi, qadriyatlari va ochiq vakansiyalari." };
 
-export const metadata: Metadata = {
-  title: "Najot Ta'lim HR | Jamoamizga qo'shiling",
-};
+async function getHeroData(): Promise<{ showcase: ShowcaseSettings; slides: HeroSlide[] }> {
+  try {
+    await dbConnect();
+    const settings = await LandingSetting.findOne().lean();
+    const showcase = settings?.showcase ? createShowcaseDraft(settings.showcase as ShowcaseSettings) : createShowcaseDraft(DEFAULT_SHOWCASE);
+    const slides = Array.isArray(settings?.heroSlides)
+      ? settings.heroSlides.map((slide: HeroSlide) => ({ _id: String(slide._id), title: slide.title, description: slide.description, image: slide.image }))
+      : [];
+    return { showcase, slides };
+  } catch (error) {
+    console.error('Landing hero settings could not be loaded:', error);
+    return { showcase: createShowcaseDraft(DEFAULT_SHOWCASE), slides: [] };
+  }
+}
 
-export default function Home() {
-
+export default async function Home() {
+  await connection();
+  const { showcase, slides } = await getHeroData();
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="landing-page">
+      <LandingMotion />
       <Header />
-      
-      <div className="flex-grow">
-        <Hero />
-        <AboutTeam />
-        <TeamMembers/>
-        <TeamMap />
-        <Partners />
-        
-        <section id="vacancies" className="py-24 bg-primary text-white">
-          <div className="container mx-auto px-4 md:px-6 text-center">
-            <h2 className="text-3xl font-bold mb-6 md:text-4xl">Siz ham Najot Ta'lim jamoasining bir qismi bo'ling!</h2>
-            <p className="max-w-2xl mx-auto text-lg mb-10 opacity-90">
-              Biz bilan kelajak ta'limini rivojlantirish uchun o'z hissangizni qo'shing. Hozirda bizda 10+ dan ortiq bo'sh ish o'rinlari mavjud.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link 
-                href="/auth/register" 
-                className="h-14 px-10 rounded-xl bg-white text-primary font-bold inline-flex items-center justify-center transition-all hover:bg-opacity-95 active:scale-95"
-              >
-                Ro'yxatdan o'tish
-              </Link>
-              <Link 
-                href="/vacancies"
-                className="h-14 px-10 rounded-xl border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white font-bold inline-flex items-center justify-center transition-all hover:bg-white/20 active:scale-95"
-              >
-                Vakansiyalarni ko'rish
-              </Link>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <footer className="bg-dark text-white py-12 border-t border-white/10">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex flex-col items-center md:items-start gap-4">
-              <Image
-                src="/najot.png" 
-                alt="Najot Ta'lim Logo" 
-                width={140} 
-                height={35} 
-                className="h-8 w-auto brightness-200"
-              />
-              <p className="text-sm text-gray-400">© 2026 Najot Ta'lim HR. Barcha huquqlar himoyalangan.</p>
-            </div>
-            
-            <div className="flex items-center gap-8 text-sm font-medium">
-              <Link href="#" className="hover:text-primary transition-colors">Yordam</Link>
-              <Link href="#" className="hover:text-primary transition-colors">Maxfiylik</Link>
-              <Link href="#" className="hover:text-primary transition-colors">Bog'lanish</Link>
-            </div>
-          </div>
+      <Hero initialShowcase={showcase} initialSlides={slides} />
+      <AboutTeam />
+      <TeamMembers />
+      <TeamMap />
+      <Partners />
+      <section className="final-cta">
+        <div className="final-cta-orbit" aria-hidden="true" />
+        <div data-reveal className="site-container final-cta-inner">
+          <span className="eyebrow eyebrow-light">Keyingi qadam</span>
+          <h2>Ta’lim kelajagida sizning ham o‘rningiz bor.</h2>
+          <p>Tajriba, g‘oya va energiyangizni minglab insonlar kelajagiga aylantiradigan jamoaga qo‘shiling.</p>
+          <div className="hero-actions"><Link href="/vacancies" className="button button-white">Vakansiyalarni ko‘rish <ArrowUpRight size={19} /></Link><Link href="/auth/register" className="button button-dark-outline">Profil yaratish</Link></div>
         </div>
+      </section>
+      <footer className="site-footer">
+        <div className="site-container footer-grid">
+          <div className="footer-brand"><Image src="/najot.png" alt="Najot Ta'lim" width={150} height={42} /><p>Zamonaviy kasblar orqali insonlar hayotini yaxshilaymiz.</p></div>
+          <div><strong>Platforma</strong><Link href="/vacancies">Vakansiyalar</Link><Link href="/skills-check">Bilim testi</Link><Link href="/auth/login">Kirish</Link></div>
+          <div><strong>Jamoa</strong><Link href="#about">Biz haqimizda</Link><Link href="#values">Qadriyatlar</Link><Link href="#locations">Filiallar</Link></div>
+          <div><strong>Bizni kuzating</strong><span className="socials"><a href="https://t.me/najottalim" aria-label="Telegram"><Send /></a><a href="https://instagram.com/najottalim" aria-label="Instagram"><Camera /></a><a href="https://youtube.com/@najottalim" aria-label="YouTube"><Play /></a></span></div>
+        </div>
+        <div className="site-container footer-bottom"><span>© 2026 Najot Ta’lim. Barcha huquqlar himoyalangan.</span><span>Toshkent, O‘zbekiston</span></div>
       </footer>
     </main>
   );
