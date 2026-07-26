@@ -10,6 +10,10 @@ export async function POST(req: Request) {
     if (!session) return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 401 });
 
     const { name, phone, image } = await req.json();
+    if (image !== undefined && typeof image !== 'string') {
+      return NextResponse.json({ error: "Rasm manzili noto‘g‘ri" }, { status: 400 });
+    }
+
     await dbConnect();
 
     const userId = (session.user as any).id;
@@ -17,7 +21,9 @@ export async function POST(req: Request) {
       userId,
       { name, phone, image },
       { new: true }
-    );
+    ).select('-password');
+
+    if (!updatedUser) return NextResponse.json({ error: 'Foydalanuvchi topilmadi' }, { status: 404 });
 
     return NextResponse.json(updatedUser);
   } catch (error) {

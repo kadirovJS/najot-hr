@@ -55,8 +55,13 @@ export async function POST(req: Request) {
     await dbConnect();
     const body = await req.json();
     const { name, phone, password, department, role } = body;
+    const normalizedPhone = typeof phone === 'string' ? phone.replace(/\D/g, '') : '';
 
-    const existingUser = await User.findOne({ phone });
+    if (!/^998\d{9}$/.test(normalizedPhone)) {
+      return NextResponse.json({ error: "Telefon raqamini +998 XX XXX XX XX formatida kiriting" }, { status: 400 });
+    }
+
+    const existingUser = await User.findOne({ phone: normalizedPhone });
     if (existingUser) {
       return NextResponse.json({ error: "Bu telefon raqami band" }, { status: 400 });
     }
@@ -64,7 +69,7 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
       name,
-      phone,
+      phone: normalizedPhone,
       password: hashedPassword,
       department,
       role: role || 'TEACHER',

@@ -20,6 +20,13 @@ import { userService } from '@/services/userService';
 import { IUser, UserFormData, UserDepartment, UserRole } from '@/types/user';
 
 const departments: UserDepartment[] = ['Support teacher', 'Main teacher', 'Management', 'Sales', 'Boshqaruv', 'Other'];
+const PHONE_PREFIX = '+998';
+
+const formatUzbekPhoneInput = (value: string) => {
+  const digits = value.replace(/\D/g, '');
+  const subscriberNumber = digits.startsWith('998') ? digits.slice(3) : digits;
+  return `${PHONE_PREFIX}${subscriberNumber.slice(0, 9)}`;
+};
 
 export default function UsersPage() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -48,7 +55,7 @@ export default function UsersPage() {
 
   const [formData, setFormData] = useState<UserFormData>({
     name: '',
-    phone: '',
+    phone: PHONE_PREFIX,
     password: '',
     department: 'Support teacher',
     role: 'TEACHER'
@@ -76,7 +83,7 @@ export default function UsersPage() {
       setEditingUser(user);
       setFormData({
         name: user.name,
-        phone: user.phone,
+        phone: formatUzbekPhoneInput(user.phone),
         department: user.department,
         role: user.role,
         password: ''
@@ -85,7 +92,7 @@ export default function UsersPage() {
       setEditingUser(null);
       setFormData({
         name: '',
-        phone: '',
+        phone: PHONE_PREFIX,
         password: '',
         department: 'Support teacher',
         role: 'TEACHER'
@@ -98,15 +105,20 @@ export default function UsersPage() {
     e.preventDefault();
     setActionLoading(true);
     try {
+      const phone = formData.phone.replace(/\D/g, '');
+      if (!/^998\d{9}$/.test(phone)) {
+        throw new Error('Telefon raqamini +998 XX XXX XX XX formatida kiriting');
+      }
+      const userData = { ...formData, phone };
       if (editingUser) {
-        await userService.updateUser(editingUser._id, formData);
+        await userService.updateUser(editingUser._id, userData);
       } else {
-        await userService.createUser(formData);
+        await userService.createUser(userData);
       }
       setIsFormModalOpen(false);
       loadUsers();
     } catch (error) {
-      alert("Xatolik yuz berdi");
+      alert(error instanceof Error ? error.message : "Xatolik yuz berdi");
     } finally {
       setActionLoading(false);
     }
@@ -368,10 +380,13 @@ export default function UsersPage() {
               <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Telefon raqami</label>
               <input 
                 required
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel"
                 className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none transition-all font-semibold text-dark text-sm"
-                placeholder="998901234567"
+                placeholder="+998 90 123 45 67"
                 value={formData.phone}
-                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                onChange={(e) => setFormData({...formData, phone: formatUzbekPhoneInput(e.target.value)})}
               />
             </div>
           </div>

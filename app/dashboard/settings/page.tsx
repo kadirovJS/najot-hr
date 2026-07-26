@@ -15,7 +15,7 @@ import {
   Phone
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { onboardingService } from '@/services/onboardingService'
+import { userService } from '@/services/userService';
 
 export default function SettingsPage() {
   const [user, setUser] = useState<any>(null);
@@ -81,26 +81,38 @@ export default function SettingsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!file.type.startsWith('image/')) {
+      alert('Faqat rasm faylini tanlang');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Rasm hajmi 5 MB dan oshmasligi kerak');
+      return;
+    }
+
     setUploadingImage(true);
     try {
-      const res = await onboardingService.uploadImageToCloudinary(file);
-      const imageUrl = res.secure_url;
-      
-      // Bazaga darhol saqlash
-      await fetch('/api/settings/profile', {
+      const { secure_url: imageUrl } = await userService.uploadProfileImage(file);
+      const profileRes = await fetch('/api/settings/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...profileData, image: imageUrl })
       });
-      
-      setProfileData({ ...profileData, image: imageUrl });
+
+      if (!profileRes.ok) {
+        const error = await profileRes.json().catch(() => null);
+        throw new Error(error?.error || 'Profilga rasmni saqlab bo‘lmadi');
+      }
+
+      const updatedUser = await profileRes.json();
+      setUser(updatedUser);
+      setProfileData((current) => ({ ...current, image: updatedUser.image || imageUrl }));
       alert("Profil rasmi yangilandi");
-      
-      // Sahifani yangilamasdan sessionni yangilash imkoni bo'lmasa, ma'lumotni qayta yuklaymiz
-      loadUser();
     } catch (error) {
-      alert("Rasm yuklashda xatolik");
+      alert(error instanceof Error ? error.message : 'Rasm yuklashda xatolik');
     } finally {
+      e.target.value = '';
       setUploadingImage(false);
     }
   };
@@ -203,16 +215,16 @@ export default function SettingsPage() {
         <p className="text-gray-500 text-xs md:text-sm font-medium">Shaxsiy ma'lumotlar va xavfsizlik boshqaruvi</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar Tabs */}
-        <div className="w-full md:w-64 shrink-0 space-y-1.5">
+      <div className="space-y-6">
+        {/* Top tabs */}
+        <nav className="flex gap-2 overflow-x-auto border-b border-gray-200 pb-3" aria-label="Sozlamalar bo‘limlari">
           <TabButton active={activeTab === 'profile'} icon={<UserIcon className="h-4 w-4" />} label="Profil" onClick={() => setActiveTab('profile')} />
           <TabButton active={activeTab === 'security'} icon={<Lock className="h-4 w-4" />} label="Xavfsizlik" onClick={() => setActiveTab('security')} />
           <TabButton active={activeTab === 'notifications'} icon={<Bell className="h-4 w-4" />} label="Bildirishnomalar" onClick={() => setActiveTab('notifications')} />
-        </div>
+        </nav>
 
         {/* Content Area */}
-        <div className="flex-grow bg-white rounded-xl border border-gray-200 shadow-sm p-6 md:p-10 min-h-[500px]">
+        <div className="min-h-[500px] rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-10">
           {activeTab === 'profile' && (
             <div className="space-y-8 md:space-y-10">
               <div className="flex flex-col items-center gap-6">
@@ -380,8 +392,9 @@ export default function SettingsPage() {
 function TabButton({ active, icon, label, onClick }: any) {
   return (
     <button 
+      type="button"
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-6 py-3.5 rounded-lg font-bold text-sm transition-all border-l-4 ${active ? 'bg-primary text-white border-primary shadow-md' : 'text-gray-400 border-transparent hover:bg-gray-50 hover:text-dark'}`}
+      className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-colors ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 hover:text-dark'}`}
     >
       {icon}
       <span className="truncate">{label}</span>

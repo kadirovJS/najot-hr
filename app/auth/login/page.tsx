@@ -7,6 +7,8 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Phone, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
 
+const normalizePhoneNumber = (value: string) => value.replace(/\D/g, '').replace(/^998/, '').slice(0, 9);
+
 export default function LoginPage() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -23,7 +25,7 @@ export default function LoginPage() {
     try {
       const result = await signIn('credentials', {
         redirect: false,
-        phone,
+        phone: `998${phone}`,
         password,
       });
 
@@ -33,7 +35,7 @@ export default function LoginPage() {
         router.push('/dashboard');
         router.refresh();
       }
-    } catch (err) {
+    } catch {
       setError('Tizimda xatolik yuz berdi');
     } finally {
       setLoading(false);
@@ -54,7 +56,7 @@ export default function LoginPage() {
             />
           </Link>
           <h2 className="text-2xl font-bold text-dark">ERP Tizimiga kirish</h2>
-          <p className="text-gray-500 mt-2 text-sm">O'z hisobingiz ma'lumotlarini kiriting</p>
+          <p className="text-gray-500 mt-2 text-sm">O&apos;z hisobingiz ma&apos;lumotlarini kiriting</p>
         </div>
 
         {error && (
@@ -68,14 +70,22 @@ export default function LoginPage() {
             <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
               <Phone className="h-4 w-4 text-primary" /> Telefon raqami
             </label>
-            <input 
-              required
-              type="text" 
-              className="w-full h-12 px-4 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-              placeholder="998901234567"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
+            <div className="flex h-12 overflow-hidden rounded-xl border border-gray-200 bg-white transition-all focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+              <span className="flex items-center border-r border-gray-200 bg-gray-50 px-4 text-sm font-semibold text-gray-700" aria-hidden="true">+998</span>
+              <input
+                id="login-phone"
+                required
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel-national"
+                pattern="[0-9]{9}"
+                maxLength={9}
+                className="min-w-0 flex-1 px-4 outline-none"
+                placeholder="901234567"
+                value={phone}
+                onChange={(event) => setPhone(normalizePhoneNumber(event.target.value))}
+              />
+            </div>
           </div>
           <div>
             <div className="flex justify-between mb-2">
@@ -117,7 +127,7 @@ export default function LoginPage() {
 
         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
           <p className="text-xs text-gray-400">
-            Agar kirishda muammo bo'lsa, HR bo'limiga murojaat qiling.
+            Agar kirishda muammo bo&apos;lsa, HR bo&apos;limiga murojaat qiling.
           </p>
         </div>
       </div>
