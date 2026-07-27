@@ -1,55 +1,43 @@
-'use client';
-
-import { useEffect, useState } from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Eye, Newspaper, RefreshCw } from 'lucide-react';
+import { ArrowRight, Eye, Newspaper } from 'lucide-react';
 import Header from '@/components/layout/Header';
-import { blogService } from '@/services/blogService';
-import { IBlog } from '@/types/blog';
+import { getPublicBlogPosts } from '@/lib/queries/blog';
 import { formatBlogDate, formatViewCount } from '@/lib/blog';
+import { BASE_URL, JsonLd, blogListJsonLd, breadcrumbJsonLd } from '@/lib/seo';
+import type { IBlog } from '@/types/blog';
 
-function BlogSkeleton() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {[1, 2, 3].map((item) => (
-        <div key={item} className="rounded-2xl overflow-hidden border border-gray-100 bg-white">
-          <div className="h-48 bg-gray-100 animate-pulse" />
-          <div className="p-6 space-y-3">
-            <div className="h-4 w-1/3 bg-gray-100 rounded animate-pulse" />
-            <div className="h-6 w-full bg-gray-100 rounded animate-pulse" />
-            <div className="h-4 w-3/4 bg-gray-100 rounded animate-pulse" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+export const revalidate = 60;
 
-export default function BlogPage() {
-  const [posts, setPosts] = useState<IBlog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [failed, setFailed] = useState(false);
+const PAGE_DESCRIPTION = "Najot Ta'lim jamoasi, ta'lim va HR sohasidagi tajriba hamda yangiliklar bilan tanishing.";
 
-  const loadPosts = async () => {
-    setLoading(true);
-    setFailed(false);
-    try {
-      setPosts(await blogService.getPosts());
-    } catch {
-      setFailed(true);
-    } finally {
-      setLoading(false);
-    }
-  };
+export const metadata: Metadata = {
+  title: 'Blog',
+  description: PAGE_DESCRIPTION,
+  alternates: { canonical: '/blog' },
+  openGraph: {
+    title: "Blog | Najot Ta'lim HR",
+    description: PAGE_DESCRIPTION,
+    url: `${BASE_URL}/blog`,
+    type: 'website',
+  },
+};
 
-  useEffect(() => {
-    loadPosts();
-  }, []);
+export default async function BlogPage() {
+  let posts: IBlog[] = [];
+  let failed = false;
+  try {
+    posts = await getPublicBlogPosts();
+  } catch {
+    failed = true;
+  }
 
   return (
     <div className="bg-white min-h-screen">
       <Header />
+      <JsonLd data={breadcrumbJsonLd([{ name: 'Bosh sahifa', path: '/' }, { name: 'Blog', path: '/blog' }])} />
+      {posts.length > 0 && <JsonLd data={blogListJsonLd(posts)} />}
       <main className="blog-index">
         <div className="site-container">
           <div className="blog-index-heading">
@@ -57,17 +45,15 @@ export default function BlogPage() {
               <span className="eyebrow"><Newspaper size={15} /> Blog</span>
               <h1>Jamoamizdan<br /><em>yangi hikoyalar.</em></h1>
             </div>
-            <p>Najot Ta’lim jamoasi, ta’lim va HR sohasidagi tajriba hamda yangiliklar bilan tanishing.</p>
+            <p>{PAGE_DESCRIPTION}</p>
           </div>
 
-          {loading ? (
-            <BlogSkeleton />
-          ) : failed ? (
+          {failed ? (
             <div className="min-h-[300px] flex flex-col items-center justify-center text-center border border-dashed border-gray-200 rounded-2xl py-16 px-6">
               <Newspaper className="h-10 w-10 text-gray-300 mb-4" />
               <h3 className="text-xl font-bold text-dark mb-2">Postlarni yuklab bo‘lmadi</h3>
               <p className="text-gray-500 mb-6">Internet aloqasini tekshirib, yana urinib ko‘ring.</p>
-              <button onClick={loadPosts} className="button button-primary inline-flex items-center gap-2"><RefreshCw size={16} /> Qayta urinish</button>
+              <Link href="/blog" className="button button-primary inline-flex items-center gap-2">Qayta urinish</Link>
             </div>
           ) : posts.length > 0 ? (
             <div className="blog-card-grid">

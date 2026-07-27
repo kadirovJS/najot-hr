@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { BASE_URL, DEFAULT_DESCRIPTION, JsonLd, SITE_NAME, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,22 +14,49 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://najottalimjamoasi.uz"),
+  metadataBase: new URL(BASE_URL),
   title: {
-    default: "Najot Ta'lim HR",
-    template: "%s | Najot Ta'lim HR"
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
   },
-  description: "Najot Ta'lim o'quv markazining HR tizimi va vakansiyalar portali",
+  description: DEFAULT_DESCRIPTION,
+  keywords: [
+    "Najot Ta'lim HR",
+    "Najot Ta'lim vakansiyalari",
+    "ish e'lonlari O'zbekiston",
+    "IT ish o'rinlari Toshkent",
+    "HR tizimi",
+    "Najot Ta'lim blog",
+  ],
   icons: {
     icon: "/favicon.png",
   },
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
-    title: "Najot Ta'lim HR",
-    description: "Najot Ta'lim o'quv markazining HR tizimi va vakansiyalar portali",
-    url: "https://najottalimjamoasi.uz",
-    siteName: "Najot Ta'lim HR",
+    title: SITE_NAME,
+    description: DEFAULT_DESCRIPTION,
+    url: BASE_URL,
+    siteName: SITE_NAME,
     locale: "uz_UZ",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: DEFAULT_DESCRIPTION,
   },
 };
 
@@ -43,6 +71,8 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <JsonLd data={organizationJsonLd()} />
+        <JsonLd data={websiteJsonLd()} />
         {children}
       </body>
     </html>

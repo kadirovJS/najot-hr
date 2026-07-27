@@ -1,11 +1,8 @@
 import type { MetadataRoute } from "next";
 
-import Vacancy from "@/models/Vacancy";
-import Blog from "@/models/Blog";
-import { dbConnect } from "@/lib/db";
-import { createUniqueBlogSlug } from "@/lib/blogSlug";
-
-const BASE_URL = "https://najottalimjamoasi.uz";
+import { getPublicBlogPosts } from "@/lib/queries/blog";
+import { getPublicVacancies } from "@/lib/queries/vacancy";
+import { BASE_URL } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -36,24 +33,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    await dbConnect();
-    const vacancies = await Vacancy.find({ isVisible: true }).select("_id createdAt");
-    const posts = await Blog.find({ isVisible: true }).select("_id title slug createdAt");
-    await Promise.all(posts.filter((post) => !post.slug).map(async (post) => {
-      post.slug = await createUniqueBlogSlug(post.title, String(post._id));
-      await post.save();
-    }));
+    const [vacancies, posts] = await Promise.all([
+      getPublicVacancies(),
+      getPublicBlogPosts(),
+    ]);
 
     const vacancyRoutes: MetadataRoute.Sitemap = vacancies.map((vacancy) => ({
       url: `${BASE_URL}/vacancies/${vacancy._id}`,
-      lastModified: vacancy.createdAt ?? new Date(),
+      lastModified: vacancy.createdAt,
       changeFrequency: "weekly",
       priority: 0.7,
     }));
 
     const blogRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
       url: `${BASE_URL}/blog/${post.slug}`,
-      lastModified: post.createdAt ?? new Date(),
+      lastModified: post.createdAt,
       changeFrequency: "weekly",
       priority: 0.6,
     }));
