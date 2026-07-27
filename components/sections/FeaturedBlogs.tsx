@@ -47,7 +47,7 @@ export default function FeaturedBlogs() {
 
         <div data-stagger className="featured-blogs-grid">
           {posts.map((post, index) => (
-            <Link href={`/blog/${post._id}`} key={post._id} className={`featured-blog-card featured-blog-card-${index + 1}`}>
+            <Link href={`/blog/${post.slug}`} key={post._id} className={`featured-blog-card featured-blog-card-${index + 1}`}>
               <div className="featured-blog-image">
                 <Image src={post.coverImage} alt={post.title} fill sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 33vw" className="object-cover" />
               </div>

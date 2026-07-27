@@ -5,6 +5,7 @@ const BlogSchema = new Schema({
   excerpt: { type: String, required: true },
   content: { type: String, required: true },
   coverImage: { type: String, required: true },
+  slug: { type: String, unique: true, sparse: true, trim: true },
   author: { type: String, required: true },
   isVisible: { type: Boolean, default: true },
   mainBlog: { type: Boolean, default: false },
@@ -18,6 +19,10 @@ const Blog = models.Blog || model('Blog', BlogSchema);
 // Shu holatda ham yangi `mainBlog` maydoni PUT so‘rovlaridan chiqarib tashlanmasligi kerak.
 if (!Blog.schema.path('mainBlog')) {
   Blog.schema.add({ mainBlog: { type: Boolean, default: false } });
+}
+
+if (!Blog.schema.path('slug')) {
+  Blog.schema.add({ slug: { type: String, unique: true, sparse: true, trim: true } });
 }
 
 export default Blog;

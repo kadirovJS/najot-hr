@@ -4,6 +4,7 @@ export interface IBlog {
   excerpt: string;
   content: string;
   coverImage: string;
+  slug: string;
   author: string;
   isVisible: boolean;
   mainBlog: boolean;

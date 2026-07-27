@@ -5,6 +5,7 @@ import BlogView from "@/models/BlogView";
 import { getServerSession } from "next-auth";
 import type { Session } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { blogIdentifierQuery, createUniqueBlogSlug } from "@/lib/blogSlug";
 
 function isSuperAdmin(session: Session | null) {
   return (session?.user as { role?: string } | undefined)?.role === 'SUPER_ADMIN';
@@ -14,8 +15,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   try {
     const { id } = await params;
     await dbConnect();
-    const post = await Blog.findOne({ _id: id, isVisible: true });
+    const post = await Blog.findOne({ ...blogIdentifierQuery(id), isVisible: true });
     if (!post) return NextResponse.json({ error: "Topilmadi" }, { status: 404 });
+    if (!post.slug) {
+      post.slug = await createUniqueBlogSlug(post.title, String(post._id));
+      await post.save();
+    }
     return NextResponse.json(post);
   } catch {
     return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });

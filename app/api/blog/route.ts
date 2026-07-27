@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import type { Session } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
+import { createUniqueBlogSlug } from "@/lib/blogSlug";
 
 function isSuperAdmin(session: Session | null) {
   return (session?.user as { role?: string } | undefined)?.role === 'SUPER_ADMIN';
@@ -25,6 +26,10 @@ export async function GET(req: Request) {
       : { isVisible: true, ...(mainBlogOnly ? { mainBlog: true } : {}) };
 
     const posts = await Blog.find(query).sort({ createdAt: -1 });
+    await Promise.all(posts.filter((post) => !post.slug).map(async (post) => {
+      post.slug = await createUniqueBlogSlug(post.title, String(post._id));
+      await post.save();
+    }));
     return NextResponse.json(posts);
   } catch {
     return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
@@ -45,6 +50,7 @@ export async function POST(req: Request) {
       excerpt: body.excerpt,
       content: body.content,
       coverImage: body.coverImage,
+      slug: await createUniqueBlogSlug(body.title),
       isVisible: body.isVisible ?? true,
       mainBlog: body.mainBlog ?? false,
       author: session?.user?.name || "Najot Ta'lim HR",

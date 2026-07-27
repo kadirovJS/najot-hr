@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Check, Copy, Eye, Newspaper, Share2 } from 'lucide-react';
@@ -12,6 +12,7 @@ import { formatBlogDate, formatViewCount } from '@/lib/blog';
 
 export default function BlogDetail() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const [post, setPost] = useState<IBlog | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -25,6 +26,11 @@ export default function BlogDetail() {
       try {
         const loadedPost = await blogService.getPostById(id);
         if (cancelled) return;
+
+        if (loadedPost.slug && loadedPost.slug !== id) {
+          router.replace(`/blog/${loadedPost.slug}`);
+          return;
+        }
 
         setPost(loadedPost);
         setLoading(false);
@@ -48,7 +54,7 @@ export default function BlogDetail() {
 
     void loadPost();
     return () => { cancelled = true; };
-  }, [id]);
+  }, [id, router]);
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(window.location.href);

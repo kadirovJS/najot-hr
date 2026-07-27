@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import Blog from '@/models/Blog';
 import BlogView from '@/models/BlogView';
+import { blogIdentifierQuery } from '@/lib/blogSlug';
 
 const VIEWER_COOKIE = 'najot_blog_viewer';
 const BOT_USER_AGENT = /bot|crawler|spider|crawling|facebookexternalhit|preview/i;
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const { id } = await params;
     await dbConnect();
 
-    const blog = await Blog.findOne({ _id: id, isVisible: true }).select('viewCount');
+    const blog = await Blog.findOne({ ...blogIdentifierQuery(id), isVisible: true }).select('viewCount');
     if (!blog) return NextResponse.json({ error: 'Topilmadi' }, { status: 404 });
 
     if (BOT_USER_AGENT.test(req.headers.get('user-agent') || '')) {

@@ -3,6 +3,7 @@ import type { MetadataRoute } from "next";
 import Vacancy from "@/models/Vacancy";
 import Blog from "@/models/Blog";
 import { dbConnect } from "@/lib/db";
+import { createUniqueBlogSlug } from "@/lib/blogSlug";
 
 const BASE_URL = "https://najottalimjamoasi.uz";
 
@@ -37,7 +38,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     await dbConnect();
     const vacancies = await Vacancy.find({ isVisible: true }).select("_id createdAt");
-    const posts = await Blog.find({ isVisible: true }).select("_id createdAt");
+    const posts = await Blog.find({ isVisible: true }).select("_id title slug createdAt");
+    await Promise.all(posts.filter((post) => !post.slug).map(async (post) => {
+      post.slug = await createUniqueBlogSlug(post.title, String(post._id));
+      await post.save();
+    }));
 
     const vacancyRoutes: MetadataRoute.Sitemap = vacancies.map((vacancy) => ({
       url: `${BASE_URL}/vacancies/${vacancy._id}`,
@@ -47,7 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     const blogRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
-      url: `${BASE_URL}/blog/${post._id}`,
+      url: `${BASE_URL}/blog/${post.slug}`,
       lastModified: post.createdAt ?? new Date(),
       changeFrequency: "weekly",
       priority: 0.6,

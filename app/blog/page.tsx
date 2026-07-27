@@ -71,8 +71,8 @@ export default function BlogPage() {
             </div>
           ) : posts.length > 0 ? (
             <div className="blog-card-grid">
-              {posts.map((post, index) => (
-                <Link href={`/blog/${post._id}`} key={post._id} className={`blog-card blog-card-${(index % 3) + 1}`}>
+              {posts.map((post) => (
+                <Link href={`/blog/${post.slug}`} key={post._id} className="blog-card">
                   <div className="blog-card-image">
                     <Image src={post.coverImage} alt={post.title} fill sizes="(max-width: 760px) 100vw, (max-width: 1100px) 50vw, 40vw" className="object-cover" />
                   </div>
