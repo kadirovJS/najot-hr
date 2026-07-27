@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://najottalimjamoasi.uz"),
   title: {
     default: "Najot Ta'lim HR",
     template: "%s | Najot Ta'lim HR"
@@ -20,7 +21,15 @@ export const metadata: Metadata = {
   description: "Najot Ta'lim o'quv markazining HR tizimi va vakansiyalar portali",
   icons: {
     icon: "/favicon.png",
-  }
+  },
+  openGraph: {
+    title: "Najot Ta'lim HR",
+    description: "Najot Ta'lim o'quv markazining HR tizimi va vakansiyalar portali",
+    url: "https://najottalimjamoasi.uz",
+    siteName: "Najot Ta'lim HR",
+    locale: "uz_UZ",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

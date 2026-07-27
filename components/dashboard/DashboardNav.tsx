@@ -4,15 +4,16 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  LayoutDashboard, 
-  Users, 
-  Briefcase, 
-  FileText, 
-  PlayCircle, 
-  Settings, 
+  LayoutDashboard,
+  Users,
+  Briefcase,
+  FileText,
+  PlayCircle,
+  Settings,
   LogOut,
   BarChart3,
   Library,
+  Newspaper,
   Menu,
   X,
 } from 'lucide-react';
@@ -30,6 +31,7 @@ export default function DashboardNav() {
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT'] },
     { name: 'Xodimlar', href: '/dashboard/users', icon: Users, roles: ['SUPER_ADMIN'] },
     { name: 'Vakansiyalar', href: '/dashboard/vacancies', icon: Briefcase, roles: ['SUPER_ADMIN', 'HR'] },
+    { name: 'Blog', href: '/dashboard/blog', icon: Newspaper, roles: ['SUPER_ADMIN'] },
     { name: 'Testlar', href: '/dashboard/tests', icon: FileText, roles: ['SUPER_ADMIN'] },
     { name: 'Kitoblar', href: '/dashboard/books', icon: Library, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT'] },
     { name: 'Statistika', href: '/dashboard/stats', icon: BarChart3, roles: ['SUPER_ADMIN'] },

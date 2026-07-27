@@ -10,6 +10,7 @@ import LandingMotion from '@/components/sections/LandingMotion';
 import Partners from '@/components/sections/Partners';
 import TeamMap from '@/components/sections/TeamMap';
 import TeamMembers from '@/components/sections/TeamMembers';
+import FeaturedBlogs from '@/components/sections/FeaturedBlogs';
 import { dbConnect } from '@/lib/db';
 import LandingSetting from '@/models/LandingSetting';
 import { createShowcaseDraft, DEFAULT_SHOWCASE, type HeroSlide, type ShowcaseSettings } from '@/lib/landing';
@@ -40,6 +41,7 @@ export default async function Home() {
       <LandingMotion />
       <Header />
       <Hero initialShowcase={showcase} initialSlides={slides} />
+      <FeaturedBlogs />
       <AboutTeam />
       <TeamMembers />
       <TeamMap />

@@ -6,11 +6,12 @@ import Image from 'next/image';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
 
 const links = [
+  { href: '/blog', label: 'Blog' },
+  { href: '/vacancies', label: 'Vakansiyalar' },
+  { href: '/skills-check', label: 'Bilimingizni sinang' },
   { href: '/#about', label: 'Biz haqimizda' },
   { href: '/#values', label: 'Qadriyatlar' },
   { href: '/#locations', label: 'Filiallar' },
-  { href: '/vacancies', label: 'Vakansiyalar' },
-  { href: '/skills-check', label: 'Bilimingizni sinang' },
 ];
 
 export default function Header() {

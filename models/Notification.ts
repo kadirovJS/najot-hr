@@ -5,7 +5,7 @@ const NOTIFICATION_RETENTION_SECONDS = 14 * 24 * 60 * 60;
 const NotificationSchema = new Schema({
   type: { 
     type: String, 
-    enum: ['NEW_VIDEO', 'NEW_VACANCY', 'NEW_COMMENT', 'SYSTEM'], 
+    enum: ['NEW_VIDEO', 'NEW_VACANCY', 'NEW_BLOG_POST', 'NEW_COMMENT', 'SYSTEM'],
     required: true 
   },
   title: { type: String, required: true },
