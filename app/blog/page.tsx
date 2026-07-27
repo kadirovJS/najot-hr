@@ -92,6 +92,7 @@ export default function BlogPage() {
               <Image src="/no-bg-icon-nt.png" alt="" width={88} height={88} className="blog-empty-icon" />
               <h3>Hozircha hikoyalar mavjud emas</h3>
               <p>Tez orada bu yerda yangi hikoyalar paydo bo‘ladi.</p>
+              <Link href="/" className="blog-empty-link">Asosiy sahifaga qaytish</Link>
             </div>
           )}
         </div>
