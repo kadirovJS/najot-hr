@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { dbConnect } from "@/lib/db";
 import Book from "@/models/Book";
 import Notification from "@/models/Notification";
+import User from "@/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -18,9 +19,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
     await dbConnect();
     
+    const userId = (session.user as any).id;
+    const commenter = await User.findById(userId).select('image').lean();
     const comment = {
-      userId: (session.user as any).id,
+      userId,
       userName: session.user?.name || "Noma'lum",
+      userImage: commenter?.image || '',
       text: text,
       createdAt: new Date()
     };

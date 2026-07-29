@@ -16,11 +16,14 @@ export async function PUT(
     const { id, commentId } = await params;
     const { text } = await req.json();
     const userId = (session.user as any).id;
+    const isSuperAdmin = (session.user as any).role === 'SUPER_ADMIN';
 
     await dbConnect();
 
     const book = await Book.findOneAndUpdate(
-      { _id: id, "comments._id": commentId, "comments.userId": userId },
+      isSuperAdmin
+        ? { _id: id, "comments._id": commentId }
+        : { _id: id, "comments._id": commentId, "comments.userId": userId },
       { $set: { "comments.$.text": text } },
       { new: true }
     );
@@ -44,12 +47,13 @@ export async function DELETE(
 
     const { id, commentId } = await params;
     const userId = (session.user as any).id;
+    const isSuperAdmin = (session.user as any).role === 'SUPER_ADMIN';
 
     await dbConnect();
 
     const book = await Book.findOneAndUpdate(
       { _id: id },
-      { $pull: { comments: { _id: commentId, userId: userId } } },
+      { $pull: { comments: isSuperAdmin ? { _id: commentId } : { _id: commentId, userId } } },
       { new: true }
     );
 

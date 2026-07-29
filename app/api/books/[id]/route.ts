@@ -8,9 +8,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   try {
     const { id } = await params;
     await dbConnect();
-    const book = await Book.findById(id);
+    const book = await Book.findById(id).populate('comments.userId', 'image').lean();
     if (!book) return NextResponse.json({ error: "Kitob topilmadi" }, { status: 404 });
-    return NextResponse.json(book);
+
+    const comments = book.comments.map((comment: any) => {
+      const commenter = comment.userId && typeof comment.userId === 'object' ? comment.userId : null;
+      return {
+        ...comment,
+        userId: commenter?._id?.toString() || comment.userId?.toString(),
+        userImage: commenter?.image || comment.userImage || '',
+      };
+    });
+
+    return NextResponse.json({ ...book, comments });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

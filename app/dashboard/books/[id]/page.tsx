@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 import { 
   ArrowLeft, 
   BookOpen, 
@@ -214,14 +215,25 @@ export default function BookDetailPage() {
               {book.comments && book.comments.length > 0 ? (
                 [...book.comments].reverse().map((comment: any, idx: number) => {
                   const isOwner = (session?.user as any)?.id === comment.userId;
+                  const canManageComment = isAdmin || isOwner;
                   const isEditing = editingCommentId === comment._id;
 
                   return (
                     <div key={comment._id || idx} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-4 hover:border-gray-200 transition-colors">
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 bg-primary/5 rounded-lg flex items-center justify-center text-primary font-bold border border-primary/10 text-sm">
-                            {comment.userName[0]}
+                          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-primary/10 bg-primary/5 text-sm font-bold text-primary">
+                            {comment.userImage ? (
+                              <Image
+                                src={comment.userImage}
+                                alt={`${comment.userName} profil rasmi`}
+                                fill
+                                sizes="36px"
+                                className="object-cover"
+                              />
+                            ) : (
+                              comment.userName?.trim().charAt(0).toUpperCase() || '?'
+                            )}
                           </div>
                           <div>
                             <h4 className="font-bold text-dark text-sm leading-none">{comment.userName}</h4>
@@ -229,7 +241,7 @@ export default function BookDetailPage() {
                           </div>
                         </div>
 
-                        {isOwner && !isEditing && (
+                        {canManageComment && !isEditing && (
                           <div className="flex gap-1">
                             <button 
                               onClick={() => {
