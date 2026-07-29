@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import {
   ArrowLeft, CheckCircle2, FileText, Loader2, Lock, Pause, Play, RotateCcw,
   Video as VideoIcon, X,
@@ -9,7 +10,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { onboardingService } from '@/services/onboardingService';
 import OnboardingAdminPage from './AdminView';
-import { getEmployeeOnboardingTrack, ONBOARDING_TRACK_META } from '@/lib/onboarding';
+import { getEmployeeOnboardingTrack, getEmployeeOnboardingTracks, ONBOARDING_TRACK_META, ONBOARDING_TRACKS, type OnboardingTrack } from '@/lib/onboarding';
 
 type TestQuestion = { question: string; options: string[]; correctAnswer: number };
 type OnboardingVideo = {
@@ -20,6 +21,7 @@ type OnboardingVideo = {
   cloudinaryUrl?: string;
   coverImageUrl?: string;
   duration: number;
+  track?: OnboardingTrack;
   testQuestions?: TestQuestion[];
   createdAt: string;
 };
@@ -76,11 +78,21 @@ const getPosterUrl = (video: OnboardingVideo) => {
 };
 
 export default function OnboardingPage() {
+  return <Suspense fallback={<div className="flex h-[60vh] items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>}><OnboardingContent /></Suspense>;
+}
+
+function OnboardingContent() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
   const user = session?.user as { role?: string; department?: string } | undefined;
   const isAdmin = user?.role === 'SUPER_ADMIN';
   const learnerTrack = getEmployeeOnboardingTrack(user?.role, user?.department);
-  const trackMeta = ONBOARDING_TRACK_META[learnerTrack];
+  const requestedTrack = searchParams.get('view');
+  const availableTracks = getEmployeeOnboardingTracks(user?.role, user?.department);
+  const activeTrack = ONBOARDING_TRACKS.includes(requestedTrack as OnboardingTrack) && availableTracks.includes(requestedTrack as OnboardingTrack)
+    ? requestedTrack as OnboardingTrack
+    : learnerTrack;
+  const trackMeta = ONBOARDING_TRACK_META[activeTrack];
   const [videos, setVideos] = useState<OnboardingVideo[]>([]);
   const [progress, setProgress] = useState<VideoProgress[]>([]);
   const [loading, setLoading] = useState(true);
@@ -263,8 +275,9 @@ export default function OnboardingPage() {
   const getProgress = useCallback((videoId: string) => progress.find((item) => item.videoId === videoId), [progress]);
   const hasPassedTest = (video: OnboardingVideo, item?: VideoProgress) => !video.testQuestions?.length || Boolean(item?.testFinished && item.scorePercentage >= 60);
   const isCourseStepComplete = (video: OnboardingVideo, item?: VideoProgress) => Boolean(item?.isCompleted && hasPassedTest(video, item));
-  const isVideoLocked = (index: number) => index > 0 && !isCourseStepComplete(videos[index - 1], getProgress(videos[index - 1]._id));
-  const courseProgress = videos.length ? Math.round((videos.filter((video) => isCourseStepComplete(video, getProgress(video._id))).length / videos.length) * 100) : 0;
+  const visibleVideos = videos.filter((video) => (video.track || 'SOFT_SKILLS') === activeTrack);
+  const isVideoLocked = (index: number) => index > 0 && !isCourseStepComplete(visibleVideos[index - 1], getProgress(visibleVideos[index - 1]._id));
+  const courseProgress = visibleVideos.length ? Math.round((visibleVideos.filter((video) => isCourseStepComplete(video, getProgress(video._id))).length / visibleVideos.length) * 100) : 0;
 
   const openVideo = (video: OnboardingVideo) => {
     const saved = getProgress(video._id) || null;
@@ -350,8 +363,8 @@ export default function OnboardingPage() {
             </div>
           </header>
 
-          {videos.length ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {videos.map((video, index) => {
+          {visibleVideos.length ? <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {visibleVideos.map((video, index) => {
               const item = getProgress(video._id);
               const locked = isVideoLocked(index);
               const watchedPercent = video.duration ? Math.min(100, Math.round(((item?.watchedSeconds || 0) / video.duration) * 100)) : 0;

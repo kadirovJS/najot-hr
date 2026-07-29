@@ -11,7 +11,7 @@ const VideoSchema = new Schema({
   duration: { type: Number, default: 0 }, // Sekundlarda
   track: {
     type: String,
-    enum: ['SOFT_SKILLS', 'MARKETING_DESIGN', 'SALES'],
+    enum: ['SOFT_SKILLS', 'TECHNICAL_SKILLS', 'MARKETING_DESIGN', 'SALES'],
     default: 'SOFT_SKILLS',
   },
   departments: [{ 

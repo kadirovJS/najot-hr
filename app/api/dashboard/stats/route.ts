@@ -6,7 +6,7 @@ import Progress from "@/models/Progress";
 import Video from "@/models/Video";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getEmployeeOnboardingTrack } from '@/lib/onboarding';
+import { isOnboardingTrackAssigned } from '@/lib/onboarding';
 
 export async function GET() {
   try {
@@ -26,9 +26,8 @@ export async function GET() {
 
     const progressByUserVideo = new Map(progressRecords.map((record) => [`${record.userId.toString()}:${record.videoId.toString()}`, record]));
     const courseProgress = employees.map((employee) => {
-      const employeeTrack = getEmployeeOnboardingTrack(employee.role, employee.department);
       const assignedVideos = videos.filter((video) => video.track
-        ? video.track === employeeTrack
+        ? isOnboardingTrackAssigned(video.track, employee.role, employee.department)
         : video.departments.includes('All') || video.departments.includes(employee.department));
       const completedSteps = assignedVideos.filter((video) => {
         const record = progressByUserVideo.get(`${employee._id.toString()}:${video._id.toString()}`);

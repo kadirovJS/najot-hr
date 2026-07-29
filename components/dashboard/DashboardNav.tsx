@@ -19,6 +19,7 @@ import {
   ChevronDown,
   LayoutList,
   Sparkles,
+  Cpu,
   Palette,
   Target,
 } from 'lucide-react';
@@ -52,16 +53,24 @@ export default function DashboardNav() {
   const employeeTrack = getEmployeeOnboardingTrack(role, department);
   const onboardingChildren = role === 'SUPER_ADMIN'
     ? [
-        { name: 'Umumiy ko‘rinish', href: '/dashboard/onboarding?view=overview', icon: LayoutList },
-        { name: 'Universal ko‘nikmalar', href: '/dashboard/onboarding?view=SOFT_SKILLS', icon: Sparkles },
-        { name: 'Marketing va dizayn', href: '/dashboard/onboarding?view=MARKETING_DESIGN', icon: Palette },
-        { name: 'Sotuv yo‘nalishi', href: '/dashboard/onboarding?view=SALES', icon: Target },
+        { name: 'Umumiy', href: '/dashboard/onboarding?view=overview', icon: LayoutList },
+        { name: ONBOARDING_TRACK_META.SOFT_SKILLS.label, href: '/dashboard/onboarding?view=SOFT_SKILLS', icon: Sparkles },
+        { name: ONBOARDING_TRACK_META.TECHNICAL_SKILLS.label, href: '/dashboard/onboarding?view=TECHNICAL_SKILLS', icon: Cpu },
+        { name: ONBOARDING_TRACK_META.MARKETING_DESIGN.label, href: '/dashboard/onboarding?view=MARKETING_DESIGN', icon: Palette },
+        { name: ONBOARDING_TRACK_META.SALES.label, href: '/dashboard/onboarding?view=SALES', icon: Target },
       ]
-    : [{
-        name: ONBOARDING_TRACK_META[employeeTrack].label,
-        href: '/dashboard/onboarding',
-        icon: employeeTrack === 'SALES' ? Target : employeeTrack === 'MARKETING_DESIGN' ? Palette : Sparkles,
-      }];
+    : [
+        {
+          name: ONBOARDING_TRACK_META[employeeTrack].label,
+          href: `/dashboard/onboarding?view=${employeeTrack}`,
+          icon: employeeTrack === 'SALES' ? Target : employeeTrack === 'MARKETING_DESIGN' ? Palette : Sparkles,
+        },
+        {
+          name: ONBOARDING_TRACK_META.TECHNICAL_SKILLS.label,
+          href: '/dashboard/onboarding?view=TECHNICAL_SKILLS',
+          icon: Cpu,
+        },
+      ];
   const mobilePriorityHrefs = role === 'SUPER_ADMIN'
     ? ['/dashboard', '/dashboard/users', '/dashboard/onboarding', '/dashboard/settings']
     : ['/dashboard', '/dashboard/onboarding', '/dashboard/books', '/dashboard/settings'];

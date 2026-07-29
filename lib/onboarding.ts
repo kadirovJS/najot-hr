@@ -1,18 +1,22 @@
-export const ONBOARDING_TRACKS = ['SOFT_SKILLS', 'MARKETING_DESIGN', 'SALES'] as const;
+export const ONBOARDING_TRACKS = ['SOFT_SKILLS', 'TECHNICAL_SKILLS', 'MARKETING_DESIGN', 'SALES'] as const;
 
 export type OnboardingTrack = (typeof ONBOARDING_TRACKS)[number];
 
 export const ONBOARDING_TRACK_META: Record<OnboardingTrack, { label: string; description: string }> = {
   SOFT_SKILLS: {
-    label: 'Universal ko‘nikmalar',
-    description: 'Har bir xodim uchun ishdagi muhim yumshoq ko‘nikmalar.',
+    label: 'Moslashuv darslari',
+    description: 'Yangi xodimning jamoa va ish jarayoniga moslashuvi uchun darslar.',
+  },
+  TECHNICAL_SKILLS: {
+    label: 'Texnik ko‘nikmalar',
+    description: 'Barcha xodimlar uchun zarur texnik bilim va ko‘nikmalar.',
   },
   MARKETING_DESIGN: {
-    label: 'Marketing va dizayn',
+    label: 'Marketing',
     description: 'Marketing, kontent va dizayn jamoasi uchun amaliy o‘quvlar.',
   },
   SALES: {
-    label: 'Sotuv yo‘nalishi',
+    label: 'Sotuv',
     description: 'Sotuv jamoasi uchun mijoz bilan ishlash va savdo jarayonlari.',
   },
 };
@@ -23,11 +27,19 @@ export const getEmployeeOnboardingTrack = (role?: string, department?: string): 
   return 'SOFT_SKILLS';
 };
 
+export const getEmployeeOnboardingTracks = (role?: string, department?: string): OnboardingTrack[] => [
+  getEmployeeOnboardingTrack(role, department),
+  'TECHNICAL_SKILLS',
+];
+
+export const isOnboardingTrackAssigned = (track: OnboardingTrack | undefined, role?: string, department?: string) =>
+  track === 'TECHNICAL_SKILLS' || track === getEmployeeOnboardingTrack(role, department);
+
 export const getOnboardingTrackQuery = (role?: string, department?: string) => {
-  const track = getEmployeeOnboardingTrack(role, department);
+  const tracks = getEmployeeOnboardingTracks(role, department);
   return {
     $or: [
-      { track },
+      { track: { $in: tracks } },
       // Videolarning eski bo‘limlar bo‘yicha biriktirilishi saqlanadi.
       { track: { $exists: false }, $or: [{ departments: 'All' }, { departments: department }] },
     ],

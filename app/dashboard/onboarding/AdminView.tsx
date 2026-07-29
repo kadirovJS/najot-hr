@@ -35,6 +35,16 @@ type LearnerProgress = {
   avgTestScore: number | null;
   testAttempts: number;
   lastActivity: string | null;
+  trackProgress: Record<OnboardingTrack, TrackProgress>;
+};
+type TrackProgress = {
+  assignedVideos: number;
+  watchedVideos: number;
+  completedVideos: number;
+  courseProgress: number;
+  avgTestScore: number | null;
+  testAttempts: number;
+  lastActivity: string | null;
 };
 type ProgressSummary = {
   totalEmployees: number;
@@ -462,9 +472,14 @@ export default function OnboardingAdminPage() {
   };
 
   const visibleVideos = selectedTrack ? videos.filter((video) => (video.track || 'SOFT_SKILLS') === selectedTrack) : videos;
-  const visibleLearners = selectedTrack ? learners.filter((learner) => learner.track === selectedTrack) : learners;
+  const trackLearners = selectedTrack
+    ? selectedTrack === 'TECHNICAL_SKILLS' ? learners : learners.filter((learner) => learner.track === selectedTrack)
+    : learners;
+  const visibleLearners = selectedTrack
+    ? trackLearners.map((learner) => ({ ...learner, ...learner.trackProgress[selectedTrack] }))
+    : trackLearners;
   const visibleSummary = selectedTrack ? trackSummaries?.[selectedTrack] : progressSummary;
-  const viewTitle = selectedTrack ? ONBOARDING_TRACK_META[selectedTrack].label : 'Umumiy ko‘rinish';
+  const viewTitle = selectedTrack ? ONBOARDING_TRACK_META[selectedTrack].label : 'Umumiy';
   const viewDescription = selectedTrack
     ? ONBOARDING_TRACK_META[selectedTrack].description
     : 'Barcha o‘quv yo‘llari, videolar va xodimlar natijasi bir joyda.';
@@ -506,7 +521,7 @@ export default function OnboardingAdminPage() {
       </div>
 
       <nav aria-label="Onboarding yo‘nalishlari" className="flex gap-2 overflow-x-auto border-b border-gray-200 pb-1">
-        <Link href="/dashboard/onboarding?view=overview" className={`shrink-0 rounded-lg px-3 py-2 text-xs font-bold transition-colors ${isOverview ? 'bg-dark text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-dark'}`}>Umumiy ko‘rinish</Link>
+        <Link href="/dashboard/onboarding?view=overview" className={`shrink-0 rounded-lg px-3 py-2 text-xs font-bold transition-colors ${isOverview ? 'bg-dark text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-dark'}`}>Umumiy</Link>
         {ONBOARDING_TRACKS.map((track) => <Link key={track} href={`/dashboard/onboarding?view=${track}`} className={`shrink-0 rounded-lg px-3 py-2 text-xs font-bold transition-colors ${selectedTrack === track ? 'bg-primary text-white' : 'text-gray-500 hover:bg-primary/5 hover:text-primary'}`}>{ONBOARDING_TRACK_META[track].label}</Link>)}
       </nav>
 
@@ -523,7 +538,7 @@ export default function OnboardingAdminPage() {
         <div className="overflow-x-auto"><table className="w-full min-w-[680px] text-left"><thead className="bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-400"><tr><th className="px-5 py-3">Xodim</th><th className="px-5 py-3">Darslar</th><th className="px-5 py-3">Jarayon</th><th className="px-5 py-3">Test</th><th className="px-5 py-3">Oxirgi faollik</th></tr></thead><tbody className="divide-y divide-gray-100">{progressLoading ? <tr><td colSpan={5} className="px-5 py-10 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin text-primary" /></td></tr> : visibleLearners.length ? visibleLearners.map((learner) => <tr key={learner._id} className="text-sm"><td className="px-5 py-4"><p className="font-bold text-dark">{learner.name}</p><p className="mt-0.5 text-xs text-gray-500">{learner.department}</p></td><td className="px-5 py-4 text-gray-600">{learner.completedVideos}/{learner.assignedVideos} yakunlangan</td><td className="px-5 py-4"><div className="flex min-w-32 items-center gap-2"><div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100"><div className="h-full rounded-full bg-primary" style={{ width: `${learner.courseProgress}%` }} /></div><span className="text-xs font-bold text-dark">{learner.courseProgress}%</span></div></td><td className="px-5 py-4 text-gray-600">{learner.avgTestScore === null ? '—' : `${learner.avgTestScore}%`} <span className="text-xs text-gray-400">({learner.testAttempts} urinish)</span></td><td className="px-5 py-4 text-xs text-gray-500">{learner.lastActivity ? new Intl.DateTimeFormat('uz-UZ', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(learner.lastActivity)) : 'Hali boshlamagan'}</td></tr>) : <tr><td colSpan={5} className="px-5 py-10 text-center text-sm text-gray-500">Bu yo‘nalishda xodimlar hali yo‘q.</td></tr>}</tbody></table></div>
       </section>
 
-      <div className="flex items-center justify-between gap-4"><div><h2 className="text-lg font-bold text-dark">{isOverview ? 'Barcha videolar' : `${viewTitle} videolari`}</h2><p className="mt-1 text-xs text-gray-500">{isOverview ? 'Yo‘nalishlar kesimida barcha materiallar.' : 'Ushbu rolga biriktirilgan xodimlargina ko‘ra oladi.'}</p></div>{isOverview && <Button className="hidden h-10 text-xs sm:inline-flex" icon={<Upload className="h-4 w-4" />} onClick={() => handleOpenForm()}>Video yuklash</Button>}</div>
+      <div className="flex items-center justify-between gap-4"><div><h2 className="text-lg font-bold text-dark">{isOverview ? 'Barcha videolar' : `${viewTitle} videolari`}</h2><p className="mt-1 text-xs text-gray-500">{isOverview ? 'Yo‘nalishlar kesimida barcha materiallar.' : selectedTrack === 'TECHNICAL_SKILLS' ? 'Ushbu bo‘lim barcha xodimlarga ko‘rinadi.' : 'Ushbu rolga biriktirilgan xodimlargina ko‘ra oladi.'}</p></div>{isOverview && <Button className="hidden h-10 text-xs sm:inline-flex" icon={<Upload className="h-4 w-4" />} onClick={() => handleOpenForm()}>Video yuklash</Button>}</div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {loading ? (
           <div className="col-span-full py-20 text-center"><Loader2 className="h-10 w-10 text-primary animate-spin mx-auto" /></div>
@@ -675,7 +690,7 @@ export default function OnboardingAdminPage() {
             <select value={formData.track} onChange={(event) => setFormData((current) => ({ ...current, track: event.target.value as OnboardingTrack }))} className="mt-2 h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold text-dark outline-none transition-colors focus:border-primary">
               {ONBOARDING_TRACKS.map((track) => <option key={track} value={track}>{ONBOARDING_TRACK_META[track].label}</option>)}
             </select>
-            <p className="mt-2 text-xs leading-relaxed text-gray-500">{ONBOARDING_TRACK_META[formData.track].description} Video ushbu rolga mansub xodimlarga avtomatik ko‘rinadi.</p>
+            <p className="mt-2 text-xs leading-relaxed text-gray-500">{ONBOARDING_TRACK_META[formData.track].description} {formData.track === 'TECHNICAL_SKILLS' ? 'Bu video barcha xodimlarga avtomatik ko‘rinadi.' : 'Video ushbu rolga mansub xodimlarga avtomatik ko‘rinadi.'}</p>
           </div>
 
           <div className="space-y-4">
