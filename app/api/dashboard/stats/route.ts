@@ -6,6 +6,7 @@ import Progress from "@/models/Progress";
 import Video from "@/models/Video";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { getEmployeeOnboardingTrack } from '@/lib/onboarding';
 
 export async function GET() {
   try {
@@ -17,15 +18,18 @@ export async function GET() {
     await dbConnect();
 
     const [employees, vacancyCount, videos, progressRecords] = await Promise.all([
-      User.find({ role: { $ne: 'SUPER_ADMIN' } }, 'department'),
+      User.find({ role: { $ne: 'SUPER_ADMIN' } }, 'department role'),
       Vacancy.countDocuments({ isVisible: true }),
-      Video.find({}, '_id departments testQuestions'),
+      Video.find({}, '_id departments track testQuestions'),
       Progress.find({}, 'userId videoId isCompleted testFinished scorePercentage'),
     ]);
 
     const progressByUserVideo = new Map(progressRecords.map((record) => [`${record.userId.toString()}:${record.videoId.toString()}`, record]));
     const courseProgress = employees.map((employee) => {
-      const assignedVideos = videos.filter((video) => video.departments.includes('All') || video.departments.includes(employee.department));
+      const employeeTrack = getEmployeeOnboardingTrack(employee.role, employee.department);
+      const assignedVideos = videos.filter((video) => video.track
+        ? video.track === employeeTrack
+        : video.departments.includes('All') || video.departments.includes(employee.department));
       const completedSteps = assignedVideos.filter((video) => {
         const record = progressByUserVideo.get(`${employee._id.toString()}:${video._id.toString()}`);
         return record?.isCompleted && (!video.testQuestions?.length || (record.testFinished && record.scorePercentage >= 60));

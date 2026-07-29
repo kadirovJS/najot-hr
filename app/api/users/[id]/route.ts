@@ -5,10 +5,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
 
+const allowedRoles = ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT', 'MARKETING_DESIGN', 'SALES'];
+const allowedDepartments = ['Support teacher', 'Main teacher', 'Management', 'Sales', 'Boshqaruv', 'Other'];
+
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    if (!session || (session.user as { role?: string }).role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
     }
 
@@ -17,7 +20,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const body = await req.json();
     const { name, phone, password, department, status, role } = body;
 
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
+    if (role && !allowedRoles.includes(role)) return NextResponse.json({ error: 'Rol noto‘g‘ri tanlangan' }, { status: 400 });
+    if (department && !allowedDepartments.includes(department)) return NextResponse.json({ error: 'Bo‘lim noto‘g‘ri tanlangan' }, { status: 400 });
     if (name) updateData.name = name;
     if (phone) updateData.phone = phone;
     if (department) updateData.department = department;
@@ -47,7 +52,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    if (!session || (session.user as { role?: string }).role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
     }
 

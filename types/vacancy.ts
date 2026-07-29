@@ -12,6 +12,7 @@ export interface IVacancy {
   description: string;
   requirements: string[];
   benefits: string[];
+  bitrixFormUrl?: string;
   isVisible: boolean;
   createdAt: string;
 }
@@ -25,5 +26,6 @@ export interface VacancyFormData {
   description: string;
   requirements: string[];
   benefits: string[];
+  bitrixFormUrl: string;
   isVisible?: boolean;
 }

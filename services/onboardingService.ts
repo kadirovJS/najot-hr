@@ -92,7 +92,9 @@ export const onboardingService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Videoni saqlab bo‘lmadi');
+    return result;
   },
 
   async updateVideo(id: string, data: any): Promise<any> {
@@ -101,7 +103,9 @@ export const onboardingService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Videoni saqlab bo‘lmadi');
+    return result;
   },
 
   async deleteVideo(id: string): Promise<void> {

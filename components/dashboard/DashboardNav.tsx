@@ -16,9 +16,15 @@ import {
   Newspaper,
   Menu,
   X,
+  ChevronDown,
+  LayoutList,
+  Sparkles,
+  Palette,
+  Target,
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { ConfirmModal } from '../ui/ConfirmModal';
+import { getEmployeeOnboardingTrack, ONBOARDING_TRACK_META } from '@/lib/onboarding';
 
 export default function DashboardNav() {
   const pathname = usePathname();
@@ -26,6 +32,8 @@ export default function DashboardNav() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const role = (session?.user as { role?: string } | undefined)?.role;
+  const department = (session?.user as { department?: string } | undefined)?.department;
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(() => pathname.startsWith('/dashboard/onboarding'));
 
   const links = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT'] },
@@ -35,12 +43,25 @@ export default function DashboardNav() {
     { name: 'Testlar', href: '/dashboard/tests', icon: FileText, roles: ['SUPER_ADMIN'] },
     { name: 'Kitoblar', href: '/dashboard/books', icon: Library, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT'] },
     { name: 'Statistika', href: '/dashboard/stats', icon: BarChart3, roles: ['SUPER_ADMIN'] },
-    { name: 'Onboarding', href: '/dashboard/onboarding', icon: PlayCircle, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT'] },
+    { name: 'Onboarding', href: '/dashboard/onboarding', icon: PlayCircle, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT', 'MARKETING_DESIGN', 'SALES'] },
     { name: 'Landing Sozlamalari', href: '/dashboard/landing-settings', icon: LayoutDashboard, roles: ['SUPER_ADMIN'] },
     { name: 'Sozlamalar', href: '/dashboard/settings', icon: Settings, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT'] },
   ];
 
   const filteredLinks = role ? links.filter((link) => link.roles.includes(role)) : [];
+  const employeeTrack = getEmployeeOnboardingTrack(role, department);
+  const onboardingChildren = role === 'SUPER_ADMIN'
+    ? [
+        { name: 'Umumiy ko‘rinish', href: '/dashboard/onboarding?view=overview', icon: LayoutList },
+        { name: 'Universal ko‘nikmalar', href: '/dashboard/onboarding?view=SOFT_SKILLS', icon: Sparkles },
+        { name: 'Marketing va dizayn', href: '/dashboard/onboarding?view=MARKETING_DESIGN', icon: Palette },
+        { name: 'Sotuv yo‘nalishi', href: '/dashboard/onboarding?view=SALES', icon: Target },
+      ]
+    : [{
+        name: ONBOARDING_TRACK_META[employeeTrack].label,
+        href: '/dashboard/onboarding',
+        icon: employeeTrack === 'SALES' ? Target : employeeTrack === 'MARKETING_DESIGN' ? Palette : Sparkles,
+      }];
   const mobilePriorityHrefs = role === 'SUPER_ADMIN'
     ? ['/dashboard', '/dashboard/users', '/dashboard/onboarding', '/dashboard/settings']
     : ['/dashboard', '/dashboard/onboarding', '/dashboard/books', '/dashboard/settings'];
@@ -64,6 +85,31 @@ export default function DashboardNav() {
             const isActive = link.href === '/dashboard' 
               ? pathname === link.href 
               : pathname.startsWith(link.href);
+            if (link.href === '/dashboard/onboarding') {
+              return <div key={link.href} className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => setIsOnboardingOpen((open) => !open)}
+                  aria-expanded={isOnboardingOpen}
+                  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                    isActive ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-dark'
+                  }`}
+                >
+                  <PlayCircle className="h-5 w-5" />
+                  <span className="flex-1 text-left">Onboarding</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isOnboardingOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isOnboardingOpen && <div className="ml-4 space-y-1 border-l border-gray-200 py-1 pl-3">
+                  {onboardingChildren.map((child) => {
+                    const ChildIcon = child.icon;
+                    return <Link key={child.href} href={child.href} className="flex min-h-9 items-center gap-2 rounded-lg px-3 text-xs font-semibold text-gray-500 transition-colors hover:bg-primary/5 hover:text-primary">
+                      <ChildIcon className="h-3.5 w-3.5" />
+                      <span>{child.name}</span>
+                    </Link>;
+                  })}
+                </div>}
+              </div>;
+            }
             return (
               <Link
                 key={link.href}

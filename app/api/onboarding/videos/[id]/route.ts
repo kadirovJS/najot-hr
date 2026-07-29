@@ -4,6 +4,7 @@ import Video from "@/models/Video";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { deleteImage, deleteVideo, uploadVideo } from "@/lib/cloudinary";
+import { ONBOARDING_TRACKS } from '@/lib/onboarding';
 
 const allowedDepartments = ['All', 'Support teacher', 'Main teacher', 'Management', 'Sales', 'Boshqaruv', 'Other'];
 type SessionUser = { role?: string };
@@ -16,17 +17,19 @@ function validateVideoUpdate(input: Record<string, unknown>) {
   const coverImageUrl = typeof input.coverImageUrl === 'string' ? input.coverImageUrl.trim() : '';
   const coverImagePublicId = typeof input.coverImagePublicId === 'string' ? input.coverImagePublicId.trim() : '';
   const duration = Number(input.duration);
+  const track = typeof input.track === 'string' && ONBOARDING_TRACKS.includes(input.track as typeof ONBOARDING_TRACKS[number]) ? input.track : '';
   const departments = Array.isArray(input.departments) ? input.departments.filter((department): department is string => typeof department === 'string' && allowedDepartments.includes(department)) : [];
   const testQuestions = Array.isArray(input.testQuestions) ? input.testQuestions : [];
   if (!title || (!youtubeUrl && !cloudinaryUrl)) throw new Error('Sarlavha va video manbasi majburiy');
   if (!Number.isFinite(duration) || duration <= 0) throw new Error('Video davomiyligi sekundlarda aniq kiritilishi kerak');
   if (!departments.length) throw new Error('Kamida bitta bo‘limni tanlang');
+  if (!track) throw new Error('O‘quv yo‘nalishini tanlang');
   if (testQuestions.some((item) => {
     if (!item || typeof item !== 'object') return true;
     const question = item as Record<string, unknown>;
     return typeof question.question !== 'string' || !question.question.trim() || !Array.isArray(question.options) || question.options.length < 2 || question.options.some((option) => typeof option !== 'string' || !option.trim()) || !Number.isInteger(question.correctAnswer) || Number(question.correctAnswer) < 0 || Number(question.correctAnswer) >= question.options.length;
   })) throw new Error('Test savollarini to‘liq va to‘g‘ri kiriting');
-  return { ...input, title, youtubeUrl, cloudinaryUrl, coverImageUrl, coverImagePublicId, duration: Math.round(duration), departments, testQuestions };
+  return { ...input, title, youtubeUrl, cloudinaryUrl, coverImageUrl, coverImagePublicId, duration: Math.round(duration), track, departments, testQuestions };
 }
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -119,7 +122,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
     await Video.findByIdAndDelete(id);
     return NextResponse.json({ message: "O'chirildi" });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "O'chirishda xatolik" }, { status: 500 });
   }
 }

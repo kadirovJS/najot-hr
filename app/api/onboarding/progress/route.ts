@@ -4,13 +4,14 @@ import Progress from '@/models/Progress';
 import Video from '@/models/Video';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { getOnboardingTrackQuery } from '@/lib/onboarding';
 
 const MIN_FORWARD_HEARTBEAT_SECONDS = 1;
 const PLAYBACK_SPEED_TOLERANCE = 1.1;
 const MAX_HEARTBEAT_ADVANCE_SECONDS = 45;
 const COMPLETION_TOLERANCE_SECONDS = 2;
 
-type SessionUser = { id?: string; department?: string };
+type SessionUser = { id?: string; department?: string; role?: string };
 type TestQuestion = { options: string[]; correctAnswer: number };
 
 function getPosition(value: unknown, duration: number) {
@@ -50,7 +51,8 @@ export async function POST(req: Request) {
     const video = await Video.findById(videoId).select('duration departments testQuestions');
     if (!video) return NextResponse.json({ error: 'Video topilmadi' }, { status: 404 });
 
-    const isAssigned = video.departments.includes('All') || video.departments.includes(user.department);
+    const accessQuery = getOnboardingTrackQuery(user.role, user.department);
+    const isAssigned = await Video.exists({ _id: videoId, ...accessQuery });
     if (!isAssigned) return NextResponse.json({ error: "Bu video sizga biriktirilmagan" }, { status: 403 });
 
     const duration = Math.floor(video.duration || 0);

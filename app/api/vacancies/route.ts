@@ -5,6 +5,7 @@ import Notification from "@/models/Notification";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
+import { normalizeBitrixFormUrl } from '@/lib/bitrix';
 
 export async function GET(req: Request) {
   try {
@@ -17,7 +18,7 @@ export async function GET(req: Request) {
     
     const vacancies = await Vacancy.find(query).sort({ createdAt: -1 });
     return NextResponse.json(vacancies);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }
@@ -25,12 +26,13 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    if (!session || (session.user as { role?: string }).role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
     }
 
     await dbConnect();
-    const body = await req.json();
+    const body = await req.json() as Record<string, unknown>;
+    body.bitrixFormUrl = normalizeBitrixFormUrl(body.bitrixFormUrl, true);
     const vacancy = await Vacancy.create(body);
 
     // Bildirishnoma yaratish

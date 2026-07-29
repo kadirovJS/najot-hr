@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowLeft, BriefcaseBusiness, Check, Clock3, Copy, MapPin, Send, Share2 } from 'lucide-react';
+import { ArrowLeft, BriefcaseBusiness, Check, Clock3, Copy, ExternalLink, MapPin, Send, Share2 } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import { formatUzDateLong } from '@/lib/date';
 import { IVacancy } from '@/types/vacancy';
@@ -30,7 +30,7 @@ export default function VacancyDetailView({ vacancy }: { vacancy: IVacancy }) {
     setCopied(true); window.setTimeout(() => setCopied(false), 2500);
   };
 
-  const telegramText = encodeURIComponent(`Assalomu alaykum, men “${vacancy.title}” vakansiyasi bo‘yicha ariza topshirmoqchiman.`);
+  const bitrixFormUrl = vacancy.bitrixFormUrl?.trim() || null;
 
   return (
     <div ref={root} className="vacancy-detail-page">
@@ -47,7 +47,7 @@ export default function VacancyDetailView({ vacancy }: { vacancy: IVacancy }) {
               </div>
               <div data-detail-hero className="detail-hero-action">
                 <span>Arizalar qabul qilinmoqda</span>
-                <a href={`https://t.me/Najot_Talim_IT?text=${telegramText}`} target="_blank" rel="noopener noreferrer">Ariza yuborish <Send size={18}/></a>
+                {bitrixFormUrl ? <a href={bitrixFormUrl} target="_blank" rel="noopener noreferrer">Ariza yuborish <Send size={18}/></a> : <p className="detail-application-unavailable">Ariza formasi tez orada ochiladi</p>}
               </div>
             </div>
             <div data-detail-hero className="detail-facts">
@@ -69,8 +69,8 @@ export default function VacancyDetailView({ vacancy }: { vacancy: IVacancy }) {
 
             <aside className="detail-apply">
               <div className="detail-apply-card">
-                <span className="eyebrow">Keyingi qadam</span><h2>Jamoaga qo‘shiling</h2><p>Telegram orqali HR jamoamizga yozing. Qisqa ma’lumot va rezyumengizni yuborishingiz mumkin.</p>
-                <a href={`https://t.me/Najot_Talim_IT?text=${telegramText}`} target="_blank" rel="noopener noreferrer" className="button button-primary">Ariza yuborish <Send size={18}/></a>
+                <span className="eyebrow">Keyingi qadam</span><h2>Jamoaga qo‘shiling</h2><p>{bitrixFormUrl ? 'Bitrix24 formasini oching va ma’lumotlaringizni to‘ldirib yuboring.' : 'Ariza formasi hozircha biriktirilmagan. Iltimos, keyinroq qayta tekshiring.'}</p>
+                {bitrixFormUrl ? <a href={bitrixFormUrl} target="_blank" rel="noopener noreferrer" className="button button-primary">Ariza yuborish <ExternalLink size={18}/></a> : <span className="detail-application-unavailable detail-application-unavailable-light">Ariza formasi kiritilmagan</span>}
                 <div className="share-row"><span><Share2/> Vakansiyani ulashish</span><button onClick={copyLink}>{copied ? <Check/> : <Copy/>}{copied ? 'Nusxalandi' : 'Havolani nusxalash'}</button></div>
               </div>
             </aside>

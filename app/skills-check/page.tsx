@@ -6,6 +6,8 @@ import { CheckCircle2, Clock, Brain, User, Loader2 } from 'lucide-react';
 import { testService } from '@/services/testService';
 import { ITestQuestion, TestType } from '@/types/test';
 
+const testTypes: TestType[] = ['DISC', 'PAEI'];
+
 export default function SkillsCheck() {
   const [step, setStep] = useState(1); // 1: Info, 2: Testing, 3: Finished
   const [formData, setFormData] = useState({
@@ -22,7 +24,7 @@ export default function SkillsCheck() {
   const [answers, setAnswers] = useState<number[]>([]);
 
   useEffect(() => {
-    let interval: any;
+    let interval: ReturnType<typeof setInterval> | undefined;
     if (isTestRunning) {
       interval = setInterval(() => {
         setTimer((prev) => prev + 1);
@@ -44,7 +46,7 @@ export default function SkillsCheck() {
         setQuestions(data);
         setStep(2);
         setIsTestRunning(true);
-      } catch (error) {
+      } catch {
         alert("Xatolik yuz berdi");
       } finally {
         setLoading(false);
@@ -69,25 +71,16 @@ export default function SkillsCheck() {
 
     const timeSpent = Math.floor(timer / 60);
 
-    // To'g'ri javoblarni hisoblash
-    let correctCount = 0;
-    const detailedResults = questions.map((q, idx) => {
-      const isCorrect = q.correctAnswer === finalAnswers[idx];
-      if (isCorrect) correctCount++;
-
-      return {
+    const detailedResponses = questions.map((q, idx) => ({
         question: q.question,
         answer: q.options[finalAnswers[idx]],
-        isCorrect
-      };
-    });
+      }));
 
     const resultData = {
       ...formData,
       timeSpent: timeSpent > 0 ? timeSpent : 1,
-      correctAnswers: correctCount,
       totalQuestions: questions.length,
-      detailedResults
+      detailedResponses,
     };
 
     // Send to Telegram API
@@ -153,7 +146,7 @@ export default function SkillsCheck() {
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">Test turini tanlang</label>
                   <div className="grid grid-cols-2 gap-4">
-                    {['DISC', 'PAEI'].map((type:any) => (
+                    {testTypes.map((type) => (
                       <button
                         key={type}
                         type="button"
@@ -228,7 +221,7 @@ export default function SkillsCheck() {
               </div>
               <h2 className="text-3xl font-bold text-dark mb-4">Rahmat!</h2>
               <p className="text-gray-500 mb-8 max-w-sm mx-auto">
-                Sizning javoblaringiz qabul qilindi. Natijalar HR menejerlarimizga yuborildi. Tez orada siz bilan bog'lanamiz.
+                Sizning javoblaringiz qabul qilindi. Natijalar HR menejerlarimizga yuborildi. Tez orada siz bilan bog‘lanamiz.
               </p>
               <button 
                 onClick={() => window.location.href = '/'}

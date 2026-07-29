@@ -6,10 +6,7 @@ import {
   Plus, 
   Edit2, 
   Trash2, 
-  CheckCircle2, 
   Loader2,
-  X,
-  Circle
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
@@ -34,7 +31,6 @@ export default function TestsAdminPage() {
   const [formData, setFormData] = useState<TestFormData>({
     question: '',
     options: ['', '', '', ''],
-    correctAnswer: 0,
     type: 'DISC'
   });
 
@@ -60,7 +56,6 @@ export default function TestsAdminPage() {
       setFormData({
         question: q.question,
         options: [...q.options],
-        correctAnswer: q.correctAnswer,
         type: q.type
       });
     } else {
@@ -68,7 +63,6 @@ export default function TestsAdminPage() {
       setFormData({
         question: '',
         options: ['', '', '', ''],
-        correctAnswer: 0,
         type: activeTab
       });
     }
@@ -93,7 +87,7 @@ export default function TestsAdminPage() {
       setIsFormModalOpen(false);
       loadQuestions();
     } catch (error) {
-      alert("Xatolik yuz berdi");
+      alert(error instanceof Error ? error.message : 'Savolni saqlashda xatolik yuz berdi');
     } finally {
       setActionLoading(false);
     }
@@ -107,7 +101,7 @@ export default function TestsAdminPage() {
       setIsDeleteModalOpen(false);
       loadQuestions();
     } catch (error) {
-      alert("O'chirishda xatolik");
+      alert(error instanceof Error ? error.message : 'Savolni o‘chirishda xatolik yuz berdi');
     } finally {
       setActionLoading(false);
       setQuestionToDelete(null);
@@ -172,16 +166,8 @@ export default function TestsAdminPage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:pl-11">
                   {q.options.map((opt, i) => (
-                    <div key={i} className={`flex items-center gap-3 p-4 rounded-xl border text-sm font-semibold transition-all ${
-                      i === q.correctAnswer 
-                        ? 'bg-emerald-50 border-emerald-100 text-emerald-700 shadow-sm' 
-                        : 'bg-gray-50/50 border-gray-100 text-gray-500'
-                    }`}>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                        i === q.correctAnswer ? 'border-emerald-500 bg-emerald-500' : 'border-gray-200'
-                      }`}>
-                        {i === q.correctAnswer && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                      </div>
+                    <div key={i} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/50 p-4 text-sm font-semibold text-gray-600">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-xs font-bold text-gray-400 ring-1 ring-gray-100">{String.fromCharCode(65 + i)}</div>
                       <span className="leading-tight">{opt}</span>
                     </div>
                   ))}
@@ -220,28 +206,15 @@ export default function TestsAdminPage() {
           </div>
 
           <div className="space-y-4 pt-2">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Variantlar va to'g'ri javob</label>
+            <div className="rounded-xl border border-primary/15 bg-primary/[0.03] px-4 py-3 text-sm leading-relaxed text-gray-600">Bu profil testi: variantlar orasida to‘g‘ri yoki noto‘g‘ri javob belgilanmaydi. Nomzod tanlagan javob botga faqat profil tahlili uchun yuboriladi.</div>
+            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Javob variantlari</label>
             <div className="grid grid-cols-1 gap-3">
               {formData.options.map((opt, idx) => (
                 <div key={idx} className="flex gap-3 items-center group">
-                  <button
-                    type="button"
-                    onClick={() => setFormData({...formData, correctAnswer: idx})}
-                    className={`w-11 h-11 shrink-0 rounded-lg flex items-center justify-center transition-all border ${
-                      formData.correctAnswer === idx 
-                        ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' 
-                        : 'bg-white border-gray-200 text-gray-300 hover:border-emerald-300 hover:text-emerald-300'
-                    }`}
-                  >
-                    {formData.correctAnswer === idx ? <CheckCircle2 className="h-5 w-5" /> : <span className="text-xs font-bold">{idx + 1}</span>}
-                  </button>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-xs font-bold text-gray-400">{String.fromCharCode(65 + idx)}</span>
                   <input 
                     required
-                    className={`flex-grow h-11 px-4 rounded-lg border outline-none transition-all font-medium text-sm ${
-                      formData.correctAnswer === idx 
-                        ? 'border-emerald-200 bg-emerald-50/20 focus:border-emerald-400' 
-                        : 'border-gray-200 bg-gray-50 focus:border-primary/50 focus:bg-white'
-                    }`}
+                    className="h-11 flex-grow rounded-lg border border-gray-200 bg-gray-50 px-4 text-sm font-medium outline-none transition-all focus:border-primary/50 focus:bg-white"
                     placeholder={`Variant ${idx + 1}`}
                     value={opt}
                     onChange={(e) => handleOptionChange(idx, e.target.value)}

@@ -5,10 +5,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
 
+const allowedRoles = ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT', 'MARKETING_DESIGN', 'SALES'];
+const allowedDepartments = ['Support teacher', 'Main teacher', 'Management', 'Sales', 'Boshqaruv', 'Other'];
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    if (!session || (session.user as { role?: string }).role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
     }
 
@@ -48,7 +51,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== 'SUPER_ADMIN') {
+    if (!session || (session.user as { role?: string }).role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: "Ruxsat yo'q" }, { status: 403 });
     }
 
@@ -59,6 +62,12 @@ export async function POST(req: Request) {
 
     if (!/^998\d{9}$/.test(normalizedPhone)) {
       return NextResponse.json({ error: "Telefon raqamini +998 XX XXX XX XX formatida kiriting" }, { status: 400 });
+    }
+    if (!name?.trim() || typeof password !== 'string' || password.length < 4) {
+      return NextResponse.json({ error: 'Ism va kamida 4 belgili parol kiriting' }, { status: 400 });
+    }
+    if (!allowedRoles.includes(role || 'TEACHER') || !allowedDepartments.includes(department)) {
+      return NextResponse.json({ error: 'Rol yoki bo‘lim noto‘g‘ri tanlangan' }, { status: 400 });
     }
 
     const existingUser = await User.findOne({ phone: normalizedPhone });

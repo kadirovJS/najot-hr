@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 
 const VacancySchema = new Schema({
   title: { type: String, required: true },
@@ -17,6 +17,7 @@ const VacancySchema = new Schema({
   description: { type: String, required: true },
   requirements: [{ type: String }],
   benefits: [{ type: String }],
+  bitrixFormUrl: { type: String },
   isVisible: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
 });

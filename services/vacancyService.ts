@@ -19,7 +19,9 @@ export const vacancyService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Vakansiya yaratilmadi');
+    return result;
   },
 
   async updateVacancy(id: string, data: Partial<VacancyFormData>): Promise<IVacancy> {
@@ -28,10 +30,16 @@ export const vacancyService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Vakansiya tahrirlanmadi');
+    return result;
   },
 
   async deleteVacancy(id: string): Promise<void> {
-    await fetch(`/api/vacancies/${id}`, { method: 'DELETE' });
+    const res = await fetch(`/api/vacancies/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const result = await res.json();
+      throw new Error(result.error || 'Vakansiya o‘chirilmadi');
+    }
   }
 };

@@ -20,6 +20,14 @@ import { userService } from '@/services/userService';
 import { IUser, UserFormData, UserDepartment, UserRole } from '@/types/user';
 
 const departments: UserDepartment[] = ['Support teacher', 'Main teacher', 'Management', 'Sales', 'Boshqaruv', 'Other'];
+const roleOptions: Array<{ value: UserRole; label: string }> = [
+  { value: 'TEACHER', label: 'O‘qituvchi' },
+  { value: 'HR', label: 'HR mutaxassisi' },
+  { value: 'ACCOUNTANT', label: 'Hisobchi' },
+  { value: 'MARKETING_DESIGN', label: 'Marketing va dizayn' },
+  { value: 'SALES', label: 'Sotuv mutaxassisi' },
+  { value: 'SUPER_ADMIN', label: 'Super administrator' },
+];
 const PHONE_PREFIX = '+998';
 
 const formatUzbekPhoneInput = (value: string) => {
@@ -186,7 +194,7 @@ export default function UsersPage() {
             <thead className="bg-gray-50/50 border-b border-gray-100">
               <tr>
                 <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Xodim</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Bo'lim</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Bo‘lim</th>
                 <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Rol</th>
                 <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Holat</th>
                 <th className="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Amallar</th>
@@ -197,7 +205,7 @@ export default function UsersPage() {
                 <tr>
                   <td colSpan={5} className="px-6 py-20 text-center">
                     <Loader2 className="h-10 w-10 text-primary animate-spin mx-auto" />
-                    <p className="text-sm text-gray-400 mt-4 font-medium">Ma'lumotlar yuklanmoqda...</p>
+                    <p className="text-sm text-gray-400 mt-4 font-medium">Ma’lumotlar yuklanmoqda...</p>
                   </td>
                 </tr>
               ) : users.length > 0 ? (
@@ -273,7 +281,7 @@ export default function UsersPage() {
           {loading ? (
             <div className="px-6 py-20 text-center">
               <Loader2 className="h-10 w-10 text-primary animate-spin mx-auto" />
-              <p className="text-sm text-gray-400 mt-4 font-medium">Ma'lumotlar yuklanmoqda...</p>
+              <p className="text-sm text-gray-400 mt-4 font-medium">Ma’lumotlar yuklanmoqda...</p>
             </div>
           ) : users.length > 0 ? (
             users.map((user) => (
@@ -407,7 +415,7 @@ export default function UsersPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Bo'lim</label>
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Bo‘lim</label>
               <div className="relative">
                 <select 
                   className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none transition-all font-semibold text-dark appearance-none text-sm cursor-pointer"
@@ -427,12 +435,16 @@ export default function UsersPage() {
                 <select 
                   className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none transition-all font-semibold text-dark appearance-none text-sm cursor-pointer"
                   value={formData.role}
-                  onChange={(e) => setFormData({...formData, role: e.target.value as UserRole})}
+                  onChange={(e) => {
+                    const role = e.target.value as UserRole;
+                    setFormData({
+                      ...formData,
+                      role,
+                      department: role === 'SALES' ? 'Sales' : formData.department,
+                    });
+                  }}
                 >
-                  <option value="TEACHER">TEACHER</option>
-                  <option value="HR">HR</option>
-                  <option value="ACCOUNTANT">ACCOUNTANT</option>
-                  <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                  {roleOptions.map((role) => <option key={role.value} value={role.value}>{role.label}</option>)}
                 </select>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                   <ChevronRight className="h-4 w-4 rotate-90" />

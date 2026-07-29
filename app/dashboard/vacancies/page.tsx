@@ -13,7 +13,10 @@ import {
   Clock, 
   X,
   PlusCircle,
-  Loader2
+  Loader2,
+  ExternalLink,
+  Link2,
+  CircleAlert,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
@@ -43,7 +46,8 @@ export default function VacanciesAdminPage() {
     salary: '',
     description: '',
     requirements: [''],
-    benefits: ['']
+    benefits: [''],
+    bitrixFormUrl: '',
   });
 
   const loadVacancies = async () => {
@@ -73,7 +77,8 @@ export default function VacanciesAdminPage() {
         salary: vacancy.salary,
         description: vacancy.description,
         requirements: vacancy.requirements.length > 0 ? vacancy.requirements : [''],
-        benefits: vacancy.benefits.length > 0 ? vacancy.benefits : ['']
+        benefits: vacancy.benefits.length > 0 ? vacancy.benefits : [''],
+        bitrixFormUrl: vacancy.bitrixFormUrl || '',
       });
     } else {
       setEditingVacancy(null);
@@ -85,7 +90,8 @@ export default function VacanciesAdminPage() {
         salary: '',
         description: '',
         requirements: [''],
-        benefits: ['']
+        benefits: [''],
+        bitrixFormUrl: '',
       });
     }
     setIsFormModalOpen(true);
@@ -130,7 +136,7 @@ export default function VacanciesAdminPage() {
       setIsFormModalOpen(false);
       loadVacancies();
     } catch (error) {
-      alert("Xatolik yuz berdi");
+      alert(error instanceof Error ? error.message : 'Vakansiyani saqlashda xatolik yuz berdi');
     } finally {
       setActionLoading(false);
     }
@@ -141,7 +147,7 @@ export default function VacanciesAdminPage() {
       await vacancyService.updateVacancy(vacancy._id, { isVisible: !vacancy.isVisible });
       loadVacancies();
     } catch (error) {
-      alert("Xatolik yuz berdi");
+      alert(error instanceof Error ? error.message : 'Vakansiya holatini yangilashda xatolik yuz berdi');
     }
   };
 
@@ -158,7 +164,7 @@ export default function VacanciesAdminPage() {
       setIsDeleteModalOpen(false);
       loadVacancies();
     } catch (error) {
-      alert("O'chirishda xatolik");
+      alert(error instanceof Error ? error.message : 'Vakansiyani o‘chirishda xatolik yuz berdi');
     } finally {
       setActionLoading(false);
       setVacancyToDelete(null);
@@ -170,7 +176,7 @@ export default function VacanciesAdminPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-dark tracking-tight">Vakansiyalar boshqaruvi</h1>
-          <p className="text-gray-500 text-xs md:text-sm font-medium">Landing pagedagi vakansiyalarni tahrirlash va yangilarini qo'shish</p>
+          <p className="text-gray-500 text-xs md:text-sm font-medium">Landing pagedagi vakansiyalarni tahrirlash va yangilarini qo‘shish</p>
         </div>
         <Button className="w-full md:w-auto h-11 px-8 rounded-lg text-sm" icon={<Plus className="h-4 w-4" />} onClick={() => handleOpenForm()}>
           Yangi vakansiya
@@ -214,6 +220,7 @@ export default function VacanciesAdminPage() {
                     <div className="flex items-center gap-2 text-gray-400">
                       <Clock className="h-4 w-4 shrink-0" /> {new Date(vacancy.createdAt).toLocaleDateString()}
                     </div>
+                    {vacancy.bitrixFormUrl ? <a href={vacancy.bitrixFormUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-primary hover:text-primary-dark" title="Bitrix24 formasini ochish"><Link2 className="h-4 w-4 shrink-0" /> Bitrix24 formasi <ExternalLink className="h-3.5 w-3.5" /></a> : <div className="flex items-center gap-1.5 text-amber-700"><CircleAlert className="h-4 w-4 shrink-0" /> Ariza havolasi kiritilmagan</div>}
                   </div>
                 </div>
 
@@ -274,7 +281,7 @@ export default function VacanciesAdminPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Bo'lim</label>
+              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Bo‘lim</label>
               <div className="relative">
                 <select 
                   className="w-full h-11 px-4 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none transition-all font-semibold text-dark appearance-none text-sm cursor-pointer"
@@ -315,6 +322,21 @@ export default function VacanciesAdminPage() {
             </div>
           </div>
 
+          <div className="rounded-xl border border-primary/15 bg-primary/[0.03] p-4">
+            <label className="ml-1 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500"><Link2 className="h-3.5 w-3.5 text-primary" /> Bitrix24 ariza formasi havolasi</label>
+            <input
+              required
+              type="url"
+              inputMode="url"
+              autoComplete="off"
+              className="mt-2 h-11 w-full rounded-lg border border-gray-200 bg-white px-4 text-sm font-semibold text-dark outline-none transition-colors placeholder:text-gray-400 focus:border-primary/50"
+              placeholder="https://...bitrix24.../crm_form_..."
+              value={formData.bitrixFormUrl}
+              onChange={(e) => setFormData({ ...formData, bitrixFormUrl: e.target.value })}
+            />
+            <p className="mt-2 text-xs leading-relaxed text-gray-500">Nomzod “Ariza yuborish” tugmasini bosganda aynan shu forma yangi oynada ochiladi.</p>
+          </div>
+
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Batafsil tavsif (Description)</label>
             <textarea 
@@ -332,7 +354,7 @@ export default function VacanciesAdminPage() {
             <div className="flex items-center justify-between border-b border-gray-100 pb-2">
               <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Nomzodga talablar</label>
               <button type="button" onClick={() => handleAddField('requirements')} className="text-primary hover:text-emerald-700 font-bold text-[10px] uppercase flex items-center gap-1.5 transition-all">
-                <PlusCircle className="h-3.5 w-3.5" /> Talab qo'shish
+                <PlusCircle className="h-3.5 w-3.5" /> Talab qo‘shish
               </button>
             </div>
             <div className="space-y-3">
@@ -359,7 +381,7 @@ export default function VacanciesAdminPage() {
             <div className="flex items-center justify-between border-b border-gray-100 pb-2">
               <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Biz nima taklif qilamiz?</label>
               <button type="button" onClick={() => handleAddField('benefits')} className="text-accent hover:text-amber-700 font-bold text-[10px] uppercase flex items-center gap-1.5 transition-all">
-                <PlusCircle className="h-3.5 w-3.5" /> Imtiyoz qo'shish
+                <PlusCircle className="h-3.5 w-3.5" /> Imtiyoz qo‘shish
               </button>
             </div>
             <div className="space-y-3">

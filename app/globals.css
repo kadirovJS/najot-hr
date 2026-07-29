@@ -147,6 +147,8 @@ a:focus-visible, button:focus-visible { outline:3px solid var(--accent); outline
 .detail-hero-action>span::before { content:''; width:8px; height:8px; border-radius:50%; background:#38d7a5; box-shadow:0 0 0 5px rgba(56,215,165,.13); }
 .detail-hero-action>a { min-height:50px; margin-top:18px; padding:0 18px; border-radius:999px; background:var(--primary); color:white; display:flex; align-items:center; justify-content:space-between; font-size:14px; font-weight:750; transition:background .2s; }
 .detail-hero-action>a:hover { background:#0a986f; }
+.detail-application-unavailable { display:block; margin-top:18px; color:#d5e2de; font-size:13px; line-height:1.5; }
+.detail-application-unavailable-light { padding:13px 16px; border:1px solid #d9e5e0; border-radius:12px; background:#f8fbf9; color:#5d7068; font-weight:650; }
 .detail-facts { margin-top:36px; background:rgba(255,255,255,.55); border-color:#ccddd6; border-radius:16px; overflow:hidden; }
 .detail-facts>div { min-height:84px; padding:14px 20px; border-color:#ccddd6; }
 .detail-body { padding:76px 0 105px; }

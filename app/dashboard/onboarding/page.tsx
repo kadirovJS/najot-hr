@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { onboardingService } from '@/services/onboardingService';
 import OnboardingAdminPage from './AdminView';
+import { getEmployeeOnboardingTrack, ONBOARDING_TRACK_META } from '@/lib/onboarding';
 
 type TestQuestion = { question: string; options: string[]; correctAnswer: number };
 type OnboardingVideo = {
@@ -78,6 +79,8 @@ export default function OnboardingPage() {
   const { data: session } = useSession();
   const user = session?.user as { role?: string; department?: string } | undefined;
   const isAdmin = user?.role === 'SUPER_ADMIN';
+  const learnerTrack = getEmployeeOnboardingTrack(user?.role, user?.department);
+  const trackMeta = ONBOARDING_TRACK_META[learnerTrack];
   const [videos, setVideos] = useState<OnboardingVideo[]>([]);
   const [progress, setProgress] = useState<VideoProgress[]>([]);
   const [loading, setLoading] = useState(true);
@@ -337,8 +340,9 @@ export default function OnboardingPage() {
         <>
           <header className="flex flex-col gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-dark">O‘quv kursi</h1>
-              <p className="mt-1 text-sm font-medium text-gray-500">Bo‘lim: <span className="text-primary">{user?.department}</span></p>
+              <div className="mb-2 inline-flex items-center rounded-full bg-primary/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">Sizning o‘quv yo‘lingiz</div>
+              <h1 className="text-3xl font-bold tracking-tight text-dark">{trackMeta.label}</h1>
+              <p className="mt-1 max-w-xl text-sm leading-relaxed text-gray-500">{trackMeta.description}</p>
             </div>
             <div className="w-full sm:w-48">
               <div className="mb-2 flex justify-between text-xs font-bold text-gray-500"><span>Kurs jarayoni</span><span>{courseProgress}%</span></div>
