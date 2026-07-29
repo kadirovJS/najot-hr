@@ -4,6 +4,7 @@ export interface IBlog {
   excerpt: string;
   content: string;
   coverImage: string;
+  images: string[];
   slug: string;
   author: string;
   isVisible: boolean;
@@ -17,6 +18,7 @@ export interface BlogFormData {
   excerpt: string;
   content: string;
   coverImage: string;
+  images: string[];
   isVisible?: boolean;
   mainBlog?: boolean;
 }

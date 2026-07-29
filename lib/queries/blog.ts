@@ -9,6 +9,7 @@ type BlogDoc = {
   excerpt: string;
   content: string;
   coverImage: string;
+  images?: string[];
   slug?: string;
   author: string;
   isVisible: boolean;
@@ -18,12 +19,14 @@ type BlogDoc = {
 };
 
 function toPlainBlog(doc: BlogDoc): IBlog {
+  const savedImages = doc.images?.length ? doc.images : [doc.coverImage];
   return {
     _id: String(doc._id),
     title: doc.title,
     excerpt: doc.excerpt,
     content: doc.content,
     coverImage: doc.coverImage,
+    images: [doc.coverImage, ...savedImages.filter((image) => image !== doc.coverImage)],
     slug: doc.slug || '',
     author: doc.author,
     isVisible: doc.isVisible,

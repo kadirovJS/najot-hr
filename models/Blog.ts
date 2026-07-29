@@ -5,6 +5,14 @@ const BlogSchema = new Schema({
   excerpt: { type: String, required: true },
   content: { type: String, required: true },
   coverImage: { type: String, required: true },
+  images: {
+    type: [String],
+    default: [],
+    validate: {
+      validator: (images: string[]) => images.length <= 5,
+      message: 'Post uchun 5 tagacha rasm tanlanishi mumkin',
+    },
+  },
   slug: { type: String, unique: true, sparse: true, trim: true },
   author: { type: String, required: true },
   isVisible: { type: Boolean, default: true },
@@ -23,6 +31,10 @@ if (!Blog.schema.path('mainBlog')) {
 
 if (!Blog.schema.path('slug')) {
   Blog.schema.add({ slug: { type: String, unique: true, sparse: true, trim: true } });
+}
+
+if (!Blog.schema.path('images')) {
+  Blog.schema.add({ images: { type: [String], default: [] } });
 }
 
 export default Blog;

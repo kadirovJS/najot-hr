@@ -12,6 +12,17 @@ function isSuperAdmin(session: Session | null) {
   return (session?.user as { role?: string } | undefined)?.role === 'SUPER_ADMIN';
 }
 
+function getPostImages(body: Record<string, unknown>, fallbackCoverImage = '') {
+  const images = Array.isArray(body.images)
+    ? [...new Set(body.images.filter((image): image is string => typeof image === 'string' && Boolean(image.trim())).map((image) => image.trim()))]
+    : fallbackCoverImage ? [fallbackCoverImage] : [];
+  if (!images.length || images.length > 5) throw new Error('Post uchun 1 tadan 5 tagacha rasm tanlang');
+
+  const requestedCover = typeof body.coverImage === 'string' ? body.coverImage.trim() : fallbackCoverImage;
+  const coverImage = images.includes(requestedCover) ? requestedCover : images[0];
+  return { images: [coverImage, ...images.filter((image) => image !== coverImage)], coverImage };
+}
+
 export async function GET(req: Request) {
   try {
     await dbConnect();
@@ -44,13 +55,18 @@ export async function POST(req: Request) {
     }
 
     await dbConnect();
-    const body = await req.json();
+    const body = await req.json() as Record<string, unknown>;
+    const title = typeof body.title === 'string' ? body.title.trim() : '';
+    if (!title) return NextResponse.json({ error: 'Post sarlavhasini kiriting' }, { status: 400 });
+    const fallbackCoverImage = typeof body.coverImage === 'string' ? body.coverImage.trim() : '';
+    const { images, coverImage } = getPostImages(body, fallbackCoverImage);
     const post = await Blog.create({
-      title: body.title,
+      title,
       excerpt: body.excerpt,
       content: body.content,
-      coverImage: body.coverImage,
-      slug: await createUniqueBlogSlug(body.title),
+      coverImage,
+      images,
+      slug: await createUniqueBlogSlug(title),
       isVisible: body.isVisible ?? true,
       mainBlog: body.mainBlog ?? false,
       author: session?.user?.name || "Najot Ta'lim HR",

@@ -12,7 +12,8 @@ import {
   Clock,
   ImagePlus,
   Loader2,
-  Sparkles
+  Sparkles,
+  X,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
@@ -26,6 +27,7 @@ const emptyForm: BlogFormData = {
   excerpt: '',
   content: '',
   coverImage: '',
+  images: [],
 };
 
 export default function BlogAdminPage() {
@@ -65,6 +67,7 @@ export default function BlogAdminPage() {
         excerpt: post.excerpt,
         content: post.content,
         coverImage: post.coverImage,
+        images: post.images?.length ? post.images : [post.coverImage],
         mainBlog: post.mainBlog,
       });
     } else {
@@ -75,22 +78,33 @@ export default function BlogAdminPage() {
   };
 
   const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const currentImageCount = formData.images.length;
 
-    if (!file.type.startsWith('image/')) {
-      alert('Faqat rasm fayllarini yuklash mumkin');
+    if (currentImageCount + files.length > 5) {
+      alert(`Postga ko‘pi bilan 5 ta rasm qo‘shish mumkin. Hozir ${currentImageCount} ta rasm tanlangan.`);
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Rasm hajmi 5MB dan oshmasligi kerak");
+    if (files.some((file) => !file.type.startsWith('image/'))) {
+      alert('Faqat rasm fayllarini yuklash mumkin');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+    if (files.some((file) => file.size > 5 * 1024 * 1024)) {
+      alert("Har bir rasm hajmi 5MB dan oshmasligi kerak");
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
 
     setImageUploading(true);
     try {
-      const { secure_url } = await blogService.uploadBlogImage(file);
-      setFormData(prev => ({ ...prev, coverImage: secure_url }));
+      const uploadedImages = await Promise.all(files.map(async (file) => (await blogService.uploadBlogImage(file)).secure_url));
+      setFormData((current) => {
+        const images = [...current.images, ...uploadedImages];
+        return { ...current, images, coverImage: current.coverImage || images[0] };
+      });
     } catch {
       alert('Rasm yuklashda xatolik yuz berdi');
     } finally {
@@ -99,10 +113,17 @@ export default function BlogAdminPage() {
     }
   };
 
+  const removeImage = (image: string) => {
+    setFormData((current) => {
+      const images = current.images.filter((item) => item !== image);
+      return { ...current, images, coverImage: current.coverImage === image ? images[0] || '' : current.coverImage };
+    });
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.coverImage) {
-      alert('Iltimos, muqova rasmini yuklang');
+    if (!formData.images.length || !formData.coverImage) {
+      alert('Iltimos, kamida bitta rasm yuklang');
       return;
     }
 
@@ -234,30 +255,41 @@ export default function BlogAdminPage() {
       >
         <form onSubmit={handleFormSubmit} className="space-y-6 overflow-y-auto max-h-[75vh] px-1 custom-scrollbar">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Muqova rasmi</label>
-            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" id="blog-cover-input" />
-            {formData.coverImage ? (
-              <div className="relative w-full h-48 rounded-lg overflow-hidden border border-gray-200 group">
-                <Image src={formData.coverImage} alt="Muqova" fill className="object-cover" />
+            <div className="flex items-center justify-between gap-3 px-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Post rasmlari</label>
+              <span className="text-xs font-semibold text-gray-500">{formData.images.length}/5</span>
+            </div>
+            <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageSelect} className="hidden" id="blog-images-input" />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+              {formData.images.map((image, index) => {
+                const isCover = image === formData.coverImage;
+                return (
+                  <div key={image} className={`relative aspect-square overflow-hidden rounded-lg bg-gray-100 ${isCover ? 'ring-2 ring-primary ring-offset-2' : 'border border-gray-200'}`}>
+                    <Image src={image} alt={`${index + 1}-post rasmi`} fill className="object-cover" sizes="(max-width: 768px) 50vw, 140px" />
+                    <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 bg-black/55 p-1.5">
+                      <button type="button" onClick={() => setFormData((current) => ({ ...current, coverImage: image }))} disabled={isCover} className="min-h-7 rounded-md bg-white px-2 text-[10px] font-bold text-dark transition-colors hover:bg-gray-100 disabled:cursor-default disabled:bg-primary disabled:text-white">
+                        {isCover ? 'Asosiy' : 'Asosiy qilish'}
+                      </button>
+                      <button type="button" onClick={() => removeImage(image)} className="grid h-7 w-7 place-items-center rounded-md bg-white/95 text-gray-600 transition-colors hover:bg-red-50 hover:text-red-600" aria-label={`${index + 1}-rasmni olib tashlash`}>
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              {formData.images.length < 5 && (
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-semibold text-sm gap-2"
+                  disabled={imageUploading}
+                  className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 px-3 text-center text-gray-500 transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary disabled:cursor-wait"
                 >
-                  <ImagePlus className="h-5 w-5" /> Rasmni almashtirish
+                  {imageUploading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : <ImagePlus className="h-6 w-6" />}
+                  <span className="text-xs font-semibold">{imageUploading ? 'Yuklanmoqda…' : 'Rasm qo‘shish'}</span>
                 </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={imageUploading}
-                className="w-full h-40 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 hover:bg-gray-100 transition-all flex flex-col items-center justify-center gap-2 text-gray-400"
-              >
-                {imageUploading ? <Loader2 className="h-7 w-7 animate-spin text-primary" /> : <ImagePlus className="h-7 w-7" />}
-                <span className="text-xs font-semibold">{imageUploading ? 'Yuklanmoqda...' : 'Rasm tanlash (max 5MB)'}</span>
-              </button>
-            )}
+              )}
+            </div>
+            <p className="px-1 text-xs leading-relaxed text-gray-500">1 tadan 5 tagacha rasm yuklang. “Asosiy” deb belgilangan rasm post sahifasida birinchi ko‘rinadi.</p>
           </div>
 
           <label className="flex items-start gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4 cursor-pointer">

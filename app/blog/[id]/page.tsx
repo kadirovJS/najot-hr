@@ -2,11 +2,11 @@ import { cache } from 'react';
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowLeft } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import BlogShareTools from '@/components/blog/BlogShareTools';
 import BlogViewCounter from '@/components/blog/BlogViewCounter';
+import BlogImageGallery from '@/components/blog/BlogImageGallery';
 import { getPublicBlogPostByIdentifier } from '@/lib/queries/blog';
 import { formatBlogDate } from '@/lib/blog';
 import { BASE_URL, JsonLd, blogPostingJsonLd, breadcrumbJsonLd } from '@/lib/seo';
@@ -69,9 +69,7 @@ export default async function BlogDetail({ params }: { params: Promise<Params> }
           <BlogShareTools />
           <h1 className="mt-6 text-3xl md:text-5xl font-bold text-dark tracking-tight leading-tight">{post.title}</h1>
 
-          <div className="relative w-full h-64 md:h-96 rounded-2xl overflow-hidden mt-8 bg-gray-50">
-            <Image src={post.coverImage} alt={post.title} fill className="object-cover" priority />
-          </div>
+          <BlogImageGallery images={post.images?.length ? post.images : [post.coverImage]} title={post.title} />
 
           <article className="mt-10 text-gray-700 text-lg leading-relaxed whitespace-pre-line">
             {post.content}
