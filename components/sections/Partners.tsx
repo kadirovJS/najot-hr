@@ -96,16 +96,18 @@ export default function Partners() {
         >
           {displayPartners.map((partner, index) => (
             <SwiperSlide key={`${partner._id}-${index}`}>
-              <div className="h-20 md:h-24 flex items-center justify-center p-4 bg-white/50 border border-gray-100/50 rounded-2xl group transition-all duration-300 hover:bg-white hover:shadow-md hover:border-gray-200">
-                <Image
-                  src={partner.logo}
-                  alt={partner.name}
-                  width={240}
-                  height={96}
-                  sizes="(max-width: 639px) 45vw, (max-width: 767px) 29vw, (max-width: 1023px) 23vw, 16vw"
-                  className="h-full w-full object-contain transition-transform duration-500 ease-in-out group-hover:scale-110"
-                  title={partner.name}
-                />
+              <div className="group flex h-28 flex-col items-center justify-center gap-2 rounded-2xl border border-gray-100/50 bg-white/50 p-3 text-center transition-all duration-300 hover:border-gray-200 hover:bg-white hover:shadow-md md:h-32 md:p-4">
+                <div className="h-12 w-full md:h-16">
+                  <Image
+                    src={partner.logo}
+                    alt={partner.name}
+                    width={240}
+                    height={96}
+                    sizes="(max-width: 639px) 45vw, (max-width: 767px) 29vw, (max-width: 1023px) 23vw, 16vw"
+                    className="h-full w-full object-contain transition-transform duration-500 ease-in-out group-hover:scale-110"
+                  />
+                </div>
+                <p className="line-clamp-2 text-xs font-semibold leading-tight text-gray-600">{partner.name}</p>
               </div>
             </SwiperSlide>
           ))}

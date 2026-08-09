@@ -25,7 +25,14 @@ import {
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { ConfirmModal } from '../ui/ConfirmModal';
-import { getEmployeeOnboardingTrack, ONBOARDING_TRACK_META } from '@/lib/onboarding';
+import { ONBOARDING_TRACKS, ONBOARDING_TRACK_META, type OnboardingTrack } from '@/lib/onboarding';
+
+const getOnboardingTrackIcon = (track: OnboardingTrack) => {
+  if (track === 'SALES') return Target;
+  if (track === 'MARKETING_DESIGN') return Palette;
+  if (track === 'TECHNICAL_SKILLS') return Cpu;
+  return Sparkles;
+};
 
 export default function DashboardNav() {
   const pathname = usePathname();
@@ -33,7 +40,6 @@ export default function DashboardNav() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const role = (session?.user as { role?: string } | undefined)?.role;
-  const department = (session?.user as { department?: string } | undefined)?.department;
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(() => pathname.startsWith('/dashboard/onboarding'));
 
   const links = [
@@ -50,27 +56,17 @@ export default function DashboardNav() {
   ];
 
   const filteredLinks = role ? links.filter((link) => link.roles.includes(role)) : [];
-  const employeeTrack = getEmployeeOnboardingTrack(role, department);
+  const onboardingTrackChildren = ONBOARDING_TRACKS.map((track) => ({
+    name: ONBOARDING_TRACK_META[track].label,
+    href: `/dashboard/onboarding?view=${track}`,
+    icon: getOnboardingTrackIcon(track),
+  }));
   const onboardingChildren = role === 'SUPER_ADMIN'
     ? [
         { name: 'Umumiy', href: '/dashboard/onboarding?view=overview', icon: LayoutList },
-        { name: ONBOARDING_TRACK_META.SOFT_SKILLS.label, href: '/dashboard/onboarding?view=SOFT_SKILLS', icon: Sparkles },
-        { name: ONBOARDING_TRACK_META.TECHNICAL_SKILLS.label, href: '/dashboard/onboarding?view=TECHNICAL_SKILLS', icon: Cpu },
-        { name: ONBOARDING_TRACK_META.MARKETING_DESIGN.label, href: '/dashboard/onboarding?view=MARKETING_DESIGN', icon: Palette },
-        { name: ONBOARDING_TRACK_META.SALES.label, href: '/dashboard/onboarding?view=SALES', icon: Target },
+        ...onboardingTrackChildren,
       ]
-    : [
-        {
-          name: ONBOARDING_TRACK_META[employeeTrack].label,
-          href: `/dashboard/onboarding?view=${employeeTrack}`,
-          icon: employeeTrack === 'SALES' ? Target : employeeTrack === 'MARKETING_DESIGN' ? Palette : Sparkles,
-        },
-        {
-          name: ONBOARDING_TRACK_META.TECHNICAL_SKILLS.label,
-          href: '/dashboard/onboarding?view=TECHNICAL_SKILLS',
-          icon: Cpu,
-        },
-      ];
+    : onboardingTrackChildren;
   const mobilePriorityHrefs = role === 'SUPER_ADMIN'
     ? ['/dashboard', '/dashboard/users', '/dashboard/onboarding', '/dashboard/settings']
     : ['/dashboard', '/dashboard/onboarding', '/dashboard/books', '/dashboard/settings'];
