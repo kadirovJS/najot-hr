@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   ChevronDown,
+  ArrowRight,
   LayoutList,
   Sparkles,
   Cpu,
@@ -39,6 +40,7 @@ export default function DashboardNav() {
   const { data: session } = useSession();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isOnboardingSheetOpen, setIsOnboardingSheetOpen] = useState(false);
   const role = (session?.user as { role?: string } | undefined)?.role;
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(() => pathname.startsWith('/dashboard/onboarding'));
 
@@ -74,6 +76,23 @@ export default function DashboardNav() {
     .map((href) => filteredLinks.find((link) => link.href === href))
     .filter((link): link is typeof links[number] => Boolean(link));
   const mobileMoreLinks = filteredLinks.filter((link) => !mobilePrimaryLinks.some((primary) => primary.href === link.href));
+
+  useEffect(() => {
+    if (!isOnboardingSheetOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsOnboardingSheetOpen(false);
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOnboardingSheetOpen]);
 
   return (
     <>
@@ -164,12 +183,86 @@ export default function DashboardNav() {
           </div>
         </div>
       )}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center border-t border-gray-200 bg-white px-2 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-1 md:hidden">
+      {isOnboardingSheetOpen && (
+        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-onboarding-title">
+          <button
+            type="button"
+            className="absolute inset-0 bg-dark/35"
+            onClick={() => setIsOnboardingSheetOpen(false)}
+            aria-label="Onboarding menyusini yopish"
+          />
+          <section id="mobile-onboarding-sheet" className="absolute inset-x-0 bottom-0 max-h-[calc(100dvh-0.5rem)] overflow-y-auto rounded-t-2xl bg-white px-4 pb-[max(1rem,calc(1rem+env(safe-area-inset-bottom)))] pt-3 shadow-lg">
+            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" aria-hidden="true" />
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <div>
+                <h2 id="mobile-onboarding-title" className="text-base font-bold text-dark">Onboarding</h2>
+                <p className="mt-0.5 text-xs font-medium text-gray-500">Yo‘nalishni tanlang</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsOnboardingSheetOpen(false)}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 hover:text-dark focus:outline-none focus:ring-2 focus:ring-primary/30"
+                aria-label="Onboarding menyusini yopish"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="border-y border-gray-100">
+              <Link
+                href="/dashboard/onboarding"
+                onClick={() => setIsOnboardingSheetOpen(false)}
+                className="flex min-h-14 items-center gap-3 py-2 text-sm font-bold text-dark transition-colors hover:text-primary"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><PlayCircle className="h-5 w-5" /></span>
+                <span className="flex-1">Barcha onboarding</span>
+                <ArrowRight className="h-4 w-4 text-gray-400" />
+              </Link>
+              {onboardingChildren.map((child) => {
+                const ChildIcon = child.icon;
+                return (
+                  <Link
+                    key={child.href}
+                    href={child.href}
+                    onClick={() => setIsOnboardingSheetOpen(false)}
+                    className="flex min-h-14 items-center gap-3 border-t border-gray-100 py-2 text-sm font-semibold text-gray-700 transition-colors hover:text-primary"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500"><ChildIcon className="h-4 w-4" /></span>
+                    <span className="flex-1">{child.name}</span>
+                    <ArrowRight className="h-4 w-4 text-gray-400" />
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+      )}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center border-t border-gray-200 bg-white px-2 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-1 md:hidden">
         {mobilePrimaryLinks.map((link) => {
           const Icon = link.icon;
           const isActive = link.href === '/dashboard' 
             ? pathname === link.href 
             : pathname.startsWith(link.href);
+          if (link.href === '/dashboard/onboarding') {
+            return (
+              <button
+                key={link.href}
+                type="button"
+                onClick={() => {
+                  setIsMoreMenuOpen(false);
+                  setIsOnboardingSheetOpen(true);
+                }}
+                aria-expanded={isOnboardingSheetOpen}
+                aria-controls="mobile-onboarding-sheet"
+                aria-haspopup="dialog"
+                className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-1 transition-colors ${
+                  isActive ? 'bg-primary/5 text-primary' : 'text-gray-400'
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                <span className="max-w-full truncate text-[10px] font-medium">{link.name}</span>
+              </button>
+            );
+          }
           return (
             <Link
               key={link.href}

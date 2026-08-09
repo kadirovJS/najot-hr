@@ -15,7 +15,7 @@ export default function DashboardLayout({
     <Providers>
       <div className="flex min-h-screen bg-gray-50">
         <DashboardNav />
-        <main className="flex-grow p-4 md:p-8 pb-20 md:pb-8">
+        <main className="min-w-0 flex-grow p-4 pb-20 md:p-8 md:pb-8">
           {children}
         </main>
       </div>

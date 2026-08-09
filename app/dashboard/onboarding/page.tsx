@@ -88,7 +88,7 @@ function OnboardingContent() {
   const isAdmin = user?.role === 'SUPER_ADMIN';
   const learnerTrack = getEmployeeOnboardingTrack(user?.role, user?.department);
   const requestedTrack = searchParams.get('view');
-  const availableTracks = getEmployeeOnboardingTracks(user?.role, user?.department);
+  const availableTracks = getEmployeeOnboardingTracks();
   const activeTrack = ONBOARDING_TRACKS.includes(requestedTrack as OnboardingTrack) && availableTracks.includes(requestedTrack as OnboardingTrack)
     ? requestedTrack as OnboardingTrack
     : learnerTrack;

@@ -209,25 +209,25 @@ export default function SettingsPage() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 md:space-y-8 pb-20 px-4 md:px-0">
-      <div className="border-b border-gray-100 pb-6">
+    <div className="mx-auto w-full max-w-5xl space-y-5 pb-12 sm:space-y-6 sm:pb-20 md:space-y-8">
+      <div className="border-b border-gray-100 pb-5 sm:pb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-dark tracking-tight">Sozlamalar</h1>
-        <p className="text-gray-500 text-xs md:text-sm font-medium">Shaxsiy ma'lumotlar va xavfsizlik boshqaruvi</p>
+        <p className="mt-1 text-xs font-medium text-gray-500 md:text-sm">Shaxsiy ma'lumotlar va xavfsizlik boshqaruvi</p>
       </div>
 
       <div className="space-y-6">
         {/* Top tabs */}
-        <nav className="flex gap-2 overflow-x-auto border-b border-gray-200 pb-3" aria-label="Sozlamalar bo‘limlari">
+        <nav className="grid grid-cols-3 gap-1 rounded-xl bg-gray-100 p-1 sm:flex sm:gap-2 sm:overflow-x-auto sm:rounded-none sm:bg-transparent sm:p-0 sm:pb-3 sm:border-b sm:border-gray-200" aria-label="Sozlamalar bo‘limlari">
           <TabButton active={activeTab === 'profile'} icon={<UserIcon className="h-4 w-4" />} label="Profil" onClick={() => setActiveTab('profile')} />
           <TabButton active={activeTab === 'security'} icon={<Lock className="h-4 w-4" />} label="Xavfsizlik" onClick={() => setActiveTab('security')} />
           <TabButton active={activeTab === 'notifications'} icon={<Bell className="h-4 w-4" />} label="Bildirishnomalar" onClick={() => setActiveTab('notifications')} />
         </nav>
 
         {/* Content Area */}
-        <div className="min-h-[500px] rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-10">
+        <div className="min-h-[500px] rounded-xl border border-gray-200 bg-white p-4 sm:p-6 md:rounded-2xl md:p-10">
           {activeTab === 'profile' && (
             <div className="space-y-8 md:space-y-10">
-              <div className="flex flex-col items-center gap-6">
+              <div className="flex flex-col items-center gap-4 sm:gap-6">
                 <div className="relative group">
                    <div className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-gray-50 bg-gray-50 flex items-center justify-center overflow-hidden shadow-md">
                       {profileData.image ? (
@@ -241,9 +241,11 @@ export default function SettingsPage() {
                         </div>
                       )}
                    </div>
-                   <button 
+                   <button
+                     type="button"
                      onClick={() => fileInputRef.current?.click()}
-                     className="absolute bottom-1 right-1 p-2 bg-primary text-white rounded-xl shadow-lg hover:bg-primary/90 transition-all border-4 border-white"
+                     aria-label="Profil rasmini o‘zgartirish"
+                     className="absolute bottom-0 right-0 flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-primary text-white shadow-md transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/30"
                    >
                      <Camera className="h-4 w-4" />
                    </button>
@@ -270,14 +272,14 @@ export default function SettingsPage() {
                     <input className="w-full h-11 pl-12 pr-6 rounded-lg border border-gray-200 bg-gray-50 focus:bg-white focus:border-primary/50 outline-none font-semibold text-dark transition-all text-sm" value={profileData.phone} onChange={(e) => setProfileData({...profileData, phone: e.target.value})} />
                   </div>
                 </div>
-                <Button className="w-full h-12 rounded-lg font-bold" isLoading={actionLoading}>O'zgarishlarni saqlash</Button>
+                <Button className="h-12 w-full rounded-lg font-bold" isLoading={actionLoading}>O'zgarishlarni saqlash</Button>
               </form>
             </div>
           )}
 
           {activeTab === 'security' && (
             <div className="space-y-8 md:space-y-10">
-              <div className="flex items-start gap-4 p-5 bg-amber-50/50 rounded-xl border border-amber-100">
+              <div className="flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50/50 p-4 sm:gap-4 sm:p-5">
                 <ShieldCheck className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                 <div>
                    <h4 className="font-bold text-amber-800 text-sm">Xavfsizlik maslahati</h4>
@@ -326,9 +328,9 @@ export default function SettingsPage() {
               </div>
 
               {/* Email Verification Section */}
-              <div className="pt-10 border-t border-gray-100">
-                <div className="bg-gray-50 rounded-2xl p-6 md:p-8 border border-gray-100">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="border-t border-gray-100 pt-8 sm:pt-10">
+                <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 sm:p-6 md:rounded-2xl md:p-8">
+                  <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center md:gap-6">
                     <div className="space-y-1">
                        <h4 className="font-bold text-dark flex items-center gap-2 text-lg">
                          <ShieldCheck className="h-5 w-5 text-primary" /> Emailni tasdiqlash
@@ -359,13 +361,13 @@ export default function SettingsPage() {
                             </div>
                           ) : (
                             <div className="space-y-4">
-                              <div className="flex items-center justify-between gap-4 bg-primary/5 p-3 rounded-lg border border-primary/10">
+                              <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/10 bg-primary/5 p-3">
                                  <p className="text-xs font-bold text-primary italic truncate">Kod yuborildi: {emailToVerify}</p>
                                  <button className="text-[10px] font-bold uppercase text-primary hover:underline shrink-0" onClick={() => setCodeSent(false)}>O'zgartirish</button>
                               </div>
                               <div className="flex flex-col sm:flex-row gap-2">
                                 <input 
-                                  className="flex-grow h-11 px-4 rounded-lg border border-gray-200 bg-white outline-none font-bold text-dark text-center tracking-[8px] text-lg focus:ring-2 focus:ring-primary/20" 
+                                  className="h-11 flex-grow rounded-lg border border-gray-200 bg-white px-4 text-center text-lg font-bold tracking-[0.35em] text-dark outline-none focus:ring-2 focus:ring-primary/20"
                                   placeholder="0000" 
                                   maxLength={4}
                                   value={verificationCode}
@@ -394,9 +396,9 @@ function TabButton({ active, icon, label, onClick }: any) {
     <button 
       type="button"
       onClick={onClick}
-      className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-colors ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 hover:text-dark'}`}
+      className={`flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-bold transition-colors sm:shrink-0 sm:justify-start sm:gap-2 sm:rounded-xl sm:px-4 sm:py-2.5 sm:text-sm ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 hover:text-dark'}`}
     >
-      {icon}
+      <span className="shrink-0">{icon}</span>
       <span className="truncate">{label}</span>
     </button>
   );
@@ -414,7 +416,7 @@ function PasswordField({ label, value, onChange, show, onToggle }: any) {
           value={value} 
           onChange={(e) => onChange(e.target.value)} 
         />
-        <button type="button" onClick={onToggle} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors">
+        <button type="button" onClick={onToggle} aria-label={show ? 'Parolni yashirish' : 'Parolni ko‘rsatish'} className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-md text-gray-400 transition-colors hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:right-2 sm:h-11 sm:w-11">
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       </div>
@@ -425,7 +427,7 @@ function PasswordField({ label, value, onChange, show, onToggle }: any) {
 function ToggleItem({ icon, title, description, active, onToggle }: any) {
   return (
     <div 
-      className={`group flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 ${
+      className={`group flex items-center gap-3 rounded-xl border p-3 transition-all duration-200 sm:gap-4 sm:p-4 ${
         active 
           ? 'border-primary/20 bg-primary/[0.02]' 
           : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/50'
@@ -436,17 +438,20 @@ function ToggleItem({ icon, title, description, active, onToggle }: any) {
       }`}>
         {icon}
       </div>
-      <div className="flex-grow">
+      <div className="min-w-0 flex-grow">
         <h4 className="font-bold text-dark leading-tight text-sm md:text-base">{title}</h4>
-        <p className="text-xs text-gray-500 font-medium mt-0.5 line-clamp-1 md:line-clamp-none">{description}</p>
+        <p className="mt-0.5 text-xs font-medium leading-relaxed text-gray-500">{description}</p>
       </div>
       <button 
+        type="button"
         onClick={onToggle}
-        className={`relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out outline-none focus:ring-2 focus:ring-primary/20 shrink-0 ${
+        aria-label={`${title} bildirishnomalarini ${active ? 'o‘chirish' : 'yoqish'}`}
+        aria-pressed={active}
+        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 ease-in-out outline-none focus:ring-2 focus:ring-primary/20 ${
           active ? 'bg-primary' : 'bg-gray-200'
         }`}
       >
-        <div className={`absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ease-in-out transform ${
+        <div className={`absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
           active ? 'translate-x-5' : 'translate-x-0'
         }`} />
       </button>

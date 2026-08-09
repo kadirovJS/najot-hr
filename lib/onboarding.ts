@@ -27,16 +27,15 @@ export const getEmployeeOnboardingTrack = (role?: string, department?: string): 
   return 'SOFT_SKILLS';
 };
 
-export const getEmployeeOnboardingTracks = (role?: string, department?: string): OnboardingTrack[] => [
-  getEmployeeOnboardingTrack(role, department),
-  'TECHNICAL_SKILLS',
-];
+// Barcha yangi tracklardagi videolar xodimlarga ochiq. Bu kurslar ko‘rinishini
+// boshqaradi; majburiy biriktirish va statistika isOnboardingTrackAssigned orqali qoladi.
+export const getEmployeeOnboardingTracks = (): OnboardingTrack[] => [...ONBOARDING_TRACKS];
 
 export const isOnboardingTrackAssigned = (track: OnboardingTrack | undefined, role?: string, department?: string) =>
   track === 'TECHNICAL_SKILLS' || track === getEmployeeOnboardingTrack(role, department);
 
 export const getOnboardingTrackQuery = (role?: string, department?: string) => {
-  const tracks = getEmployeeOnboardingTracks(role, department);
+  const tracks = getEmployeeOnboardingTracks();
   return {
     $or: [
       { track: { $in: tracks } },
