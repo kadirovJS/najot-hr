@@ -14,7 +14,11 @@ export async function GET() {
     await dbConnect();
     const cutoff = new Date(Date.now() - NOTIFICATION_RETENTION_MS);
     await Notification.deleteMany({ createdAt: { $lt: cutoff } });
-    const notifications = await Notification.find({ createdAt: { $gte: cutoff } }).sort({ createdAt: -1 }).limit(20);
+    const userId = (session.user as { id?: string }).id;
+    const notifications = await Notification.find({
+      createdAt: { $gte: cutoff },
+      $or: [{ recipientId: { $exists: false } }, { recipientId: null }, { recipientId: userId }],
+    }).sort({ createdAt: -1 }).limit(20);
     return NextResponse.json(notifications);
   } catch {
     return NextResponse.json({ error: "Xatolik" }, { status: 500 });

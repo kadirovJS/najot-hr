@@ -23,6 +23,7 @@ import {
   Cpu,
   Palette,
   Target,
+  Swords,
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { ConfirmModal } from '../ui/ConfirmModal';
@@ -46,6 +47,7 @@ export default function DashboardNav() {
 
   const links = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT'] },
+    { name: '1 vs 1', href: '/onevsone', icon: Swords, roles: ['SUPER_ADMIN', 'TEACHER', 'HR', 'ACCOUNTANT', 'MARKETING_DESIGN', 'SALES'] },
     { name: 'Xodimlar', href: '/dashboard/users', icon: Users, roles: ['SUPER_ADMIN'] },
     { name: 'Vakansiyalar', href: '/dashboard/vacancies', icon: Briefcase, roles: ['SUPER_ADMIN', 'HR'] },
     { name: 'Blog', href: '/dashboard/blog', icon: Newspaper, roles: ['SUPER_ADMIN'] },

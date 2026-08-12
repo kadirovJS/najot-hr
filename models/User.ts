@@ -29,6 +29,9 @@ const UserSchema = new Schema({
   },
   onboardingProgress: { type: Number, default: 0 },
   watchedVideos: [{ type: Schema.Types.ObjectId, ref: 'Video' }],
+  gameRating: { type: Number, default: 1000, index: true },
+  gamesWon: { type: Number, default: 0 },
+  gamesLost: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
 });
 
