@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Phone, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Phone, Lock, Loader2, Eye, EyeOff,  MoveLeft } from 'lucide-react';
 
 const normalizePhoneNumber = (value: string) => value.replace(/\D/g, '').replace(/^998/, '').slice(0, 9);
 
@@ -48,11 +48,11 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-6">
             <Image 
-              src="https://najottalim.uz/icons/logo.svg" 
+              src="/no-bg-icon-nt.png" 
               alt="Najot Ta'lim Logo" 
               width={160} 
-              height={40} 
-              className="h-10 w-auto mx-auto"
+              height={140} 
+              className="h-20 w-auto mx-auto"
             />
           </Link>
           <h2 className="text-2xl font-bold text-dark">ERP Tizimiga kirish</h2>
@@ -129,6 +129,10 @@ export default function LoginPage() {
           <p className="text-xs text-gray-400">
             Agar kirishda muammo bo&apos;lsa, HR bo&apos;limiga murojaat qiling.
           </p>
+          <Link href="/" className="text-sm text-primary font-medium hover:underline mt-4 inline-block">
+            <MoveLeft className="h-4 w-4 inline-block mr-2"/>
+            Asosiy sahifaga qaytish
+          </Link>
         </div>
       </div>
     </div>
