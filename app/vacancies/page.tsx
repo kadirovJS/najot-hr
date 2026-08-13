@@ -31,7 +31,7 @@ export default async function VacanciesPage() {
 
   return (
     <>
-      <JsonLd data={breadcrumbJsonLd([{ name: 'Bosh sahifa', path: '/' }, { name: 'Vakansiyalar', path: '/vacancies' }])} />
+      <JsonLd data={breadcrumbJsonLd([{ name: "Najot Ta'lim", path: '/' }, { name: 'Vakansiyalar', path: '/vacancies' }])} />
       {vacancies.length > 0 && <JsonLd data={vacancyListJsonLd(vacancies)} />}
       <VacanciesExplorer vacancies={vacancies} failed={failed} />
     </>

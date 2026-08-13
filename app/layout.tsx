@@ -21,8 +21,12 @@ export const metadata: Metadata = {
   },
   description: DEFAULT_DESCRIPTION,
   keywords: [
+    "Najot Ta'lim",
+    "Najot Talim",
     "Najot Ta'lim HR",
     "Najot Ta'lim vakansiyalari",
+    "Najot Ta'lim vakansiya",
+    "Najot Ta'lim o'quv markazi",
     "ish e'lonlari O'zbekiston",
     "IT ish o'rinlari Toshkent",
     "HR tizimi",

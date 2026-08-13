@@ -14,11 +14,14 @@ export function organizationJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: SITE_NAME,
+    alternateName: ["Najot Ta'lim", "Najot Ta'lim HR"],
     url: BASE_URL,
     logo: absoluteUrl('/najot.png'),
+    description: "Najot Ta'lim — dasturlash, dizayn va marketing kabi zamonaviy kasblarni o'rgatuvchi ta'lim markazi. Bu sahifa Najot Ta'lim jamoasining rasmiy HR tizimi va vakansiyalar portali.",
     sameAs: [
+      'https://najottalim.uz',
       'https://t.me/najottalim',
-      'https://instagram.com/najottalim',
+      'https://www.instagram.com/najottalimteam/',
       'https://youtube.com/@najottalim',
     ],
   };
@@ -29,6 +32,7 @@ export function websiteJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: SITE_NAME,
+    alternateName: "Najot Ta'lim",
     url: BASE_URL,
     inLanguage: 'uz',
   };

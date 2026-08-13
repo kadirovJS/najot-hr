@@ -56,7 +56,7 @@ export default async function BlogDetail({ params }: { params: Promise<Params> }
       <Header />
       <JsonLd data={blogPostingJsonLd(post)} />
       <JsonLd data={breadcrumbJsonLd([
-        { name: 'Bosh sahifa', path: '/' },
+        { name: "Najot Ta'lim", path: '/' },
         { name: 'Blog', path: '/blog' },
         { name: post.title, path: `/blog/${post.slug}` },
       ])} />

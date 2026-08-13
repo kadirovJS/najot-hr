@@ -23,7 +23,7 @@ export interface ShowcaseSettings {
 
 export const DEFAULT_SHOWCASE: ShowcaseSettings = {
   eyebrow: "Najot Ta'lim jamoasi",
-  title: "Bilim beradigan jamoada o'z izingizni qoldiring.",
+  title: "Najot Ta'lim jamoasida o'z izingizni qoldiring.",
   description: "Kelajak kasblarini o‘rgatayotgan, bir-birini qo‘llaydigan va doim o‘sishga intiladigan jamoaga qo‘shiling.",
   primaryCtaLabel: "Ochiq vakansiyalar",
   primaryCtaHref: "/vacancies",

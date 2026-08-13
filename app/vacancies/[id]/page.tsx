@@ -43,7 +43,7 @@ export default async function VacancyDetail({ params }: { params: Promise<Params
     <>
       <JsonLd data={jobPostingJsonLd(vacancy)} />
       <JsonLd data={breadcrumbJsonLd([
-        { name: 'Bosh sahifa', path: '/' },
+        { name: "Najot Ta'lim", path: '/' },
         { name: 'Vakansiyalar', path: '/vacancies' },
         { name: vacancy.title, path: `/vacancies/${vacancy._id}` },
       ])} />

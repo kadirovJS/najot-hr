@@ -23,7 +23,7 @@ export default function AboutTeam() {
     <>
       <section id="pathways" className="pathways-section">
         <div className="site-container">
-          <div data-reveal className="section-heading split-heading"><div><span className="eyebrow">Platformadan boshlang</span><h2>Sizga kerakli yo‘l — bir qadam narida.</h2></div><p>Bu yerda faqat vakansiya emas: o‘zingizni sinash, jamoani tanish va yangi imkoniyatni boshlash mumkin.</p></div>
+          <div data-reveal className="section-heading split-heading"><div><span className="eyebrow">Platformadan boshlang</span><h2>Sizga kerakli yo‘l — bir qadam narida.</h2></div><p>Bu yerda faqat vakansiya emas: Najot Ta’lim jamoasida o‘zingizni sinash, jamoani tanish va yangi imkoniyatni boshlash mumkin.</p></div>
           <div data-stagger className="path-grid">
             {paths.map(({ icon: Icon, ...path }, index) => (
               <Link href={path.href} className={`path-card path-${index + 1}`} key={path.title}>
@@ -39,7 +39,7 @@ export default function AboutTeam() {
       <section id="about" className="about-section">
         <div className="site-container about-layout">
           <div data-reveal className="about-statement"><span className="eyebrow eyebrow-light">Biz haqimizda</span><h2>Ta’limni o‘zgartirish — avvalo, <em>kuchli muhit</em> yaratishdan boshlanadi.</h2></div>
-          <div data-reveal className="about-detail"><p>Najot Ta’lim — dasturlash, dizayn va marketing kabi zamonaviy kasblar o‘rgatiladigan markaz. Biz odamlarning kelajakka ishonchini amaliy bilim orqali mustahkamlaymiz.</p><p>Bugun 350+ kishilik jamoamiz bir maqsad atrofida ishlaydi: O‘zbekistonda sifatli ta’limni yanada kengroq va ta’sirliroq qilish.</p><Link href="/vacancies">Biz bilan ishlash <ArrowUpRight size={18} /></Link></div>
+          <div data-reveal className="about-detail"><p>Najot Ta’lim — dasturlash, dizayn va marketing kabi zamonaviy kasblar o‘rgatiladigan markaz. Biz odamlarning kelajakka ishonchini amaliy bilim orqali mustahkamlaymiz.</p><p>Bugun Najot Ta’lim’da 350+ kishilik jamoamiz bir maqsad atrofida ishlaydi: O‘zbekistonda sifatli ta’limni yanada kengroq va ta’sirliroq qilish.</p><Link href="/vacancies">Biz bilan ishlash <ArrowUpRight size={18} /></Link></div>
         </div>
         <div className="marquee" aria-hidden="true"><div>O‘RGANAMIZ · ULASHAMIZ · O‘STIRAMIZ · O‘RGANAMIZ · ULASHAMIZ · O‘STIRAMIZ ·</div></div>
       </section>

@@ -36,7 +36,7 @@ export default async function BlogPage() {
   return (
     <div className="bg-white min-h-screen">
       <Header />
-      <JsonLd data={breadcrumbJsonLd([{ name: 'Bosh sahifa', path: '/' }, { name: 'Blog', path: '/blog' }])} />
+      <JsonLd data={breadcrumbJsonLd([{ name: "Najot Ta'lim", path: '/' }, { name: 'Blog', path: '/blog' }])} />
       {posts.length > 0 && <JsonLd data={blogListJsonLd(posts)} />}
       <main className="blog-index">
         <div className="site-container">
