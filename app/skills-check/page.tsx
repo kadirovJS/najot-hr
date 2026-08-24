@@ -8,14 +8,12 @@ import { twMerge } from 'tailwind-merge';
 import {
   AlertCircle,
   ArrowUpRight,
-  Brain,
   CheckCircle2,
   Clock,
   Compass,
   Keyboard,
   LogOut,
   ShieldCheck,
-  Sparkles,
   User,
   Users2,
 } from 'lucide-react';
@@ -244,10 +242,7 @@ export default function SkillsCheck() {
                     className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary/25 blur-3xl"
                   />
                   <div className="relative">
-                    <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white/80">
-                      <Sparkles className="h-3.5 w-3.5" /> Skills Check
-                    </span>
-                    <h1 className="mt-6 text-3xl font-bold leading-tight">
+                    <h1 className="text-3xl font-bold leading-tight">
                       O‘zingizni bir necha daqiqada tanishtiring.
                     </h1>
                     <p className="mt-3 text-sm leading-relaxed text-white/70">
@@ -271,16 +266,6 @@ export default function SkillsCheck() {
                 </div>
 
                 <div className="p-8 md:p-12">
-                  <div className="mb-8 flex items-center gap-3 lg:hidden">
-                    <div className="rounded-2xl bg-primary/10 p-3">
-                      <Brain className="h-7 w-7 text-primary" />
-                    </div>
-                    <div>
-                      <h1 className="text-xl font-bold text-dark">Skills Check</h1>
-                      <p className="text-sm text-gray-500">Bir necha daqiqada o‘zingizni tanishtiring</p>
-                    </div>
-                  </div>
-
                   <AnimatePresence>
                     {errorMsg && (
                       <motion.div
